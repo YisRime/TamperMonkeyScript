@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BiliBili 关注管理
 // @namespace    https://github.com/YisRime/BilibiliFollowManage
-// @version      9.0
+// @version      9.1
 // @description  B站关注管理，支持批量取关、分组管理、信息同步等功能，适用于批量管理关注列表。
 // @author       苡淞
 // @match        https://space.bilibili.com/*/relation/follow*
@@ -84,6 +84,8 @@
         .active .bm-arrow{color:var(--b-blue)}
         .bm-btn-inv{cursor:pointer;color:var(--b-blue);margin-left:8px;font-size:12px;user-select:none;font-weight:normal}
         .bm-btn-inv:hover{text-decoration:underline}
+        .bm-btn-clr{cursor:pointer;color:var(--b-red);margin-left:8px;font-size:12px;user-select:none;font-weight:normal}
+        .bm-btn-clr:hover{text-decoration:underline}
     `);
 
     const Q = (sel, p = document) => p.querySelector(sel);
@@ -311,7 +313,13 @@
             Q('#bm-cls', this.ui).onclick = () => this.hide();
             Q('#bm-all', this.ui).onchange = e => this.toggleAll(e.target.checked);
             let tm;
-            Q('#bm-k', this.ui).oninput = () => { clearTimeout(tm); tm = setTimeout(() => this.render(), 300); };
+            Q('#bm-k', this.ui).oninput = () => { 
+                clearTimeout(tm); 
+                tm = setTimeout(() => {
+                    if (this.settings.autoDeselect) this.state.selected.clear();
+                    this.render(); 
+                }, 300); 
+            };
             const tog = (id, f, a, b) => { Q(id).onclick = e => { const v = e.target.textContent===a; e.target.textContent = v?b:a; this.state.filter[f] = v?'>':'<='; if(f==='fans') this.state.filter[f]=v?'<':'>='; }; };
             tog('#bm-f-op', 'fans', '≥', '<');
             Q('#bm-d-op').onclick = e => { const v = e.target.textContent==='早于'; this.state.filter.date = v?'>':'<='; e.target.textContent = v?'晚于':'早于'; };
@@ -370,6 +378,7 @@
             };
             Q('#bm-st').onclick = e => {
                 if (e.target.id === 'bm-btn-inv') this.toggleInvert();
+                if (e.target.id === 'bm-btn-clr') { this.state.selected.clear(); this.render(); }
             };
         }
 
@@ -438,7 +447,12 @@
         }
 
         addCond(t) {
-            const push = (c) => { this.state.conds.push(c); this.renderConds(); this.render(); };
+            const push = (c) => { 
+                if (this.settings.autoDeselect) this.state.selected.clear();
+                this.state.conds.push(c); 
+                this.renderConds(); 
+                this.render(); 
+            };
             if (['vip', 'ver', 'stat', 'grp'].includes(t)) {
                 const el = Q(`#bm-s-${t}`);
                 if (!el.value) return;
@@ -468,9 +482,27 @@
             c.style.display = 'flex';
             this.state.conds.forEach((o, i) => {
                 const t = CE('div', 'bm-filter-tag'); t.innerHTML = `<span>${o.l}</span><span class="rm">✕</span>`;
-                t.querySelector('.rm').onclick = () => { this.state.conds.splice(i, 1); this.renderConds(); this.render(); };
+                t.querySelector('.rm').onclick = () => { 
+                    if (this.settings.autoDeselect) this.state.selected.clear();
+                    this.state.conds.splice(i, 1); 
+                    this.renderConds(); 
+                    this.render(); 
+                };
                 c.appendChild(t);
             });
+            if (this.state.conds.length > 1) {
+                const clr = CE('div', 'bm-filter-tag');
+                clr.innerHTML = `<span style="cursor:pointer;color:var(--b-red);font-weight:bold;">清空</span>`;
+                clr.style.background = '#fff0f6';
+                clr.style.borderColor = '#ffadd2';
+                clr.onclick = () => {
+                    if (this.settings.autoDeselect) this.state.selected.clear();
+                    this.state.conds = [];
+                    this.renderConds();
+                    this.render();
+                };
+                c.appendChild(clr);
+            }
         }
 
         render() {
@@ -543,7 +575,8 @@
         updateUI() {
             const tot = this.state.list.length, vis = this.view.length, sel = this.state.selected.size;
             const invBtn = `<span id="bm-btn-inv" class="bm-btn-inv">[反选]</span>`;
-            Q('#bm-st').innerHTML = `共 <span class="bm-status-num">${tot}</span> 人${vis!==tot?` | 筛选 <span class="bm-status-num">${vis}</span>`:''}${sel?` | 已选 <span class="bm-status-num" style="color:var(--b-blue)">${sel}</span>${invBtn}`:''}`;
+            const clrBtn = `<span id="bm-btn-clr" class="bm-btn-clr">[清空选中]</span>`;
+            Q('#bm-st').innerHTML = `共 <span class="bm-status-num">${tot}</span> 人${vis!==tot?` | 筛选 <span class="bm-status-num">${vis}</span>`:''}${sel?` | 已选 <span class="bm-status-num" style="color:var(--b-blue)">${sel}</span>${invBtn}${clrBtn}`:''}`;
             const all = Q('#bm-all'); all.checked = vis>0 && sel===vis; all.indeterminate = sel>0 && sel<vis;
             ['bm-btn-fol', 'bm-btn-unf', 'bm-btn-g-add', 'bm-btn-g-cpy', 'bm-btn-g-mov'].forEach(id => Q('#'+id).disabled = !sel);
         }
