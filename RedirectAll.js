@@ -3,7 +3,7 @@
 // @namespace    https://github.com/YisRime/TamperMonkeyScript
 // @version      1.0.0
 // @author       YisRime
-// @description  【提交 Issue 以扩充网站支持】一键跳转各大网站的外链，已适配：知乎、简书、豆瓣、百度贴吧、YouTube、CSDN、掘金、哔哩哔哩、QQ（电脑端/移动端/邮箱）、微信（企业微信/阅读模板/开发者社区/安全确认/公众号）、Google、Steam、微博（移动版/网页版）、腾讯文档、腾讯兔小巢、腾讯问卷、腾讯云、Gitee、GitCode、开源中国、牛客网、百度百科、搜狗搜索、语雀、金山文档、石墨文档、飞书、酷安、少数派、爱发电、天眼查、企查查、爱企查、亿企查、阿里云（开发者社区/帮助中心/云栖社区）、Instagram、LinkedIn、Telegram、Epic、力扣、51CTO、洛谷、LINUX DO、NGA、NodeSeek、InfoQ、HelloGitHub、CNB、链滴、站长之家、优设网、网盘分享、PC6下载、YY语音、KOOK、机核网、森空岛、巴哈姆特、CurseForge、GameBanana、我的世界中文论坛、360个人图书馆、印象笔记、5ch、MC模组百科、Pixiv、ACGrip、开发者知识库、花瓣网、异次元软件、AtCoder、LaTeX开源社区、知更鸟、ABABTOOLS、URLShare、Zaker、喜格微、标志情报局、Unsafelink、TechLife、书签地球、蓝字团队等。
+// @description  【提交 Issue 以扩充网站支持】一键跳转各大网站的外链。目前已适配 80+ 个网站，包括：知乎、微信、QQ、哔哩哔哩、CSDN、掘金、百度贴吧、简书、豆瓣、微博、Google、YouTube、Steam、Telegram、Gitee、语雀、飞书、少数派、力扣、NGA、Pixiv 等。
 // @match        *://link.zhihu.com/*
 // @match        *://www.jianshu.com/go-wild*
 // @match        *://www.douban.com/link2*
