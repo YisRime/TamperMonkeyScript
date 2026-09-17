@@ -1,11 +1,9 @@
 ﻿// ==UserScript==
 // @name         Linux Do All In One
-// @namespace    https://github.com/YisRime/LinuxDo-AIO
-// @version      1.0.0
+// @namespace    https://github.com/YisRime/TamperMonkeyScript
+// @version      1.0.2
 // @author       YisRime
 // @description  Linux Do 小助手：直接跳转外链、只看楼主、去除样式、AI 总结，并可查询升级指标与积分资产，甚至支持自动阅读与点赞回复。
-// @homepage     https://github.com/YisRime/LinuxDo-AIO
-// @supportURL   https://github.com/YisRime/LinuxDo-AIO/issues
 // @match        https://linux.do/*
 // @match        https://idcflare.com/*
 // @icon         https://www.google.com/s2/favicons?domain=linux.do
@@ -472,23 +470,26 @@
             const identity = Tool.identity();
             const name = env.Discourse?.User?.current()?.username || env.Discourse?.__container__?.lookup?.('service:current-user')?.username;
             if (!identity || !name) return;
-            button.parentElement?.querySelectorAll('.lda-floor-btn').forEach(element => element.remove());
+            const existing = button.parentElement?.querySelectorAll('.lda-floor-btn');
+            if (existing?.length) return existing.forEach(element => element.remove());
             button.disabled = true;
             try {
-                let page = 1, items = [];
-                while (true) {
-                    const response = await fetch(`/t/${identity}.json?username_filters=${encodeURIComponent(name)}&page=${page}`);
-                    if (!response.ok) break;
-                    const list = (await response.json()).post_stream?.posts || [];
-                    if (!list.length) break;
-                    list.forEach(post => { if (post.post_number > 1) items.push(post.post_number); });
-                    page++;
+                const response = await fetch(`/t/${identity}.json?username_filters[]=${encodeURIComponent(name)}`);
+                if (!response.ok) return;
+                const stream = (await response.json()).post_stream || {};
+                let list = (stream.posts || []).filter(post => post.username?.toLowerCase() === name.toLowerCase());
+
+                const remain = (stream.stream || []).filter(id => !list.some(post => post.id === id));
+                if (remain.length) {
+                    const extra = await fetch(`/t/${identity}/post_stream.json?${remain.map(id => `post_ids[]=${id}`).join('&')}`);
+                    if (extra.ok) list = list.concat((await extra.json()).post_stream?.posts || []);
                 }
-                if (!items.length) return;
+
+                const items = [...new Set(list.map(post => post.post_number).filter(num => num > 1))].sort((a, b) => a - b);
                 let base = button;
                 items.forEach(number => {
                     const node = document.createElement('button');
-                    node.className = 'btn btn-default lda-floor-btn';
+                    node.className = 'btn btn-default no-text lda-floor-btn';
                     node.type = 'button';
                     node.title = `前往 ${number} 楼`;
                     node.innerHTML = `<span class="d-button-label">#${number}</span>`;
@@ -559,8 +560,13 @@
                 button.onclick = () => action(button);
                 box.appendChild(button);
             };
-            attach('floors', 'lda-ownreply-btn', '查询我的回复', `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`, (button) => Patch.floors(button));
             attach('digest', 'lda-digest-btn', '智能总结本贴', `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path></svg>`, (button) => Patch.digest(button));
+            attach('floors', 'lda-ownreply-btn', '查询我的回复', `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`, (button) => Patch.floors(button));
+            const digestBtn = box.querySelector('.lda-digest-btn');
+            const floorsBtn = box.querySelector('.lda-ownreply-btn');
+            if (digestBtn && floorsBtn && floorsBtn.compareDocumentPosition(digestBtn) & Node.DOCUMENT_POSITION_FOLLOWING) {
+                box.insertBefore(digestBtn, floorsBtn);
+            }
         },
         bypass(event) {
             if (!GM_getValue('lda_opt_bypass', true)) return;
@@ -1073,7 +1079,7 @@
                 
                 .post-stream.lookopwrapactive .topic-post { display: none !important; }
                 .post-stream.lookopwrapactive .topic-post.topic-owner { display: block !important; }
-                .lda-floor-btn { min-width: 32px; height: 32px; padding: 0 6px !important; margin-left: 4px; font-size: 12px !important; font-weight: 600; line-height: 32px; display: inline-flex !important; align-items: center; justify-content: center; }
+                .timeline-controls .lda-floor-btn { width: var(--d-button-size-regular, 36px) !important; height: var(--d-button-size-regular, 36px) !important; min-width: var(--d-button-size-regular, 36px) !important; padding: 0 !important; font-size: 11px !important; font-weight: 600; line-height: 1 !important; display: inline-flex !important; align-items: center; justify-content: center; border-radius: 50% !important; box-sizing: border-box; }
                 
                 .timeline-container { position: relative !important; }
                 #lda-digest-card { position: absolute; top: 100%; right: 0; margin-top: 10px; width: 320px; max-height: 480px; border-radius: 12px; display: flex; flex-direction: column; padding: 12px; gap: 8px; z-index: 1000; }
@@ -1103,7 +1109,7 @@
             this.box.innerHTML = `
                 <div id="lda-panel-content">
                     <div id="lda-header">
-                        <a id="lda-header-title" href="https://github.com/YisRime/LinuxDo-AIO" target="_blank">Linux Do AIO | 1.0.0 | Yis_Rime</a>
+                        <a id="lda-header-title" href="https://github.com/YisRime/LinuxDo-AIO" target="_blank">Linux Do AIO | 1.0.1 | Yis_Rime</a>
                     </div>
                     <div class="lda-group">
                         <div id="lda-log-box"></div>
