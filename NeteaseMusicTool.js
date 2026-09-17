@@ -14,7 +14,7 @@
 // @connect      172.*
 // @connect      *
 // @license      AGPLv3
-// @require      https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js
