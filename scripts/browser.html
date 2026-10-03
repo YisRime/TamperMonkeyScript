@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>跑 h5player-lite 浏览器实测</title>
+<script>
+window.__errs = [];
+window.__consoleErrors = [];
+(function () {
+  const textOf = a => a.map(x => (x && (x.message || x.type)) || String(x)).join(' ');
+  const FAILURE_TEXT = /失败|异常|无法|不可用|不支持|出错|error/i;
+  const rawLog = console.log.bind(console);
+  console.log = function (...a) {
+    const s = textOf(a);
+    if (FAILURE_TEXT.test(s)) { window.__consoleErrors.push(s) }
+    rawLog(...a);
+  };
+  const rawErr = console.error.bind(console);
+  console.error = function (...a) { window.__consoleErrors.push('console.error: ' + textOf(a)); rawErr(...a) };
+})();
+window.addEventListener('error', function (e) { window.__errs.push(e.error ? String(e.error.stack).split('\n').slice(0, 3).join(' <- ') : e.message) });
+window.addEventListener('unhandledrejection', function (e) {
+  const r = e.reason;
+  window.__errs.push('rejection: ' + ((r && r.message) || r) + (r && r.stack ? ' @ ' + String(r.stack).split('\n').slice(1, 3).join(' <- ') : ''));
+});
+(function () {
+  const scenario = new URLSearchParams(location.search).get('scenario');
+  if (scenario === 'disabled') { localStorage.setItem('_h5player_enable', 'false'); }
+  if (scenario === 'enabled') { localStorage.removeItem('_h5player_enable'); }
+})();
+(function () {
+  const store = {};
+  window.unsafeWindow = window;
+  window.GM_getValue = function (k, d) { return k in store ? store[k] : d };
+  window.GM_setValue = function (k, v) { store[k] = v };
+  window.GM_deleteValue = function (k) { delete store[k] };
+  window.GM_listValues = function () { return Object.keys(store) };
+  window.GM_addValueChangeListener = function () { return 1 };
+  window.GM_removeValueChangeListener = function () {};
+  window.GM_addStyle = function (css) {
+    const s = document.createElement('style');
+    s.textContent = css;
+    (document.head || document.documentElement).appendChild(s);
+    return s;
+  };
+  window.GM_openInTab = function () { return { close: function () {} } };
+  window.GM_getTab = function (cb) { cb && cb({ id: 1 }) };
+  window.GM_saveTab = function () {};
+  window.GM_getTabs = function (cb) { cb && cb({ 1: {} }) };
+  window.GM_setClipboard = function () {};
+  window.GM_registerMenuCommand = function () {};
+  window.__gmStore = store;
+})();
+</script>
+<script src="./cases.js"></script>
+<script src="./smoke.js"></script>
+<script>
+(function () {
+  var internals = window.__playerInternals || {};
+  Object.keys(internals).forEach(function (k) { window[k] = internals[k] });
+  function isDisabledSite () {
+    try { return configManager.get('enable') === false } catch (e) { return false }
+  }
+  window.__h5pChecks = async function () {
+    const cases = window.__h5pCases || [];
+    if (!cases.length) { throw new Error('没有用例表：这份是模板，先跑 node scripts/R6Player.test.ts suite --browser 生成夹具') }
+    const disabled = isDisabledSite();
+    const out = [];
+    for (const c of cases) {
+      if (!!c.disabledSite !== disabled) { continue }
+      const label = (c.group || '') + ' · ' + c.name;
+      try {
+        const fn = (0, eval)('(' + c.body + ')');
+        const r = await fn();
+        out.push({ name: label, ok: true, info: r === undefined ? '' : String(r) });
+      } catch (e) {
+        out.push({ name: label, ok: false, info: e.message });
+      }
+    }
+    const failed = out.filter(r => !r.ok);
+    return {
+      场景: disabled ? '本站已禁用脚本' : '正常启用',
+      通过: out.length - failed.length,
+      失败: failed.length,
+      失败明细: failed.map(f => f.name + ' :: ' + f.info),
+      未捕获异常: (window.__errs || []).slice(),
+      明细: out
+    };
+  };
+  window.__h5pRealKeyCheck = async function () {
+    const fire = (key, code) => {
+      document.dispatchEvent(new KeyboardEvent('keydown', { key, code, bubbles: true, cancelable: true }));
+    };
+    tunerCtl.unLockPlaybackRate();
+    tunerCtl.setPlaybackRate(1);
+    tunerCtl.unLockPlaybackRate();
+    const before = tunerCtl.getPlaybackRate();
+    fire('c', 'KeyC');
+    await new Promise(r => setTimeout(r, 30));
+    const after = tunerCtl.getPlaybackRate();
+    return { ok: after > before, before, after, 提示: (() => { const t = document.querySelector('.html_player_enhance_tips'); return t ? t.innerText : null })() };
+  };
+  window.__h5pDisable = function () {
+    localStorage.setItem('_h5player_enable', 'false');
+    location.reload();
+  };
+  window.__h5pEnable = function () {
+    localStorage.removeItem('_h5player_enable');
+    location.reload();
+  };
+  window.__h5pState = function () {
+    return {
+      脚本启用: configManager.get('enable'),
+      任务配置中心: (typeof TCC === 'object' && TCC) ? Object.keys(TCC.conf).length + ' 个站点' : String(TCC),
+      当前实例: !!playerCtl.player(),
+      控制器单例数: [playerCtl, uiCtl, tunerCtl, pictureCtl, inputCtl].filter(c => c && typeof c === 'object').length,
+      未捕获异常: (window.__errs || []).slice()
+    };
+  };
+})();
+</script>
+</head>
+<body>
+<div id="wrap" style="width:820px;height:460px;background:#111">
+  <video id="v" width="800" height="450" controls></video>
+</div>
+<p style="font:13px system-ui;color:#888">
+  控制台执行 <code>window.__h5pChecks()</code> 跑与 Node 沙箱一致的断言；
+  <code>window.__h5pDisable()</code> / <code>window.__h5pEnable()</code> 切换「本站禁用脚本」场景。
+</p>
+<script>
+(function () {
+  const q = new URLSearchParams(location.search);
+  if (q.get('run') !== 'checks') { return }
+  const out = document.createElement('pre');
+  out.id = 'h5p-report';
+  out.style.cssText = 'font:12px/1.5 monospace;white-space:pre-wrap;max-width:1100px;color:#111';
+  document.body.appendChild(out);
+  document.title = 'H5P · running';
+  const line = x => (x.ok ? 'ok   ' : 'FAIL ') + x.name + (x.info ? ' :: ' + x.info : '');
+  setTimeout(function () {
+    window.__h5pChecks().then(function (r) {
+      const realKey = r.场景 === '正常启用' ? window.__h5pRealKeyCheck() : Promise.resolve({ skipped: '禁用场景不跑真实按键' });
+      return realKey.then(function (k) {
+        out.textContent = 'SCENARIO=' + r.场景 + ' PASS=' + r.通过 + '/' + (r.通过 + r.失败) + ' FAIL=' + r.失败 +
+          '\nMEDIA=' + JSON.stringify((function () { const v = playerCtl.player() || {}; return { paused: v.paused, duration: v.duration, readyState: v.readyState, networkState: v.networkState, currentSrc: v.currentSrc } })()) +
+          '\nREALKEY=' + JSON.stringify(k) + '\nERRS=' + JSON.stringify(r.未捕获异常) +
+          '\nFAILED=' + JSON.stringify(r.失败明细) + '\n------\n' + r.明细.map(line).join('\n');
+        document.title = 'H5P · ' + r.场景 + ' ' + r.通过 + '/' + (r.通过 + r.失败) + ' fail=' + r.失败;
+      });
+    }).catch(function (e) {
+      out.textContent = 'HARNESS-ERROR ' + ((e && e.stack) || e);
+      document.title = 'H5P · harness error';
+    });
+  }, 2000);
+})();
+</script>
+</body>
+</html>

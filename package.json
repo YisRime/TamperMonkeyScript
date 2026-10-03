@@ -1,0 +1,25 @@
+{
+  "name": "tampermonkey-script",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "TamperMonkey Script",
+  "scripts": {
+    "build": "node scripts/build.ts all",
+    "build:quiz": "node scripts/build.ts AutoQuiz",
+    "build:player": "node scripts/build.ts R6Player",
+    "check": "node scripts/build.ts all --check",
+    "test": "node scripts/R6Player.test.ts && node scripts/AutoQuiz.test.ts",
+    "test:quiz": "node scripts/AutoQuiz.test.ts",
+    "test:player": "node scripts/R6Player.test.ts",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "esbuild": "^0.25.12",
+    "typescript": "^5.9.3"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true
+  }
+}
