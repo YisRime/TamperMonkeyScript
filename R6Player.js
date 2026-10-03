@@ -18,7 +18,1163 @@
 // @run-at       document-start
 // @license      AGPLv3
 // ==/UserScript==
-(()=>{var mt=Object.defineProperty;var R=(i,e)=>{for(var t in e)mt(i,t,{get:e[t],enumerable:!0})};var ke={};R(ke,{Utils:()=>c,original:()=>k,tabIdentity:()=>B});var k={Object:{defineProperty:Object.defineProperty},Proxy,Map,WeakMap,map:{clear:Map.prototype.clear,set:Map.prototype.set,has:Map.prototype.has,get:Map.prototype.get,delete:Map.prototype.delete},HTMLMediaElement,alert,confirm,prompt},B={id:null,seq:0},c=class i{static isObj(e){return Object.prototype.toString.call(e)==="[object Object]"}static clone(e){if(e===null||typeof e!="object")return e;let t=i.isArr(e)?[]:{};for(let o in e)t[o]=typeof e[o]=="object"?i.clone(e[o]):e[o];return t}static mergeObj(e,t,o){if(!i.isObj(e)||!i.isObj(t))return e;function n(r,s){return Object.keys(s).forEach(a=>{let l=r[a],m=s[a];typeof l>"u"?r[a]=m:i.isObj(l)&&i.isObj(m)?r[a]=n(l,m):o&&i.isArr(l)&&i.isArr(m)?r[a]=l.concat(m):r[a]=m}),r}return n(e,t)}static setPath(e,t,o){if(!e||!t||typeof t!="string")return!1;let n=e,r=t.split(".");for(let s=0;s<r.length&&n;s++){if(s===r.length-1)return n[r[s]]=o,!0;n=n[r[s]]}return!1}static getPath(e,t){t=t||"";let o=t.split("."),n=e;for(let r=0;r<o.length&&n;r++)n=n[o[r]];return n}static extractData(e,t){if(t=t||1,t>3)return{};let o={};if(typeof e!="object")return o;for(let n in e){let r=e[n],s=typeof r;s==="number"||s==="string"||s==="boolean"?o[n]=r:s==="object"&&Object.prototype.propertyIsEnumerable.call(e,n)&&(o[n]=i.extractData(r,t+1))}return o}static isArr(e){return Object.prototype.toString.call(e)==="[object Array]"}static ready(e,t,o){let n=window,r=o||n.document.documentElement;if(!r)return!1;let s=n.MutationObserver||n.WebKitMutationObserver,a=r._MutationListeners||[];function l(b,P){a.push({selector:b,fn:P}),r._MutationObserver||(r._MutationListeners=a,r._MutationObserver=new s(()=>{for(let v=0;v<r._MutationListeners.length;v++){let L=r._MutationListeners[v];m(L.selector,L.fn)}}),r._MutationObserver.observe(r,{childList:!0,subtree:!0})),m(b,P)}function m(b,P){let v=r.querySelectorAll(b);for(let L=0;L<v.length;L++){let D=v[L];D._MutationReadyList_=D._MutationReadyList_||[],D._MutationReadyList_.includes(P)||(D._MutationReadyList_.push(P),P.call(D,D))}}(Array.isArray(e)?e:[e]).forEach(b=>l(b,t))}static eachParent(e,t,o){let n=e.parentNode;for(;n&&(!o||n.classList)&&!t(n,e);)n=n.parentNode}static addStyle(e,t,o){if(t&&document.getElementById(t))return!1;let n=document.createElement("style"),r=o||document.head||document.getElementsByTagName("head")[0];return n.appendChild(document.createTextNode(e)),r.appendChild(n),t&&n.setAttribute("id",t),n}static snapMethods(e,t){Object.keys(e).forEach(o=>{try{e[o]instanceof Function&&(t[o]=e[o])}catch{}})}static el(e,t){let o=document.createElement(e);return o.className=t,o}static editable(e){let t=e.getAttribute&&e.getAttribute("contenteditable")==="true",o=/INPUT|TEXTAREA|SELECT|LABEL/.test(e.nodeName);return t||o}static eventPath(e){return e.composedPath?e.composedPath():[e.target]}static eventTarget(e){return i.eventPath(e)[0]||e.target}static rebindKeydown(e,t){t.forEach(o=>{o.removeEventListener("keydown",e,!0),o.addEventListener("keydown",e,!0)})}static inShadow(e,t){for(;e;e=e.parentNode)if(e.toString()==="[object ShadowRoot]")return t?e:!0;return!1}static inView(e){let t=window.innerWidth||document.documentElement.clientWidth,o=window.innerHeight||document.documentElement.clientHeight,{top:n,left:r,right:s,bottom:a}=e.getBoundingClientRect();return n>=0&&r>=0&&s<=t&&a<=o}static invisible(e){if(!e||e.offsetParent===null||e.style.visibility==="hidden"||e.style.display==="none")return!0;let{top:t,right:o,bottom:n,left:r,width:s,height:a}=e.getBoundingClientRect();return t===0&&o===0&&n===0&&r===0&&s===0&&a===0}static q(e){return document.querySelector(e)}static firstUpper(e){return`${e}`.replace(/^\S/,t=>t.toUpperCase())}static setTitle(e,t,o){let n=`${o||""}`.replace(/[\\/:*?"<>|]/g,"-");return t&&t.setAttribute("data-title",n),e&&e.setAttribute("data-title",n),n}static isMedia(e){return e&&(e instanceof HTMLMediaElement||e.HTMLMediaElement||e.HTMLVideoElement||e.HTMLAudioElement)}static isVideo(e){return e&&(e instanceof HTMLVideoElement||e.HTMLVideoElement)}static isAudio(e){return e&&(e instanceof HTMLAudioElement||e.HTMLAudioElement)}static onMedia(e,t,o,n){if(!e||!e.getBoundingClientRect)return!1;let r=e.getBoundingClientRect();if(r.width<1||r.height<1)return!1;let s=n===void 0?e.controls&&r.height>100?80:0:n;return t>r.left&&t<r.right&&o>r.top&&o<r.bottom-s}static inFrame(){return window!==window.top}static crossSite(){let e=!0;try{(window.top.localStorage||window.top.location.href)&&(e=!1)}catch{e=!0}return e}static storageUsable(){return window.localStorage&&window.localStorage.getItem instanceof Function&&window.localStorage.setItem instanceof Function}static openTab(e,t){let o=Date.now(),n=`r6player_openTab_${e}`,r=0;if(window.GM_getValue&&window.GM_setValue){if(r=window.GM_getValue(n,0),r&&o-r<1e3)return;window.GM_setValue(n,o)}else{if(r=sessionStorage.getItem(n),r&&o-parseInt(r)<1e3)return;sessionStorage.setItem(n,o.toString())}if(window.GM_openInTab)window.GM_openInTab(e,t||{active:!0,insert:!0,setParent:!0});else{let s=document.createElement("a");Object.assign(s,{href:e,target:"_blank",rel:"noopener noreferrer"}),Object.assign(s.style,{display:"inline-block",width:"1px",height:"1px",opacity:0}),document.body.appendChild(s),s.click(),setTimeout(()=>{document.body.removeChild(s)},300)}}static isChallenge(){let e=document.title.includes("Just a moment")||document.title.includes("Cloudflare")||document.title.includes("challenge"),t=!!document.querySelector('meta[http-equiv="refresh"]'),o=!!document.querySelector('meta[name="robots"][content*="noindex"]'),n=!!document.querySelector('.main-wrapper[role="main"]'),r=!!document.querySelector("#challenge-error-text"),s=document.body&&document.body.classList?document.body.classList.contains("no-js"):!1,a=document.styleSheets.length>0&&(document.documentElement.innerHTML.includes("background-image: url(data:image/svg+xml;base64,")||document.documentElement.innerHTML.includes("challenge")),l=t||o,m=n||r||s;return e&&l||e&&m||m&&(n?1:0)+(r?1:0)+(s?1:0)>=2&&l||a&&(e||l||m)}static nextTabSeq(){if(!window.GM_getValue||!window.GM_setValue)return++B.seq;let e=Number(window.GM_getValue("_global_id_")||0)+1;return window.GM_setValue("_global_id_",e),e}static getTabId(){return new Promise((e,t)=>{window.GM_getTab instanceof Function?window.GM_getTab(function(o){o.tabId||(o.tabId=i.nextTabSeq(),window.GM_saveTab(o)),B.id=o.tabId,e(o.tabId)}):e(Date.now())})}static throttle(e,t=80){let o=null;return function(){if(o)return!1;o=setTimeout(()=>{o=null},t),e.apply(this,arguments)}}static stepValue(e,t){return Math.abs(Number(e))||t}static isModifier(e){return["ctrl","controlleft","controlright","shift","shiftleft","shiftright","alt","altleft","altright","meta","metaleft","metaright","capsLock"].includes(e.toLowerCase())}static swallow(e,t){e&&typeof e.then=="function"&&typeof e.catch=="function"&&e.catch(o=>console.log("[Utils] Promise拒绝吞掉",t,o))}};var We={};R(We,{bootState:()=>j,initEnhance:()=>ft,setupRuntime:()=>dt,startUp:()=>ne,watchTags:()=>Ke});var ze={};R(ze,{PageBridge:()=>O,fakeConfig:()=>lt,pageBridge:()=>M,pictureKey:()=>$,userAgentMap:()=>ge});var $e={};R($e,{HotkeysRunner:()=>Y,InputControl:()=>I,buildCommands:()=>Ge,createInput:()=>Ve,debuggerNow:()=>at,hotkeyCommands:()=>W,input:()=>y,runCommand:()=>oe});var He={};R(He,{ConfigManager:()=>he,applyReload:()=>G,blacklistedDomains:()=>qe,blocksSet:()=>E,configManager:()=>g,configSave:()=>U,configScope:()=>K,configSwitch:()=>T,defaultConfiguration:()=>ot,downloadState:()=>ce,globalFunctional:()=>nt,menuCmd:()=>w,menuGroups:()=>rt,menuItems:()=>Re,menuOn:()=>Q,rawLocalStorage:()=>me,siteDisabled:()=>te});var je={};R(je,{TaskControl:()=>ee,allowCross:()=>z,douyinTitle:()=>tt,douyuScreen:()=>Ne,escapeTask:()=>ue,facebookTask:()=>Be,hoverTitle:()=>Ae,installTasks:()=>Ue,taskCenter:()=>S,taskConf:()=>fe,taskScratch:()=>C,watermarkTask:()=>de,xgplayerTask:()=>Fe});var Ie={};R(Ie,{FullScreen:()=>Z,PlayerControl:()=>le,activePlayer:()=>u,createPlayer:()=>De,fullScreenInstances:()=>Oe});var Se={};R(Se,{Amplifier:()=>X,MediaCore:()=>ie,SourceControl:()=>se,createMedia:()=>_e,createSource:()=>xe,mediaCore:()=>h,mediaSource:()=>_,supportMediaTags:()=>J});var J=["video","bwp-video"],ie=class{inited;proxied;originDescriptors;originMethods;mediaElementList;mediaElementHandler;mediaMap;plusProps;plusMethods;constructor(){this.inited=!1,this.proxied=!1,this.originDescriptors={},this.originMethods={},this.mediaElementList=[],this.mediaElementHandler=[],this.mediaMap=new k.Map,this.plusProps=["playbackRate","volume","currentTime"],this.plusMethods=["play","pause"]}isNative(e){return e instanceof k.HTMLMediaElement}mediaPlus(e){if(!h.isNative(e))return!1;let t=k.map.get.call(h.mediaMap,e);if(t)return t;let o={lock(s,a){let l=`__${s}_info__`;t[l]=t[l]||{},t[l].lock=!0,a=Number(a),!Number.isNaN(a)&&a>0&&(t[l].unlockTime=Date.now()+a)},unlock(s){let a=`__${s}_info__`;t[a]=t[a]||{},t[a].lock=!1,t[a].unlockTime=Date.now()-100},locked(s){let a=t[`__${s}_info__`]||{};return a.unlockTime?Date.now()<a.unlockTime:!!a.lock},get(s){if(h.originDescriptors[s]&&h.originDescriptors[s].get&&!h.originMethods[s])return h.originDescriptors[s].get.apply(e)},set(s,a){if(h.originDescriptors[s]&&h.originDescriptors[s].set&&!h.originMethods[s]&&typeof a<"u")return h.originDescriptors[s].set.apply(e,[a])},apply(s){if(h.originMethods[s]instanceof Function){let a=Array.from(arguments);return a.shift(),h.originMethods[s].apply(e,a)}}};t={...o};let n=h.plusProps.concat(h.plusMethods),r=Object.keys(o);return n.forEach(s=>{let a=h.originMethods[s]instanceof Function;r.forEach(l=>{(a?l==="get"||l==="set":l==="apply")||(t[`${l}${c.firstUpper(s)}`]=function(){return o[l].apply(null,[s,...arguments])})})}),k.map.set.call(h.mediaMap,e,t),t}admit(e){if(h.isNative(e)&&!h.mediaElementList.includes(e)){h.mediaElementList.push(e),h.mediaPlus(e);try{h.mediaElementHandler.forEach(t=>{t instanceof Function&&t(e)})}catch(t){console.log("[Media] 检出回调异常",t)}}}proxyMethod(e,t){let o=e&&e.prototype[t];o&&(e.prototype[t]=new k.Proxy(o,{apply(n,r,s){if(h.admit(r),h.plusMethods.includes(t)){let a=h.mediaPlus(r);if(a&&a.locked(t))return}return n.apply(r,s)}}))}hijackProp(e,t){if(!e||!e.prototype||!h.originDescriptors[t])return!1;k.Object.defineProperty.call(Object,e.prototype,t,{configurable:!0,enumerable:!0,get:function(){let o=h.originDescriptors[t].get.apply(this,arguments),n=h.mediaPlus(this);return n&&n.locked(t)&&t==="playbackRate"?1:o},set:function(o){if(t==="src"&&h.admit(this),h.plusProps.includes(t)){let n=h.mediaPlus(this);if(n&&n.locked(t))return}return h.originDescriptors[t].set.apply(this,arguments)}})}eachOther(e,t){u.listPlayers().forEach(o=>{if(o===e)return;let n=h.mediaPlus(o);n&&t(n)})}mediaProxy(){return h.proxied||(["play","pause","load","addEventListener"].forEach(t=>{h.proxyMethod(HTMLMediaElement,t)}),h.plusProps.concat(["src"]).forEach(t=>{h.hijackProp(HTMLMediaElement,t)}),h.proxied=!0),h.proxied}mediaChecker(e){return!(e instanceof Function)||h.mediaElementHandler.includes(e)||(h.mediaElementHandler.push(e),h.proxied||h.mediaProxy()),h.mediaElementList}init(e){return h.inited?!1:(h.originDescriptors=Object.getOwnPropertyDescriptors(HTMLMediaElement.prototype),c.snapMethods(HTMLMediaElement.prototype,h.originMethods),e=e instanceof Function?e:function(){},h.mediaChecker(e),h.inited=!0,!0)}},h=null,_e=()=>(h=new ie,h),se=class{hasMediaSourceInit;originMethods;urlMethods;sourceMap;urlMap;constructor(){this.hasMediaSourceInit=!1,this.originMethods={},this.urlMethods={},this.sourceMap=new k.Map,this.urlMap=new k.Map}bindElement(e){let t=e.currentSrc||e.src;if(!t)return!1;_.sourceMap.forEach(o=>{o.mediaSource.__objURL__&&t===o.mediaSource.__objURL__&&(o.mediaElement=e)})}prune(){_.sourceMap.forEach(e=>{let t=e.mediaElement;(!(t instanceof HTMLMediaElement)||c.invisible(t))&&(e.sourceBuffer&&e.sourceBuffer.length&&(e.sourceBuffer.forEach(o=>{o.bufferData=[],o.originAppendBuffer=null}),e.sourceBuffer=[]),e.mediaElement=null,k.map.delete.call(_.sourceMap,e.mediaSource),k.map.delete.call(_.urlMap,e.mediaSource))})}proxySource(){if(!_.originMethods.addSourceBuffer||!_.originMethods.endOfStream)return!1;_.urlMethods.createObjectURL=_.urlMethods.createObjectURL||URL.prototype.constructor.createObjectURL,URL.prototype.constructor.createObjectURL=new k.Proxy(_.urlMethods.createObjectURL,{apply(e,t,o){let n=o[0],r=e.apply(t,o);return n instanceof MediaSource&&!k.map.has.call(_.urlMap,n)&&(n.__objURL__=r,k.map.set.call(_.urlMap,n,r)),r}}),MediaSource.prototype.addSourceBuffer=new k.Proxy(_.originMethods.addSourceBuffer,{apply(e,t,o){k.map.has.call(_.sourceMap,t)||k.map.set.call(_.sourceMap,t,{mediaSource:t,createTime:Date.now(),sourceBuffer:[],endOfStream:!1});let n=k.map.get.call(_.sourceMap,t),r=o[0]||"",s=e.apply(t,o),a={mimeCodecs:r,originAppendBuffer:s.appendBuffer,bufferData:[],mediaInfo:{}};try{let l=a.mediaInfo,m=a.mimeCodecs.split(";");l.type=m[0].split("/")[0],l.format=m[0].split("/")[1],l.codecs=m[1].trim().replace("codecs=","").replace(/["']/g,"")}catch(l){console.log("[Media] 媒体信息解析异常",a,l)}return n.sourceBuffer.push(a),s.appendBuffer=new k.Proxy(a.originAppendBuffer,{apply(l,m,x){return n.endOfStream||a.bufferData.push(x[0]),l.apply(m,x)}}),s}}),MediaSource.prototype.endOfStream=new k.Proxy(_.originMethods.endOfStream,{apply(e,t,o){let n=k.map.get.call(_.sourceMap,t);return n&&(n.endOfStream=!0),e.apply(t,o)}})}downloadStream(e,t){let o=e.currentSrc||e.src;if(!o)return console.log("[Media] 下载地址缺失"),!1;let n=!1;_.sourceMap.forEach(r=>{let s=r.mediaSource;if(!s.__objURL__)return console.log("[Media] objectURL缺失",s,r),!1;if(o!==s.__objURL__)return!1;n=!0,r.mediaElement=e;let a=null;r.sourceBuffer.forEach(l=>{if(!l.mimeCodecs||l.mimeCodecs.toString().indexOf(";")===-1)return console.log("[Media] 流信息异常无法下载",l),!1;try{let m=`${a||l.mediaInfo.title||t||e.getAttribute("data-title")||document.title||Date.now()}`;a=m;let x=`${m}_${l.mediaInfo.type}.${l.mediaInfo.format}`,b=document.createElement("a"),P=URL.createObjectURL(new Blob(l.bufferData));b.href=P,b.download=x;try{b.click(),r.hasDownload=!0}finally{URL.revokeObjectURL(P),l.bufferData=[]}}catch(m){r.hasDownload=!1,console.log("[Media] 流下载异常",m)}})}),n||console.log("[Media] 媒体流未找到",o)}hasInit(){return _.hasMediaSourceInit}init(){if(_.hasMediaSourceInit||!window.MediaSource)return!1;c.snapMethods(MediaSource.prototype,_.originMethods),_.proxySource(),_.hasMediaSourceInit=!0}},_=null,xe=()=>(_=new se,_);var X=class{_source;_gain;constructor(e){let t=new(window.AudioContext||window.webkitAudioContext);this._source=t.createMediaElementSource(e),this._source.connect(this._gain=t.createGain()),this._gain.connect(t.destination)}setLoudness(e){this._gain.gain.value=Math.pow(10,10*Math.log2(e)/20)}};var ve={};R(ve,{MenuControl:()=>H,createMenu:()=>Te,menu:()=>f,menuStyle:()=>Qe});var Me={};R(Me,{PictureControl:()=>N,createPicture:()=>Pe,filterDefs:()=>q,picture:()=>p});var q=[{name:"brightness",noun:"亮度",up:"☀️",down:"🌙",label:"图像亮度：",scale:100,unit:"%",base:1,step:.1},{name:"contrast",noun:"对比度",up:"◐",down:"◑",label:"图像对比度：",scale:100,unit:"%",base:1,step:.1},{name:"saturation",noun:"饱和度",up:"🌈",down:"🌫️",label:"图像饱和度：",scale:100,unit:"%",base:1,step:.1},{name:"hue",noun:"色相",up:"🎨",down:"🎨",label:"图像色相：",scale:1,unit:"°",base:0,step:1,negative:!0},{name:"blur",noun:"模糊度",up:"💨",down:"💨",label:"图像模糊度：",scale:1,unit:"px",base:0,step:1}],Xe=q.map(i=>i.base),N=class{defaultTransform;scale;translate;rotate;rotateY;rotateX;historyTransform;transformGuard;_transformStyle;filter;key;setup;constructor(){this.defaultTransform={scale:1,translate:{x:0,y:0},rotate:0,rotateY:0,rotateX:0},this.scale=this.defaultTransform.scale,this.translate=c.clone(this.defaultTransform.translate),this.rotate=this.defaultTransform.rotate,this.rotateY=this.defaultTransform.rotateY,this.rotateX=this.defaultTransform.rotateX,this.historyTransform={},this.transformGuard=null,this._transformStyle={wanted:null,actual:null},this.filter={key:Xe.slice(),setup:function(){u.player().style.filter=`brightness(${this.key[0]}) contrast(${this.key[1]}) saturate(${this.key[2]}) hue-rotate(${this.key[3]}deg) blur(${this.key[4]}px)`},reset:function(){this.key=Xe.slice(),this.setup()}}}writeTransform(e,t){let o=p._transformStyle;o.wanted===t&&e.style.transform===o.actual||(e.style.transform=t,o.wanted=t,o.actual=e.style.transform)}eachDiff(e){Object.keys(p.defaultTransform).forEach(t=>{let o=p.defaultTransform[t];c.isObj(o)?Object.keys(o).forEach(n=>{Number(p[t][n])!==o[n]&&e(t,n,p[t][n])}):Number(p[t])!==o&&e(t,null,p[t])})}setTransform(e){let t=u.player(),o=p.scale=Number(Number(p.scale).toFixed(2)),n=p.translate,r=p.rotateX===180?`rotateX(${p.rotateX}deg)`:p.rotateY===180?`rotateY(${p.rotateY}deg)`:"",s=`scale(${o.toFixed(2)}) translate(${n.x}px, ${n.y}px) rotate(${p.rotate}deg) ${r}`;p.writeTransform(t,s);let a=`视频缩放率：${(o*100).toFixed(0)}%`;n.x&&(a+=` 水平位移：${p.translate.x}px`),n.y&&(a+=` 垂直位移：${p.translate.y}px`),e!==!0&&(p.eachDiff((l,m,x)=>{m?(p.historyTransform[l]=p.historyTransform[l]||{},p.historyTransform[l][m]=x):p.historyTransform[l]=x}),f.tips(a)),p.transformGuard||(p.transformGuard=setInterval(()=>{p.setTransform(!0)},300))}setRotate(){p.rotate+=90,p.rotate%360===0&&(p.rotate=0),p.setTransform(!0),f.tips("画面旋转："+p.rotate+"°")}setMirror(e=!1){let t=e?"rotateX":"rotateY";p[t]=p[t]===0?180:0,p.setTransform(!0),f.tips(` ${e?"垂直":"水平"}镜像 ${p[t]}deg`)}setScale(e){e=Number(e),p.scale=Number.isNaN(e)?1:e,p.setTransform()}scaleStep(e,t){p.setScale(p.scale+t*c.stepValue(e,.05))}zoomIn(e){p.scaleStep(e,1)}zoomOut(e){p.scaleStep(e,-1)}setTranslate(e,t){typeof e=="number"&&(p.translate.x=e),typeof t=="number"&&(p.translate.y=t),p.setTransform()}translateStep(e,t,o){let n=t*c.stepValue(o,10);p.setTranslate(e==="x"?p.translate.x+n:null,e==="y"?p.translate.y+n:null)}moveRight(e){return p.translateStep("x",1,e)}moveLeft(e){return p.translateStep("x",-1,e)}moveUp(e){return p.translateStep("y",-1,e)}moveDown(e){return p.translateStep("y",1,e)}resetTransform(e){let t=!1;if(p.eachDiff(()=>{t=!0}),!t&&Object.keys(p.historyTransform).length)Object.keys(p.historyTransform).forEach(o=>{c.isObj(p.historyTransform[o])?Object.keys(p.historyTransform[o]).forEach(n=>{p[o][n]=p.historyTransform[o][n]}):p[o]=p.historyTransform[o]});else{let o=c.clone(p.defaultTransform);Object.keys(o).forEach(n=>{p[n]=o[n]})}p.setTransform(e)}setFilter(e,t,o){let n=q[e];if(!n||typeof t!="number")return console.log("[Picture] 滤镜参数错误",e,t),!1;o===!0&&t>0&&(t=-t);let r=p.filter.key;r[e]=Number((r[e]+t).toFixed(2)),r[e]<0&&!n.negative&&(r[e]=0),p.filter.setup(),f.tips(n.label+parseInt(String(r[e]*n.scale))+n.unit)}resetPicture(){p.resetTransform(!0),p.filter.reset(),f.tips("图像属性：复位")}},p=null,Pe=()=>(p=new N,p);q.forEach((i,e)=>{N.prototype[i.name]=t=>p.setFilter(e,t),N.prototype[i.name+"Up"]=t=>p.setFilter(e,t||i.step),N.prototype[i.name+"Down"]=t=>p.setFilter(e,t||-i.step,!0)});var Qe=`
+(() => {
+  var __defProp = Object.defineProperty;
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, { get: all[name], enumerable: true });
+  };
+
+  // Utils.ts
+  var Utils_exports = {};
+  __export(Utils_exports, {
+    Utils: () => Utils,
+    original: () => original,
+    tabIdentity: () => tabIdentity
+  });
+  var original = {
+    Object: { defineProperty: Object.defineProperty },
+    Proxy,
+    Map,
+    WeakMap,
+    map: { clear: Map.prototype.clear, set: Map.prototype.set, has: Map.prototype.has, get: Map.prototype.get, delete: Map.prototype.delete },
+    HTMLMediaElement,
+    alert,
+    confirm,
+    prompt
+  };
+  var tabIdentity = { id: null, seq: 0 };
+  var Utils = class _Utils {
+    // — 对象与数组：判型、深拷贝、按路径读写、递归取数
+    static isObj(obj) {
+      return Object.prototype.toString.call(obj) === "[object Object]";
+    }
+    // 深拷贝：非对象（含 null）原样返回，数组 / 对象按成员递归复制
+    static clone(source) {
+      if (source === null || typeof source !== "object") {
+        return source;
+      }
+      const result = _Utils.isArr(source) ? [] : {};
+      for (const key in source) {
+        result[key] = typeof source[key] === "object" ? _Utils.clone(source[key]) : source[key];
+      }
+      return result;
+    }
+    // 把 objB 深合并进 objA（改的是 objA），concatArr 为真时数组取拼接而不是覆盖
+    static mergeObj(objA, objB, concatArr) {
+      if (!_Utils.isObj(objA) || !_Utils.isObj(objB)) return objA;
+      function deepMerge(objA2, objB2) {
+        Object.keys(objB2).forEach((key) => {
+          const subItemA = objA2[key];
+          const subItemB = objB2[key];
+          if (typeof subItemA === "undefined") {
+            objA2[key] = subItemB;
+          } else {
+            if (_Utils.isObj(subItemA) && _Utils.isObj(subItemB)) {
+              objA2[key] = deepMerge(subItemA, subItemB);
+            } else {
+              if (concatArr && _Utils.isArr(subItemA) && _Utils.isArr(subItemB)) {
+                objA2[key] = subItemA.concat(subItemB);
+              } else {
+                objA2[key] = subItemB;
+              }
+            }
+          }
+        });
+        return objA2;
+      }
+      return deepMerge(objA, objB);
+    }
+    // 按 a.b.c 路径写值，路径任一段断掉就返回 false
+    static setPath(obj, path, val) {
+      if (!obj || !path || typeof path !== "string") {
+        return false;
+      }
+      let result = obj;
+      const pathArr = path.split(".");
+      for (let i = 0; i < pathArr.length; i++) {
+        if (!result) break;
+        if (i === pathArr.length - 1) {
+          result[pathArr[i]] = val;
+          return true;
+        }
+        result = result[pathArr[i]];
+      }
+      return false;
+    }
+    // 按 a.b.c 路径取值，中途断掉得到 undefined
+    static getPath(obj, path) {
+      path = path || "";
+      const pathArr = path.split(".");
+      let result = obj;
+      for (let i = 0; i < pathArr.length; i++) {
+        if (!result) break;
+        result = result[pathArr[i]];
+      }
+      return result;
+    }
+    // 把对象抽成纯数据（标量直取、对象递归，最多三层），跨 Tab / 跨域传消息前用它
+    static extractData(obj, deep) {
+      deep = deep || 1;
+      if (deep > 3) return {};
+      const result = {};
+      if (typeof obj !== "object") {
+        return result;
+      }
+      for (const key in obj) {
+        const val = obj[key];
+        const valType = typeof val;
+        if (valType === "number" || valType === "string" || valType === "boolean") {
+          result[key] = val;
+        } else if (valType === "object" && Object.prototype.propertyIsEnumerable.call(obj, key)) {
+          result[key] = _Utils.extractData(val, deep + 1);
+        }
+      }
+      return result;
+    }
+    // 是不是数组，走 Object.prototype.toString 所以跨 iframe 也准
+    static isArr(arr) {
+      return Object.prototype.toString.call(arr) === "[object Array]";
+    }
+    // — DOM 与行内样式：元素等待、遍历父级、可视范围、样式互转
+    // 元素监听器：selector 可以是数组，shadowRoot 可选
+    static ready(selector, fn, shadowRoot) {
+      const win = window;
+      const docRoot = shadowRoot || win.document.documentElement;
+      if (!docRoot) return false;
+      const MutationObserver = win.MutationObserver || win.WebKitMutationObserver;
+      const listeners = docRoot._MutationListeners || [];
+      function $ready(selector2, fn2) {
+        listeners.push({ selector: selector2, fn: fn2 });
+        if (!docRoot._MutationObserver) {
+          docRoot._MutationListeners = listeners;
+          docRoot._MutationObserver = new MutationObserver(() => {
+            for (let i = 0; i < docRoot._MutationListeners.length; i++) {
+              const item = docRoot._MutationListeners[i];
+              check(item.selector, item.fn);
+            }
+          });
+          docRoot._MutationObserver.observe(docRoot, { childList: true, subtree: true });
+        }
+        check(selector2, fn2);
+      }
+      function check(selector2, fn2) {
+        const elements = docRoot.querySelectorAll(selector2);
+        for (let i = 0; i < elements.length; i++) {
+          const element = elements[i];
+          element._MutationReadyList_ = element._MutationReadyList_ || [];
+          if (!element._MutationReadyList_.includes(fn2)) {
+            element._MutationReadyList_.push(fn2);
+            fn2.call(element, element);
+          }
+        }
+      }
+      const selectorArr = Array.isArray(selector) ? selector : [selector];
+      selectorArr.forEach((selector2) => $ready(selector2, fn));
+    }
+    // 逐层向上遍历父节点，回调返回 true 时提前结束；onlyClassable 用于停在真正的元素节点上
+    static eachParent(dom, fn, onlyClassable) {
+      let parent = dom.parentNode;
+      while (parent && (!onlyClassable || parent.classList)) {
+        const isEnd = fn(parent, dom);
+        if (isEnd) {
+          break;
+        }
+        parent = parent.parentNode;
+      }
+    }
+    // 把一段 CSS 文本插成 style 节点；带 id 且已存在就不重复插
+    static addStyle(cssText, id, insetTo) {
+      if (id && document.getElementById(id)) {
+        return false;
+      }
+      const style = document.createElement("style");
+      const head = insetTo || document.head || document.getElementsByTagName("head")[0];
+      style.appendChild(document.createTextNode(cssText));
+      head.appendChild(style);
+      if (id) {
+        style.setAttribute("id", id);
+      }
+      return style;
+    }
+    // 采集原型上的方法做原始参照：跨域受限或站点改写过的属性读取会抛错，逐个吞掉
+    static snapMethods(proto, target) {
+      Object.keys(proto).forEach((key) => {
+        try {
+          if (proto[key] instanceof Function) {
+            target[key] = proto[key];
+          }
+        } catch (e) {
+        }
+      });
+    }
+    // 建元素顺手带上类名：菜单浮层里五个节点都是这两行
+    static el(tag, className) {
+      const node = document.createElement(tag);
+      node.className = className;
+      return node;
+    }
+    // 事件目标是不是可编辑区域（contenteditable 或输入类控件）
+    static editable(target) {
+      const isEditable = target.getAttribute && target.getAttribute("contenteditable") === "true";
+      const isInputDom = /INPUT|TEXTAREA|SELECT|LABEL/.test(target.nodeName);
+      return isEditable || isInputDom;
+    }
+    // 事件经过的完整路径：阴影树里的节点只有 composedPath 能拿到
+    static eventPath(event) {
+      return event.composedPath ? event.composedPath() : [event.target];
+    }
+    // 事件真正落在哪个元素上：路径为空时退回 target
+    static eventTarget(event) {
+      return _Utils.eventPath(event)[0] || event.target;
+    }
+    // 捕获阶段重绑一次按键监听：解绑要带上同一个 capture 标志才解得掉，重复调用不会叠加出多份处理
+    static rebindKeydown(handler, docs) {
+      docs.forEach((doc) => {
+        doc.removeEventListener("keydown", handler, true);
+        doc.addEventListener("keydown", handler, true);
+      });
+    }
+    // 节点是否在阴影树里；returnShadowRoot 为真时返回那个 ShadowRoot
+    static inShadow(node, returnShadowRoot) {
+      for (; node; node = node.parentNode) {
+        if (node.toString() === "[object ShadowRoot]") {
+          return returnShadowRoot ? node : true;
+        }
+      }
+      return false;
+    }
+    // 元素是否完整落在可视窗口内
+    static inView(element) {
+      const viewWidth = window.innerWidth || document.documentElement.clientWidth;
+      const viewHeight = window.innerHeight || document.documentElement.clientHeight;
+      const { top, left, right, bottom } = element.getBoundingClientRect();
+      return top >= 0 && left >= 0 && right <= viewWidth && bottom <= viewHeight;
+    }
+    // 元素是否已不在文档里或不可见（无布局盒、隐藏、矩形全零）
+    static invisible(element) {
+      if (!element || element.offsetParent === null) {
+        return true;
+      }
+      if (element.style.visibility === "hidden" || element.style.display === "none") {
+        return true;
+      }
+      const { top, right, bottom, left, width, height } = element.getBoundingClientRect();
+      return top === 0 && right === 0 && bottom === 0 && left === 0 && width === 0 && height === 0;
+    }
+    // 页面里的单个元素，选择器由站点任务配置给出
+    static q(str) {
+      return document.querySelector(str);
+    }
+    // 属性名 -> API 方法名后缀：enhancer 的 set/lock/unlock/locked 与增强 API 的动态生成共用这一处
+    static firstUpper(str) {
+      return `${str}`.replace(/^\S/, (s) => s.toUpperCase());
+    }
+    // 站点标题写到播放器与外层容器上（截图与下载文件名取值处），顺手清洗文件名非法字符
+    static setTitle(player, wrap, title) {
+      const safe = `${title || ""}`.replace(/[\\/:*?"<>|]/g, "-");
+      if (wrap) {
+        wrap.setAttribute("data-title", safe);
+      }
+      if (player) {
+        player.setAttribute("data-title", safe);
+      }
+      return safe;
+    }
+    // — 媒体元素：判定与画面区域内的命中测试
+    static isMedia(element) {
+      return element && (element instanceof HTMLMediaElement || element.HTMLMediaElement || element.HTMLVideoElement || element.HTMLAudioElement);
+    }
+    // 是不是视频元素，含被站点改造过标签名的
+    static isVideo(element) {
+      return element && (element instanceof HTMLVideoElement || element.HTMLVideoElement);
+    }
+    // 是不是音频元素，含被站点改造过标签名的
+    static isAudio(element) {
+      return element && (element instanceof HTMLAudioElement || element.HTMLAudioElement);
+    }
+    // 指针是否落在媒体元素画面区域内；bottomReserve 为下沿预留高度，缺省时按原生控制条预留 80px
+    static onMedia(element, x, y, bottomReserve) {
+      if (!element || !element.getBoundingClientRect) return false;
+      const rect = element.getBoundingClientRect();
+      if (rect.width < 1 || rect.height < 1) return false;
+      const reserve = bottomReserve === void 0 ? element.controls && rect.height > 100 ? 80 : 0 : bottomReserve;
+      return x > rect.left && x < rect.right && y > rect.top && y < rect.bottom - reserve;
+    }
+    // — 运行环境：iframe、存储可用性、新标签页
+    static inFrame() {
+      return window !== window.top;
+    }
+    // 是否处在跨域受限的 iframe 里（读 window.top 会抛错就是）
+    static crossSite() {
+      let result = true;
+      try {
+        if (window.top.localStorage || window.top.location.href) {
+          result = false;
+        }
+      } catch (e) {
+        result = true;
+      }
+      return result;
+    }
+    // localStorage 是否可用，读写方法都在才算
+    static storageUsable() {
+      return window.localStorage && window.localStorage.getItem instanceof Function && window.localStorage.setItem instanceof Function;
+    }
+    // 新标签页打开链接：同一地址 1 秒内只开一次，优先用 GM_openInTab
+    static openTab(url, opts) {
+      const now = Date.now();
+      const sessionKey = `r6player_openTab_${url}`;
+      let lastOpenTime = 0;
+      if (window.GM_getValue && window.GM_setValue) {
+        lastOpenTime = window.GM_getValue(sessionKey, 0);
+        if (lastOpenTime && now - lastOpenTime < 1e3) {
+          return;
+        }
+        window.GM_setValue(sessionKey, now);
+      } else {
+        lastOpenTime = sessionStorage.getItem(sessionKey);
+        if (lastOpenTime && now - parseInt(lastOpenTime) < 1e3) {
+          return;
+        }
+        sessionStorage.setItem(sessionKey, now.toString());
+      }
+      if (window.GM_openInTab) {
+        window.GM_openInTab(url, opts || { active: true, insert: true, setParent: true });
+      } else {
+        const a = document.createElement("a");
+        Object.assign(a, { href: url, target: "_blank", rel: "noopener noreferrer" });
+        Object.assign(a.style, { display: "inline-block", width: "1px", height: "1px", opacity: 0 });
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+        }, 300);
+      }
+    }
+    // 是否为 Cloudflare 的 challenge 页面
+    static isChallenge() {
+      const titleCheck = document.title.includes("Just a moment") || document.title.includes("Cloudflare") || document.title.includes("challenge");
+      const metaRefreshExists = !!document.querySelector('meta[http-equiv="refresh"]');
+      const robotsNoindexExists = !!document.querySelector('meta[name="robots"][content*="noindex"]');
+      const mainWrapperExists = !!document.querySelector('.main-wrapper[role="main"]');
+      const challengeErrorExists = !!document.querySelector("#challenge-error-text");
+      const bodyNoJsClass = document.body && document.body.classList ? document.body.classList.contains("no-js") : false;
+      const hasCloudflareStyling = document.styleSheets.length > 0 && (document.documentElement.innerHTML.includes("background-image: url(data:image/svg+xml;base64,") || document.documentElement.innerHTML.includes("challenge"));
+      const metaFeatures = metaRefreshExists || robotsNoindexExists;
+      const domFeatures = mainWrapperExists || challengeErrorExists || bodyNoJsClass;
+      return titleCheck && metaFeatures || titleCheck && domFeatures || domFeatures && (mainWrapperExists ? 1 : 0) + (challengeErrorExists ? 1 : 0) + (bodyNoJsClass ? 1 : 0) >= 2 && metaFeatures || hasCloudflareStyling && (titleCheck || metaFeatures || domFeatures);
+    }
+    // 取一个全局自增的 id，作为当前 TAB 的标识
+    static nextTabSeq() {
+      if (!window.GM_getValue || !window.GM_setValue) {
+        return ++tabIdentity.seq;
+      }
+      const gID = Number(window.GM_getValue("_global_id_") || 0) + 1;
+      window.GM_setValue("_global_id_", gID);
+      return gID;
+    }
+    // 取当前 TAB 的 id，供 iframe 判断自己是否与顶层同标签
+    static getTabId() {
+      return new Promise((resolve, reject) => {
+        if (window.GM_getTab instanceof Function) {
+          window.GM_getTab(function(obj) {
+            if (!obj.tabId) {
+              obj.tabId = _Utils.nextTabSeq();
+              window.GM_saveTab(obj);
+            }
+            tabIdentity.id = obj.tabId;
+            resolve(obj.tabId);
+          });
+        } else {
+          resolve(Date.now());
+        }
+      });
+    }
+    // — 函数级：节流、数值步进、参数归一、吞掉浏览器拒绝
+    static throttle(fn, interval = 80) {
+      let timeout = null;
+      return function() {
+        if (timeout) return false;
+        timeout = setTimeout(() => {
+          timeout = null;
+        }, interval);
+        fn.apply(this, arguments);
+      };
+    }
+    // 步进量：取正幅值，非数字或 0 时回落到该动作自己的默认步长；向下用 -stepValue(...)
+    static stepValue(num, fallback) {
+      return Math.abs(Number(num)) || fallback;
+    }
+    // 是不是修饰键，ctrl / shift / alt / meta 的左右键名与 capsLock 都算
+    static isModifier(key) {
+      return [
+        "ctrl",
+        "controlleft",
+        "controlright",
+        "shift",
+        "shiftleft",
+        "shiftright",
+        "alt",
+        "altleft",
+        "altright",
+        "meta",
+        "metaleft",
+        "metaright",
+        "capsLock"
+      ].includes(key.toLowerCase());
+    }
+    // 浏览器会以 Promise 拒绝的形式回应全屏等操作（如站点用 Permissions-Policy 禁止全屏），统一吞掉以免变成未捕获异常
+    static swallow(ret, what) {
+      if (ret && typeof ret.then === "function" && typeof ret.catch === "function") {
+        ret.catch((e) => console.log("[Utils] Promise拒绝吞掉", what, e));
+      }
+    }
+  };
+
+  // Boot.ts
+  var Boot_exports = {};
+  __export(Boot_exports, {
+    bootState: () => bootState,
+    initEnhance: () => initEnhance,
+    setupRuntime: () => setupRuntime,
+    startUp: () => startUp,
+    watchTags: () => watchTags
+  });
+
+  // Bridge.ts
+  var Bridge_exports = {};
+  __export(Bridge_exports, {
+    PageBridge: () => PageBridge,
+    fakeConfig: () => fakeConfig,
+    pageBridge: () => pageBridge,
+    pictureKey: () => pictureKey,
+    userAgentMap: () => userAgentMap
+  });
+
+  // Input.ts
+  var Input_exports = {};
+  __export(Input_exports, {
+    HotkeysRunner: () => HotkeysRunner,
+    InputControl: () => InputControl,
+    buildCommands: () => buildCommands,
+    createInput: () => createInput,
+    debuggerNow: () => debuggerNow,
+    hotkeyCommands: () => hotkeyCommands,
+    input: () => input,
+    runCommand: () => runCommand
+  });
+
+  // Config.ts
+  var Config_exports = {};
+  __export(Config_exports, {
+    ConfigManager: () => ConfigManager,
+    applyReload: () => applyReload,
+    blacklistedDomains: () => blacklistedDomains,
+    blocksSet: () => blocksSet,
+    configManager: () => configManager,
+    configSave: () => configSave,
+    configScope: () => configScope,
+    configSwitch: () => configSwitch,
+    defaultConfiguration: () => defaultConfiguration,
+    downloadState: () => downloadState,
+    globalFunctional: () => globalFunctional,
+    menuCmd: () => menuCmd,
+    menuGroups: () => menuGroups,
+    menuItems: () => menuItems,
+    menuOn: () => menuOn,
+    rawLocalStorage: () => rawLocalStorage,
+    siteDisabled: () => siteDisabled
+  });
+
+  // Task.ts
+  var Task_exports = {};
+  __export(Task_exports, {
+    TaskControl: () => TaskControl,
+    allowCross: () => allowCross,
+    douyinTitle: () => douyinTitle,
+    douyuScreen: () => douyuScreen,
+    escapeTask: () => escapeTask,
+    facebookTask: () => facebookTask,
+    hoverTitle: () => hoverTitle,
+    installTasks: () => installTasks,
+    taskCenter: () => taskCenter,
+    taskConf: () => taskConf,
+    taskScratch: () => taskScratch,
+    watermarkTask: () => watermarkTask,
+    xgplayerTask: () => xgplayerTask
+  });
+
+  // Player.ts
+  var Player_exports = {};
+  __export(Player_exports, {
+    FullScreen: () => FullScreen,
+    PlayerControl: () => PlayerControl,
+    activePlayer: () => activePlayer,
+    createPlayer: () => createPlayer,
+    fullScreenInstances: () => fullScreenInstances
+  });
+
+  // Media.ts
+  var Media_exports = {};
+  __export(Media_exports, {
+    Amplifier: () => Amplifier,
+    MediaCore: () => MediaCore,
+    SourceControl: () => SourceControl,
+    createMedia: () => createMedia,
+    createSource: () => createSource,
+    mediaCore: () => mediaCore,
+    mediaSource: () => mediaSource,
+    supportMediaTags: () => supportMediaTags
+  });
+  var supportMediaTags = ["video", "bwp-video"];
+  var MediaCore = class {
+    inited;
+    proxied;
+    originDescriptors;
+    originMethods;
+    mediaElementList;
+    mediaElementHandler;
+    mediaMap;
+    plusProps;
+    plusMethods;
+    constructor() {
+      this.inited = false;
+      this.proxied = false;
+      this.originDescriptors = {};
+      this.originMethods = {};
+      this.mediaElementList = [];
+      this.mediaElementHandler = [];
+      this.mediaMap = new original.Map();
+      this.plusProps = ["playbackRate", "volume", "currentTime"];
+      this.plusMethods = ["play", "pause"];
+    }
+    // 是不是原生 HTMLMediaElement，用启动时的快照判，站点后打的补丁改不动它
+    isNative(el) {
+      return el instanceof original.HTMLMediaElement;
+    }
+    // 为一个媒体元素建增强 API：按 plusProps/plusMethods 生成 lock/unlock/locked/get/set/apply 的派生方法
+    mediaPlus(mediaElement) {
+      if (!mediaCore.isNative(mediaElement)) {
+        return false;
+      }
+      let enhancer = original.map.get.call(mediaCore.mediaMap, mediaElement);
+      if (enhancer) {
+        return enhancer;
+      }
+      const mediaPlusBaseApi = {
+        // 锁住某个属性：带时长就到期自动解锁，不带就一锁到底
+        lock(keyName, duration) {
+          const infoKey = `__${keyName}_info__`;
+          enhancer[infoKey] = enhancer[infoKey] || {};
+          enhancer[infoKey].lock = true;
+          duration = Number(duration);
+          if (!Number.isNaN(duration) && duration > 0) {
+            enhancer[infoKey].unlockTime = Date.now() + duration;
+          }
+        },
+        // 解锁某个属性，到期时间回拨到过去
+        unlock(keyName) {
+          const infoKey = `__${keyName}_info__`;
+          enhancer[infoKey] = enhancer[infoKey] || {};
+          enhancer[infoKey].lock = false;
+          enhancer[infoKey].unlockTime = Date.now() - 100;
+        },
+        // 某个属性当前是否被锁：有到期时间按时间判，没有就看标记
+        locked(keyName) {
+          const info = enhancer[`__${keyName}_info__`] || {};
+          return info.unlockTime ? Date.now() < info.unlockTime : !!info.lock;
+        },
+        // 读原型上的取值器，只对已被代理的属性走这条路
+        get(keyName) {
+          if (mediaCore.originDescriptors[keyName] && mediaCore.originDescriptors[keyName].get && !mediaCore.originMethods[keyName]) {
+            return mediaCore.originDescriptors[keyName].get.apply(mediaElement);
+          }
+        },
+        // 写原型上的设值器，只对已被代理的属性走这条路
+        set(keyName, val) {
+          if (mediaCore.originDescriptors[keyName] && mediaCore.originDescriptors[keyName].set && !mediaCore.originMethods[keyName] && typeof val !== "undefined") {
+            return mediaCore.originDescriptors[keyName].set.apply(mediaElement, [val]);
+          }
+        },
+        // 调原型上的方法（play / pause 这类），第一个参数是方法名
+        apply(keyName) {
+          if (mediaCore.originMethods[keyName] instanceof Function) {
+            const args = Array.from(arguments);
+            args.shift();
+            return mediaCore.originMethods[keyName].apply(mediaElement, args);
+          }
+        }
+      };
+      enhancer = { ...mediaPlusBaseApi };
+      const extApiKeys = mediaCore.plusProps.concat(mediaCore.plusMethods);
+      const baseApiKeys = Object.keys(mediaPlusBaseApi);
+      extApiKeys.forEach((key) => {
+        const isMethod = mediaCore.originMethods[key] instanceof Function;
+        baseApiKeys.forEach((baseKey) => {
+          if (isMethod ? baseKey === "get" || baseKey === "set" : baseKey === "apply") {
+            return;
+          }
+          enhancer[`${baseKey}${Utils.firstUpper(key)}`] = function() {
+            return mediaPlusBaseApi[baseKey].apply(null, [key, ...arguments]);
+          };
+        });
+      });
+      original.map.set.call(mediaCore.mediaMap, mediaElement, enhancer);
+      return enhancer;
+    }
+    // 认领一个媒体元素：进全局列表、建增强 API、再逐个通知检测回调
+    admit(ctx) {
+      if (mediaCore.isNative(ctx) && !mediaCore.mediaElementList.includes(ctx)) {
+        mediaCore.mediaElementList.push(ctx);
+        mediaCore.mediaPlus(ctx);
+        try {
+          mediaCore.mediaElementHandler.forEach((handler) => {
+            handler instanceof Function && handler(ctx);
+          });
+        } catch (e) {
+          console.log("[Media] 检出回调异常", e);
+        }
+      }
+    }
+    // 给原型方法套代理：先认领调用者，被锁住的方法直接拦掉
+    proxyMethod(element, methodName) {
+      const originFunc = element && element.prototype[methodName];
+      if (!originFunc) return;
+      element.prototype[methodName] = new original.Proxy(originFunc, {
+        // 方法代理的入口：先认领 ctx，命中锁定就返回，否则转给原方法
+        apply(target, ctx, args) {
+          mediaCore.admit(ctx);
+          if (mediaCore.plusMethods.includes(methodName)) {
+            const enhancer = mediaCore.mediaPlus(ctx);
+            if (enhancer && enhancer.locked(methodName)) {
+              return;
+            }
+          }
+          return target.apply(ctx, args);
+        }
+      });
+    }
+    // 劫持原型属性：读时被锁按属性回缺省值，写时被锁直接吞掉，src 赋值顺带触发检出
+    hijackProp(element, property) {
+      if (!element || !element.prototype || !mediaCore.originDescriptors[property]) {
+        return false;
+      }
+      original.Object.defineProperty.call(Object, element.prototype, property, {
+        configurable: true,
+        enumerable: true,
+        get: function() {
+          const val = mediaCore.originDescriptors[property].get.apply(this, arguments);
+          const enhancer = mediaCore.mediaPlus(this);
+          if (enhancer && enhancer.locked(property)) {
+            if (property === "playbackRate") {
+              return 1;
+            }
+          }
+          return val;
+        },
+        set: function(value) {
+          if (property === "src") {
+            mediaCore.admit(this);
+          }
+          if (mediaCore.plusProps.includes(property)) {
+            const enhancer = mediaCore.mediaPlus(this);
+            if (enhancer && enhancer.locked(property)) {
+              return;
+            }
+          }
+          return mediaCore.originDescriptors[property].set.apply(this, arguments);
+        }
+      });
+    }
+    // 把一项设置同步到页面上的其它媒体元素，当前实例由调用方自己处理
+    eachOther(except, apply) {
+      activePlayer.listPlayers().forEach((media) => {
+        if (media === except) return;
+        const api = mediaCore.mediaPlus(media);
+        if (api) {
+          apply(api);
+        }
+      });
+    }
+    // 装媒体元素代理：play / pause / load / addEventListener 与四个属性各劫持一次，只装一次
+    mediaProxy() {
+      if (!mediaCore.proxied) {
+        const proxyMethods = ["play", "pause", "load", "addEventListener"];
+        proxyMethods.forEach((methodName) => {
+          mediaCore.proxyMethod(HTMLMediaElement, methodName);
+        });
+        mediaCore.plusProps.concat(["src"]).forEach((property) => {
+          mediaCore.hijackProp(HTMLMediaElement, property);
+        });
+        mediaCore.proxied = true;
+      }
+      return mediaCore.proxied;
+    }
+    // 登记检测回调并保证代理已装好，返回当前实例列表
+    mediaChecker(handler) {
+      if (!(handler instanceof Function) || mediaCore.mediaElementHandler.includes(handler)) {
+        return mediaCore.mediaElementList;
+      } else {
+        mediaCore.mediaElementHandler.push(handler);
+      }
+      if (!mediaCore.proxied) {
+        mediaCore.mediaProxy();
+      }
+      return mediaCore.mediaElementList;
+    }
+    // 初始化媒体核心：先留原型描述符与方法快照，再装代理与检测回调，只初始化一次
+    init(mediaCheckerHandler) {
+      if (mediaCore.inited) {
+        return false;
+      }
+      mediaCore.originDescriptors = Object.getOwnPropertyDescriptors(HTMLMediaElement.prototype);
+      Utils.snapMethods(HTMLMediaElement.prototype, mediaCore.originMethods);
+      mediaCheckerHandler = mediaCheckerHandler instanceof Function ? mediaCheckerHandler : function() {
+      };
+      mediaCore.mediaChecker(mediaCheckerHandler);
+      mediaCore.inited = true;
+      return true;
+    }
+  };
+  var mediaCore = null;
+  var createMedia = () => {
+    mediaCore = new MediaCore();
+    return mediaCore;
+  };
+  var SourceControl = class {
+    hasMediaSourceInit;
+    originMethods;
+    urlMethods;
+    sourceMap;
+    urlMap;
+    constructor() {
+      this.hasMediaSourceInit = false;
+      this.originMethods = {};
+      this.urlMethods = {};
+      this.sourceMap = new original.Map();
+      this.urlMap = new original.Map();
+    }
+    // 把媒体元素认领到它的 MediaSource 记录上，按 objectURL 对上号
+    bindElement(mediaEl) {
+      const curSrc = mediaEl.currentSrc || mediaEl.src;
+      if (!curSrc) {
+        return false;
+      }
+      mediaSource.sourceMap.forEach((mediaSourceInfo) => {
+        if (mediaSourceInfo.mediaSource.__objURL__ && curSrc === mediaSourceInfo.mediaSource.__objURL__) {
+          mediaSourceInfo.mediaElement = mediaEl;
+        }
+      });
+    }
+    // 关联的媒体元素已脱文档或不可见时，清掉缓冲数据与元素引用并从两张表里摘除，减少内存占用
+    prune() {
+      mediaSource.sourceMap.forEach((mediaSourceInfo) => {
+        const mediaElement = mediaSourceInfo.mediaElement;
+        if (!(mediaElement instanceof HTMLMediaElement) || Utils.invisible(mediaElement)) {
+          if (mediaSourceInfo.sourceBuffer && mediaSourceInfo.sourceBuffer.length) {
+            mediaSourceInfo.sourceBuffer.forEach((sourceBufferItem) => {
+              sourceBufferItem.bufferData = [];
+              sourceBufferItem.originAppendBuffer = null;
+            });
+            mediaSourceInfo.sourceBuffer = [];
+          }
+          mediaSourceInfo.mediaElement = null;
+          original.map.delete.call(mediaSource.sourceMap, mediaSourceInfo.mediaSource);
+          original.map.delete.call(mediaSource.urlMap, mediaSourceInfo.mediaSource);
+        }
+      });
+    }
+    // 给 createObjectURL / addSourceBuffer / endOfStream 各套一层代理，把流数据攒进记录表
+    proxySource() {
+      if (!mediaSource.originMethods.addSourceBuffer || !mediaSource.originMethods.endOfStream) {
+        return false;
+      }
+      mediaSource.urlMethods.createObjectURL = mediaSource.urlMethods.createObjectURL || URL.prototype.constructor.createObjectURL;
+      URL.prototype.constructor.createObjectURL = new original.Proxy(mediaSource.urlMethods.createObjectURL, {
+        // 记下 objectURL 与 MediaSource 的对应关系
+        apply(target, ctx, args) {
+          const object = args[0];
+          const objectURL = target.apply(ctx, args);
+          if (object instanceof MediaSource && !original.map.has.call(mediaSource.urlMap, object)) {
+            object.__objURL__ = objectURL;
+            original.map.set.call(mediaSource.urlMap, object, objectURL);
+          }
+          return objectURL;
+        }
+      });
+      MediaSource.prototype.addSourceBuffer = new original.Proxy(mediaSource.originMethods.addSourceBuffer, {
+        // 新开一条记录，并把 sourceBuffer 的 appendBuffer 也换成代理来攒数据
+        apply(target, ctx, args) {
+          if (!original.map.has.call(mediaSource.sourceMap, ctx)) {
+            original.map.set.call(mediaSource.sourceMap, ctx, { mediaSource: ctx, createTime: Date.now(), sourceBuffer: [], endOfStream: false });
+          }
+          const mediaSourceInfo = original.map.get.call(mediaSource.sourceMap, ctx);
+          const mimeCodecs = args[0] || "";
+          const sourceBuffer = target.apply(ctx, args);
+          const sourceBufferItem = { mimeCodecs, originAppendBuffer: sourceBuffer.appendBuffer, bufferData: [], mediaInfo: {} };
+          try {
+            const mediaInfo = sourceBufferItem.mediaInfo;
+            const tmpArr = sourceBufferItem.mimeCodecs.split(";");
+            mediaInfo.type = tmpArr[0].split("/")[0];
+            mediaInfo.format = tmpArr[0].split("/")[1];
+            mediaInfo.codecs = tmpArr[1].trim().replace("codecs=", "").replace(/["']/g, "");
+          } catch (e) {
+            console.log("[Media] 媒体信息解析异常", sourceBufferItem, e);
+          }
+          mediaSourceInfo.sourceBuffer.push(sourceBufferItem);
+          sourceBuffer.appendBuffer = new original.Proxy(sourceBufferItem.originAppendBuffer, {
+            // 缓存这一段流数据
+            apply(bufTarget, bufCtx, bufArgs) {
+              if (!mediaSourceInfo.endOfStream) {
+                sourceBufferItem.bufferData.push(bufArgs[0]);
+              }
+              return bufTarget.apply(bufCtx, bufArgs);
+            }
+          });
+          return sourceBuffer;
+        }
+      });
+      MediaSource.prototype.endOfStream = new original.Proxy(mediaSource.originMethods.endOfStream, {
+        // 流结束：标记完成
+        apply(target, ctx, args) {
+          const mediaSourceInfo = original.map.get.call(mediaSource.sourceMap, ctx);
+          if (mediaSourceInfo) {
+            mediaSourceInfo.endOfStream = true;
+          }
+          return target.apply(ctx, args);
+        }
+      });
+    }
+    // 下载由 MediaSource 管理的媒体文件：不再弹确认与命名框，未就绪也直接下已缓冲的部分
+    downloadStream(mediaEl, title) {
+      const curSrc = mediaEl.currentSrc || mediaEl.src;
+      if (!curSrc) {
+        console.log("[Media] 下载地址缺失");
+        return false;
+      }
+      let hasFindMediaSource = false;
+      mediaSource.sourceMap.forEach((mediaSourceInfo) => {
+        const source = mediaSourceInfo.mediaSource;
+        if (!source.__objURL__) {
+          console.log("[Media] objectURL缺失", source, mediaSourceInfo);
+          return false;
+        }
+        if (curSrc !== source.__objURL__) {
+          return false;
+        }
+        hasFindMediaSource = true;
+        mediaSourceInfo.mediaElement = mediaEl;
+        let mediaSourceTitle = null;
+        mediaSourceInfo.sourceBuffer.forEach((sourceBufferItem) => {
+          if (!sourceBufferItem.mimeCodecs || sourceBufferItem.mimeCodecs.toString().indexOf(";") === -1) {
+            console.log("[Media] 流信息异常无法下载", sourceBufferItem);
+            return false;
+          }
+          try {
+            const mediaTitle = `${mediaSourceTitle || sourceBufferItem.mediaInfo.title || title || mediaEl.getAttribute("data-title") || document.title || Date.now()}`;
+            mediaSourceTitle = mediaTitle;
+            const fileName = `${mediaTitle}_${sourceBufferItem.mediaInfo.type}.${sourceBufferItem.mediaInfo.format}`;
+            const a = document.createElement("a");
+            const blobUrl = URL.createObjectURL(new Blob(sourceBufferItem.bufferData));
+            a.href = blobUrl;
+            a.download = fileName;
+            try {
+              a.click();
+              mediaSourceInfo.hasDownload = true;
+            } finally {
+              URL.revokeObjectURL(blobUrl);
+              sourceBufferItem.bufferData = [];
+            }
+          } catch (e) {
+            mediaSourceInfo.hasDownload = false;
+            console.log("[Media] 流下载异常", e);
+          }
+        });
+      });
+      if (!hasFindMediaSource) {
+        console.log("[Media] 媒体流未找到", curSrc);
+      }
+    }
+    // MediaSource 相关代理是否已装好
+    hasInit() {
+      return mediaSource.hasMediaSourceInit;
+    }
+    // 装 MediaSource 代理：先留一份原型方法快照，再逐个套代理，只装一次
+    init() {
+      if (mediaSource.hasMediaSourceInit) {
+        return false;
+      }
+      if (!window.MediaSource) {
+        return false;
+      }
+      Utils.snapMethods(MediaSource.prototype, mediaSource.originMethods);
+      mediaSource.proxySource();
+      mediaSource.hasMediaSourceInit = true;
+    }
+  };
+  var mediaSource = null;
+  var createSource = () => {
+    mediaSource = new SourceControl();
+    return mediaSource;
+  };
+  var Amplifier = class {
+    _source;
+    _gain;
+    constructor(mediaElem) {
+      const context = new (window.AudioContext || window.webkitAudioContext)();
+      this._source = context.createMediaElementSource(mediaElem);
+      this._source.connect(this._gain = context.createGain());
+      this._gain.connect(context.destination);
+    }
+    // 响度 → 分贝 → 增益倍数两条换算一步到位（每 10 分贝翻一倍）
+    setLoudness(value) {
+      this._gain.gain.value = Math.pow(10, 10 * Math.log2(value) / 20);
+    }
+  };
+
+  // Menu.ts
+  var Menu_exports = {};
+  __export(Menu_exports, {
+    MenuControl: () => MenuControl,
+    createMenu: () => createMenu,
+    menu: () => menu,
+    menuStyle: () => menuStyle
+  });
+
+  // Picture.ts
+  var Picture_exports = {};
+  __export(Picture_exports, {
+    PictureControl: () => PictureControl,
+    createPicture: () => createPicture,
+    filterDefs: () => filterDefs,
+    picture: () => picture
+  });
+  var filterDefs = [
+    { name: "brightness", noun: "亮度", up: "☀️", down: "🌙", label: "图像亮度：", scale: 100, unit: "%", base: 1, step: 0.1 },
+    { name: "contrast", noun: "对比度", up: "◐", down: "◑", label: "图像对比度：", scale: 100, unit: "%", base: 1, step: 0.1 },
+    { name: "saturation", noun: "饱和度", up: "🌈", down: "🌫️", label: "图像饱和度：", scale: 100, unit: "%", base: 1, step: 0.1 },
+    // 色相是角度、模糊是像素，按原值展示，不能像比例值那样乘上100；色相是唯一可以取负的一组
+    { name: "hue", noun: "色相", up: "🎨", down: "🎨", label: "图像色相：", scale: 1, unit: "°", base: 0, step: 1, negative: true },
+    { name: "blur", noun: "模糊度", up: "💨", down: "💨", label: "图像模糊度：", scale: 1, unit: "px", base: 0, step: 1 }
+  ];
+  var filterDefaults = filterDefs.map((def) => def.base);
+  var PictureControl = class {
+    defaultTransform;
+    scale;
+    translate;
+    rotate;
+    rotateY;
+    rotateX;
+    historyTransform;
+    transformGuard;
+    _transformStyle;
+    filter;
+    key;
+    setup;
+    constructor() {
+      this.defaultTransform = { scale: 1, translate: { x: 0, y: 0 }, rotate: 0, rotateY: 0, rotateX: 0 };
+      this.scale = this.defaultTransform.scale;
+      this.translate = Utils.clone(this.defaultTransform.translate);
+      this.rotate = this.defaultTransform.rotate;
+      this.rotateY = this.defaultTransform.rotateY;
+      this.rotateX = this.defaultTransform.rotateX;
+      this.historyTransform = {};
+      this.transformGuard = null;
+      this._transformStyle = { wanted: null, actual: null };
+      this.filter = {
+        key: filterDefaults.slice(),
+        setup: function() {
+          activePlayer.player().style.filter = `brightness(${this.key[0]}) contrast(${this.key[1]}) saturate(${this.key[2]}) hue-rotate(${this.key[3]}deg) blur(${this.key[4]}px)`;
+        },
+        reset: function() {
+          this.key = filterDefaults.slice();
+          this.setup();
+        }
+      };
+    }
+    // 画面样式由定时守护负责维持：值没变、也没被人改掉时不要重复赋值，避免持续触发样式重算
+    writeTransform(player, transform) {
+      const cache = picture._transformStyle;
+      if (cache.wanted === transform && player.style.transform === cache.actual) {
+        return;
+      }
+      player.style.transform = transform;
+      cache.wanted = transform;
+      cache.actual = player.style.transform;
+    }
+    // 逐键比较当前值与缺省值（translate 有两个子键），有差异就把 (键, 子键, 当前值) 交给回调
+    eachDiff(handler) {
+      Object.keys(picture.defaultTransform).forEach((key) => {
+        const def = picture.defaultTransform[key];
+        if (Utils.isObj(def)) {
+          Object.keys(def).forEach((subKey) => {
+            if (Number(picture[key][subKey]) !== def[subKey]) {
+              handler(key, subKey, picture[key][subKey]);
+            }
+          });
+        } else if (Number(picture[key]) !== def) {
+          handler(key, null, picture[key]);
+        }
+      });
+    }
+    // 设置视频画面的缩放与位移
+    setTransform(notTips) {
+      const player = activePlayer.player();
+      const scale = picture.scale = Number(Number(picture.scale).toFixed(2));
+      const translate = picture.translate;
+      const mirror = picture.rotateX === 180 ? `rotateX(${picture.rotateX}deg)` : picture.rotateY === 180 ? `rotateY(${picture.rotateY}deg)` : "";
+      const transform = `scale(${scale.toFixed(2)}) translate(${translate.x}px, ${translate.y}px) rotate(${picture.rotate}deg) ${mirror}`;
+      picture.writeTransform(player, transform);
+      let tipsMsg = `视频缩放率：${(scale * 100).toFixed(0)}%`;
+      if (translate.x) {
+        tipsMsg += ` 水平位移：${picture.translate.x}px`;
+      }
+      if (translate.y) {
+        tipsMsg += ` 垂直位移：${picture.translate.y}px`;
+      }
+      if (notTips !== true) {
+        picture.eachDiff((key, subKey, val) => {
+          if (subKey) {
+            picture.historyTransform[key] = picture.historyTransform[key] || {};
+            picture.historyTransform[key][subKey] = val;
+          } else {
+            picture.historyTransform[key] = val;
+          }
+        });
+        menu.tips(tipsMsg);
+      }
+      if (!picture.transformGuard) {
+        picture.transformGuard = setInterval(() => {
+          picture.setTransform(true);
+        }, 300);
+      }
+    }
+    // 视频画面旋转 90 度
+    setRotate() {
+      picture.rotate += 90;
+      if (picture.rotate % 360 === 0) picture.rotate = 0;
+      picture.setTransform(true);
+      menu.tips("画面旋转：" + picture.rotate + "°");
+    }
+    // 镜像就是绕对应那根轴翻到 180 再翻回来，两个方向只差一个字段名
+    setMirror(vertical = false) {
+      const axis = vertical ? "rotateX" : "rotateY";
+      picture[axis] = picture[axis] === 0 ? 180 : 0;
+      picture.setTransform(true);
+      menu.tips(` ${vertical ? "垂直" : "水平"}镜像 ${picture[axis]}deg`);
+    }
+    // 缩放视频画面：菜单与用户自定的快捷键都可能把字符串递进来，先收成数字再落状态
+    setScale(num) {
+      num = Number(num);
+      picture.scale = Number.isNaN(num) ? 1 : num;
+      picture.setTransform();
+    }
+    // 缩放一档：放大与缩小只差一个符号
+    scaleStep(num, sign) {
+      picture.setScale(picture.scale + sign * Utils.stepValue(num, 0.05));
+    }
+    // 视频放大
+    zoomIn(num) {
+      picture.scaleStep(num, 1);
+    }
+    // 视频缩小
+    zoomOut(num) {
+      picture.scaleStep(num, -1);
+    }
+    // 设置视频画面的位移属性
+    setTranslate(x, y) {
+      if (typeof x === "number") {
+        picture.translate.x = x;
+      }
+      if (typeof y === "number") {
+        picture.translate.y = y;
+      }
+      picture.setTransform();
+    }
+    // 沿一个轴平移一步，四个方向只差符号；命令名要留给默认快捷键配置，所以各留一层壳
+    translateStep(axis, sign, num) {
+      const step = sign * Utils.stepValue(num, 10);
+      picture.setTranslate(axis === "x" ? picture.translate.x + step : null, axis === "y" ? picture.translate.y + step : null);
+    }
+    // 视频画面向右平移
+    moveRight(num) {
+      return picture.translateStep("x", 1, num);
+    }
+    // 视频画面向左平移
+    moveLeft(num) {
+      return picture.translateStep("x", -1, num);
+    }
+    // 视频画面向上平移
+    moveUp(num) {
+      return picture.translateStep("y", -1, num);
+    }
+    // 视频画面向下平移
+    moveDown(num) {
+      return picture.translateStep("y", 1, num);
+    }
+    // 复位画面变换：已到缺省值就退回上一次的历史值，否则回到出厂缺省
+    resetTransform(notTips) {
+      let diff = false;
+      picture.eachDiff(() => {
+        diff = true;
+      });
+      if (!diff && Object.keys(picture.historyTransform).length) {
+        Object.keys(picture.historyTransform).forEach((key) => {
+          if (Utils.isObj(picture.historyTransform[key])) {
+            Object.keys(picture.historyTransform[key]).forEach((subKey) => {
+              picture[key][subKey] = picture.historyTransform[key][subKey];
+            });
+          } else {
+            picture[key] = picture.historyTransform[key];
+          }
+        });
+      } else {
+        const defaultTransform = Utils.clone(picture.defaultTransform);
+        Object.keys(defaultTransform).forEach((key) => {
+          picture[key] = defaultTransform[key];
+        });
+      }
+      picture.setTransform(notTips);
+    }
+    // — 图像滤镜：亮度/对比度/饱和度/色相/模糊（原 FilterControl 全部并入此处）
+    setFilter(item, num, isDown) {
+      const def = filterDefs[item];
+      if (!def || typeof num !== "number") {
+        console.log("[Picture] 滤镜参数错误", item, num);
+        return false;
+      }
+      if (isDown === true && num > 0) {
+        num = -num;
+      }
+      const key = picture.filter.key;
+      key[item] = Number((key[item] + num).toFixed(2));
+      if (key[item] < 0 && !def.negative) {
+        key[item] = 0;
+      }
+      picture.filter.setup();
+      menu.tips(def.label + parseInt(String(key[item] * def.scale)) + def.unit);
+    }
+    // 五个滤镜的 15 个动作（brightnessUp / hueDown …）按 filterDefs 生成到原型上
+    resetPicture() {
+      picture.resetTransform(true);
+      picture.filter.reset();
+      menu.tips("图像属性：复位");
+    }
+  };
+  var picture = null;
+  var createPicture = () => {
+    picture = new PictureControl();
+    return picture;
+  };
+  filterDefs.forEach((def, item) => {
+    PictureControl.prototype[def.name] = (num) => picture.setFilter(item, num);
+    PictureControl.prototype[def.name + "Up"] = (num) => picture.setFilter(item, num || def.step);
+    PictureControl.prototype[def.name + "Down"] = (num) => picture.setFilter(item, num || -def.step, true);
+  });
+
+  // Menu.ts
+  var menuStyle = `
     :host { all: initial; }
     * { box-sizing: border-box; }
     .r6pcm-menu {
@@ -57,22 +1213,1498 @@
     .r6pcm-item__label { overflow: hidden; text-overflow: ellipsis; }
     .r6pcm-item__arrow { color: #9a9aa0; font-size: 11px; flex: none; }
     .r6pcm-divider { height: 1px; margin: 5px 8px; background: rgba(255, 255, 255, 0.1); }
-  `,Je=!1,H=class i{fontSize;tipsClassName;timers;host;shadow;isOpen;menuStack;closeBound;constructor(){this.fontSize=12,this.tipsClassName="html_player_enhance_tips",this.timers=new Array(3),this.host=null,this.shadow=null,this.isOpen=!1,this.menuStack=[],this.closeBound=!1}tipsHost(e){let t=e||u.player(),o=t.parentNode||t,n=o.getBoundingClientRect();return(!n.width||!n.height)&&o.parentNode&&(o=o.parentNode),o}tips(e){let t=u.player();if(!t)return console.log("[Menu] 提示无实例落空",e),!0;let o=u.isAudioInstance(),n=f.tipsMount();if(n===t)return console.log("[Menu] 提示容器异常",t,e),!1;let r="";if(!o){let b=n.getAttribute("style")||"";if(r=n.getAttribute("style-backup")||"",r)b&&!b.includes("style-backup")&&(r=b);else{let be=b||"style-backup: none",F={};be.split(";").forEach(re=>{let we=re.split(":");we.length===2&&(F[we[0].trim()]=we[1].trim())}),F.opacity==="0"&&(F.opacity="1"),F.visibility==="hidden"&&(F.visibility="visible"),be=Object.keys(F).map(re=>`${re}: ${F[re]}`).join("; "),n.setAttribute("style-backup",be),r=b}let P=r.split(";"),v=n.getAttribute("def-position")||window.getComputedStyle(n).position;n.getAttribute("def-position")===null&&n.setAttribute("def-position",v||""),["static","inherit","initial","unset",""].includes(v)&&P.push("position: relative");let L=t.getBoundingClientRect(),D=n.getBoundingClientRect();(!D.width||!D.height)&&(P.push("min-width:"+L.width+"px"),P.push("min-height:"+L.height+"px")),n.setAttribute("style",P.join(";"));let pt=t.getBoundingClientRect();Math.abs(pt.height-L.height)>50&&n.setAttribute("style",r)}let s="."+f.tipsClassName,a=document.querySelectorAll(s);a.length>1&&a.forEach(b=>{b.remove()});let l=n.querySelector(s);if(!l&&(f.initTips(),l=n.querySelector(s),!l))return console.log("[Menu] 提示节点缺失"),!1;let m=l.style;l.innerText=e;for(let b=0;b<3;b++)f.timers[b]&&clearTimeout(f.timers[b]);function x(){m.display="block",f.timers[0]=setTimeout(function(){m.opacity=1},50),f.timers[1]=setTimeout(function(){m.opacity=0,m.display="none",r&&n.setAttribute("style",r)},2e3)}m.display==="block"?(m.display="none",clearTimeout(f.timers[2]),f.timers[2]=setTimeout(function(){x()},100)):x()}tipsMount(){return u.isAudioInstance()?document.body:f.tipsHost()}initTips(){let e=u.isAudioInstance(),t=f.tipsMount();if(t.querySelector("."+f.tipsClassName))return;let o=`
-      position: ${e?"fixed":"absolute"};
+  `;
+  var contextMenuInited = false;
+  var MenuControl = class _MenuControl {
+    fontSize;
+    tipsClassName;
+    timers;
+    host;
+    shadow;
+    isOpen;
+    menuStack;
+    closeBound;
+    constructor() {
+      this.fontSize = 12;
+      this.tipsClassName = "html_player_enhance_tips";
+      this.timers = new Array(3);
+      this.host = null;
+      this.shadow = null;
+      this.isOpen = false;
+      this.menuStack = [];
+      this.closeBound = false;
+    }
+    // 取提示浮层的挂载容器：播放器的父节点，父节点没有布局盒时再上退一层
+    tipsHost(videoEl) {
+      const player = videoEl || activePlayer.player();
+      let tispContainer = player.parentNode || player;
+      const containerBox = tispContainer.getBoundingClientRect();
+      if ((!containerBox.width || !containerBox.height) && tispContainer.parentNode) {
+        tispContainer = tispContainer.parentNode;
+      }
+      return tispContainer;
+    }
+    // 在画面上弹一条即时提示，先备份容器行内样式，两秒后还原
+    tips(str) {
+      const player = activePlayer.player();
+      if (!player) {
+        console.log("[Menu] 提示无实例落空", str);
+        return true;
+      }
+      const isAudio = activePlayer.isAudioInstance();
+      const parentNode = menu.tipsMount();
+      if (parentNode === player) {
+        console.log("[Menu] 提示容器异常", player, str);
+        return false;
+      }
+      let backupStyle = "";
+      if (!isAudio) {
+        const defStyle = parentNode.getAttribute("style") || "";
+        backupStyle = parentNode.getAttribute("style-backup") || "";
+        if (!backupStyle) {
+          let backupSty = defStyle || "style-backup: none";
+          const backupStyObj = {};
+          backupSty.split(";").forEach((item) => {
+            const parts = item.split(":");
+            if (parts.length === 2) {
+              backupStyObj[parts[0].trim()] = parts[1].trim();
+            }
+          });
+          if (backupStyObj.opacity === "0") {
+            backupStyObj.opacity = "1";
+          }
+          if (backupStyObj.visibility === "hidden") {
+            backupStyObj.visibility = "visible";
+          }
+          backupSty = Object.keys(backupStyObj).map((key) => `${key}: ${backupStyObj[key]}`).join("; ");
+          parentNode.setAttribute("style-backup", backupSty);
+          backupStyle = defStyle;
+        } else if (defStyle && !defStyle.includes("style-backup")) {
+          backupStyle = defStyle;
+        }
+        const newStyleArr = backupStyle.split(";");
+        const oldPosition = parentNode.getAttribute("def-position") || window.getComputedStyle(parentNode).position;
+        if (parentNode.getAttribute("def-position") === null) {
+          parentNode.setAttribute("def-position", oldPosition || "");
+        }
+        if (["static", "inherit", "initial", "unset", ""].includes(oldPosition)) {
+          newStyleArr.push("position: relative");
+        }
+        const playerBox = player.getBoundingClientRect();
+        const parentNodeBox = parentNode.getBoundingClientRect();
+        if (!parentNodeBox.width || !parentNodeBox.height) {
+          newStyleArr.push("min-width:" + playerBox.width + "px");
+          newStyleArr.push("min-height:" + playerBox.height + "px");
+        }
+        parentNode.setAttribute("style", newStyleArr.join(";"));
+        const newPlayerBox = player.getBoundingClientRect();
+        if (Math.abs(newPlayerBox.height - playerBox.height) > 50) {
+          parentNode.setAttribute("style", backupStyle);
+        }
+      }
+      const tipsSelector = "." + menu.tipsClassName;
+      const tipsList = document.querySelectorAll(tipsSelector);
+      if (tipsList.length > 1) {
+        tipsList.forEach((tipsItem) => {
+          tipsItem.remove();
+        });
+      }
+      let tipsDom = parentNode.querySelector(tipsSelector);
+      if (!tipsDom) {
+        menu.initTips();
+        tipsDom = parentNode.querySelector(tipsSelector);
+        if (!tipsDom) {
+          console.log("[Menu] 提示节点缺失");
+          return false;
+        }
+      }
+      const style = tipsDom.style;
+      tipsDom.innerText = str;
+      for (let i = 0; i < 3; i++) {
+        if (menu.timers[i]) clearTimeout(menu.timers[i]);
+      }
+      function showTips() {
+        style.display = "block";
+        menu.timers[0] = setTimeout(function() {
+          style.opacity = 1;
+        }, 50);
+        menu.timers[1] = setTimeout(function() {
+          style.opacity = 0;
+          style.display = "none";
+          if (backupStyle) {
+            parentNode.setAttribute("style", backupStyle);
+          }
+        }, 2e3);
+      }
+      if (style.display === "block") {
+        style.display = "none";
+        clearTimeout(menu.timers[2]);
+        menu.timers[2] = setTimeout(function() {
+          showTips();
+        }, 100);
+      } else {
+        showTips();
+      }
+    }
+    // 提示节点的挂载容器：音频实例没有可用的画面包裹层，直接挂在 body 上
+    tipsMount() {
+      return activePlayer.isAudioInstance() ? document.body : menu.tipsHost();
+    }
+    // 设置提示DOM的样式
+    initTips() {
+      const isAudio = activePlayer.isAudioInstance();
+      const parentNode = menu.tipsMount();
+      if (parentNode.querySelector("." + menu.tipsClassName)) return;
+      const tipsStyle = `
+      position: ${isAudio ? "fixed" : "absolute"};
       z-index: 999999;
-      font-size: ${f.fontSize||16}px;
+      font-size: ${menu.fontSize || 16}px;
       padding: 5px 10px;
       background: rgba(0,0,0,0.4);
       color:white;
-      ${e?"bottom: 0; right: 0;":"top: 0; left: 0;"}
+      ${isAudio ? "bottom: 0; right: 0;" : "top: 0; left: 0;"}
       transition: all 500ms ease;
       opacity: 0;
-      border-${e?"top-left":"bottom-right"}-radius: 5px;
+      border-${isAudio ? "top-left" : "bottom-right"}-radius: 5px;
       display: none;
       -webkit-font-smoothing: subpixel-antialiased;
       font-family: 'microsoft yahei', Verdana, Geneva, sans-serif;
       -webkit-user-select: none;
-    `,n=document.createElement("div");n.setAttribute("style",o),n.setAttribute("class",f.tipsClassName),t.appendChild(n)}placeMenu(e,t,o){e.style.left="0px",e.style.top="0px";let n=e.getBoundingClientRect(),r=window.innerWidth,s=window.innerHeight,a=t;a+n.width>r-8&&(a=r-n.width-8),a<8&&(a=8);let l=o;l+n.height>s-8&&(l=s-n.height-8),l<8&&(l=8),e.style.left=a+"px",e.style.top=l+"px"}closeFrom(e){for(let t=f.menuStack.length-1;t>=e;t--){let o=f.menuStack[t];o&&o.remove(),f.menuStack.splice(t,1)}}close(){f.closeFrom(0),f.isOpen=!1}renderNodes(e,t,o,n){let r=document.fullscreenElement||document.documentElement;if(!(f.host&&f.host.isConnected&&f.host.parentNode===r&&f.shadow)){f.host&&f.host.isConnected&&f.host.parentNode.removeChild(f.host),f.host=document.createElement("div"),f.host.style.cssText="position: fixed; left: 0; top: 0; width: 0; height: 0; z-index: 2147483647;",r.appendChild(f.host),f.host.attachShadow?f.shadow=f.host.attachShadow({mode:"open"}):f.shadow=f.host;let a=document.createElement("style");a.textContent=Qe,f.shadow.appendChild(a)}let s=c.el("div","r6pcm-menu");return e.forEach(a=>{if(a.divider){let x=c.el("div","r6pcm-divider");s.appendChild(x);return}let l=c.el("div","r6pcm-item"),m=c.el("span","r6pcm-item__label");if(m.textContent=typeof a.title=="function"?a.title():a.title||"",l.appendChild(m),Array.isArray(a.children)&&a.children.length){let x=c.el("span","r6pcm-item__arrow");x.textContent="▸",l.appendChild(x),l.addEventListener("mouseenter",()=>{f.closeFrom(t+1);let b=l.getBoundingClientRect(),P=f.renderNodes(a.children,t+1,b.right+2,b.top-6),v=P.getBoundingClientRect();v.right>window.innerWidth-8&&f.placeMenu(P,b.left-v.width-2,b.top-6)})}else l.addEventListener("mouseenter",()=>{f.closeFrom(t+1)}),a.fn instanceof Function&&l.addEventListener("click",x=>{x.stopPropagation(),f.close(),setTimeout(()=>{try{a.fn()}catch(b){console.log("[Menu] 菜单动作异常",b)}},50)});s.appendChild(l)}),f.shadow.appendChild(s),f.placeMenu(s,o,n),f.menuStack[t]=s,f.isOpen=!0,s}open(e,t){f.close(),f.renderNodes(i.buildTree(),0,e,t),!f.closeBound&&(f.closeBound=!0,window.addEventListener("mousedown",o=>{f.isOpen&&(c.eventPath(o).includes(f.host)||f.close())},!0),window.addEventListener("keydown",o=>{f.isOpen&&o.key==="Escape"&&f.close()},!0),window.addEventListener("scroll",()=>{f.isOpen&&f.close()},!0),window.addEventListener("resize",()=>{f.isOpen&&f.close()}),document.addEventListener("fullscreenchange",()=>{f.isOpen&&f.close()}),window.addEventListener("blur",()=>{f.isOpen&&f.close()}))}static buildTree(){return[{title:"▶ 播放控制",children:[w("⏯ 播放 / 暂停","switchPlay"),w("⏩ 快进 5 秒","seekForward"),w("⏭ 快进 30 秒","seekForward",30),w("⏪ 后退 5 秒","seekBack"),w("⏮ 后退 30 秒","seekBack",-30),{divider:!0},w("▶| 下一帧","freezeFrame",1),w("|◀ 上一帧","freezeFrame",-1),w("⏭ 播放下一集（需网站支持）","nextVideo")]},{title:"🎚 倍速",children:[w("🐢 减速播放 -0.1","slowDown"),w("🐇 加速播放 +0.1","speedUp"),w("↩️ 恢复正常速度（1x / 上次倍速）","resetSpeed"),{divider:!0},...["0.5","0.75","1.0","1.25","1.5","2.0","3.0","4.0","8.0","16.0"].map(e=>w(e+"x","applyRate",Number(e))),{divider:!0},...["1","2","3","4"].map(e=>w("🚀 快速跳速 "+e+"x（连按叠加）","boost",Number(e)))]},{title:"🔊 音量",children:[w("🔊 音量 +20%","volumeUp",.2),w("🔉 音量 -20%","volumeDown",-.2),w("🔊 音量 +5%","volumeUp",.05),w("🔉 音量 -5%","volumeDown",-.05)]},{title:"🖼 画面",children:[w("📷 截图（复制到剪贴板并下载）","capture"),w("📺 画中画","togglePicture"),w("⛶ 全屏","maximize"),w("🖥 网页全屏","webMaximize"),{divider:!0},w("🔄 画面旋转 90°","setRotate"),w("↔️ 画面水平镜像翻转","setMirror"),w("↕️ 画面垂直镜像翻转","setMirror",!0),{divider:!0},w("🔍 放大画面 +0.05","zoomIn"),w("🔍 缩小画面 -0.05","zoomOut"),w("🎯 恢复画面（缩放位移复位）","resetTransform"),{divider:!0},...[["➡️","右","Right"],["⬅️","左","Left"],["⬆️","上","Up"],["⬇️","下","Down"]].map(([e,t,o])=>w(e+" 画面"+t+"移 10px","move"+o))]},{title:"🎨 滤镜",children:[...q.flatMap(e=>[w(e.up+" 增加"+e.noun,e.name+"Up"),w(e.down+" 减少"+e.noun,e.name+"Down")]),{divider:!0},w("♻️ 图像复位（滤镜+画面）","resetPicture")]},{title:"⬇️ 下载与进度",children:[w("⬇️ 下载音视频（实验性功能）","mediaDownload"),{divider:!0},w("启用/禁用：自动跟随跳转到缓冲区时间","toggleBuffered"),w("🔁 允许/禁止自动恢复播放进度","toggleRestore")]},{title:"⌨️ 快捷键",children:[w(()=>`${y.keysPaused?"启用快捷键":"禁用快捷键"}（临时）`,"toggleHotkeys"),w(()=>`${y.enable?"禁用":"启用"} r6Player 增强（Ctrl+空格）`,"toggleEnhance")]},{title:"⚙️ 设置",children:Re()},{title:"ℹ️ 关于",children:[w("🖨 打印播放器信息（调试）","printInfo")]}]}static init(){Je||(Je=!0,window.addEventListener("contextmenu",e=>{if(!Q()){f.close();return}let t=c.eventPath(e).find(n=>n&&c.isMedia(n)),o=window.getSelection&&window.getSelection();if(!t||!c.onMedia(t,e.clientX,e.clientY)||o&&!o.isCollapsed){f.close();return}u.player()!==t&&u.claim(t),e.preventDefault(),e.stopPropagation(),f.open(e.clientX,e.clientY)},!0))}},f=null,Te=()=>(f=new H,f);var Ce={};R(Ce,{TunerControl:()=>A,createTuner:()=>Le,mediaProps:()=>V,progressKey:()=>ae,takenOver:()=>Ee,tuner:()=>d});var V={playbackRate:()=>d.playbackRateInfo,volume:()=>d.volumeInfo,currentTime:()=>d.timeInfo()},ae=i=>window.location.href+i,Ze=()=>"media.allowRestorePlayProgress."+location.host,Ee=i=>S.doTask("blockSet"+i)||E(i),A=class{playbackRate;lastPlaybackRate;playbackRateInfo;boostInfo;_setPlaybackRateDuplicate_;_setPlaybackRateDuplicate2_;volume;volumeInfo;skipStep;fps;followBuffer;_firstProgressRecord_;_hasRestorePlayProgress_;constructor(){this.playbackRate=g.get("media.playbackRate"),this.lastPlaybackRate=g.get("media.lastPlaybackRate"),this.playbackRateInfo={lockTimeout:Date.now()-1,time:Date.now(),value:-1},this.boostInfo=null,this._setPlaybackRateDuplicate_=null,this._setPlaybackRateDuplicate2_=null,this.volume=g.get("media.volume"),this.volumeInfo={lockTimeout:Date.now()-1,time:Date.now(),value:-1},this.skipStep=5,this.fps=30,this.followBuffer=!1,this._firstProgressRecord_=null,this._hasRestorePlayProgress_=null}getSpeed(){let e=g.get("media.playbackRate")||d.playbackRate;if(c.inFrame()){let t=g.getGlobal("media.playbackRate");t&&(e=t)}return Number(Number(e).toFixed(1))}lock(e,t=200){let o=c.firstUpper(e);if(u.enhancer)return E(o)&&(t=1e3*60*60*24*365),u.enhancer["lock"+o](t),!0;let n=V[e]();n&&(n.lockTimeout=Date.now()+t)}unlock(e){if(u.enhancer)return u.enhancer["unlock"+c.firstUpper(e)](),!0;let t=V[e]();t&&(t.lockTimeout=Date.now()-1)}locked(e){if(u.enhancer)return u.enhancer["locked"+c.firstUpper(e)]();let t=V[e]();return!!(t&&t.lockTimeout)&&Date.now()-t.lockTimeout<0}proxyProp(e,t,o){try{let n=Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype,t);k.Object.defineProperty.call(Object,e,t,Object.assign({configurable:!0},o(n)))}catch(n){console.log("[Tuner] 属性接管失败",t,n)}}plusSet(e,t){return u.enhancer?(u.enhancer["set"+c.firstUpper(e)](t),!0):!1}directSet(e,t,o,n){delete e[t],e[t]=o;let r=V[t]();r&&(r.time=Date.now(),r.value=o),d.proxyProp(e,t,n)}applyRate(e,t,o){return d.applyProp("playbackRate",e,o||1e3,t)}fixSpeed(e){Math.abs(d.getSpeed()-e)>1&&d.seekForward(.1,!0)}applyProp(e,t,o,n){let r=c.firstUpper(e);d["unlock"+r]();let s=d[e==="playbackRate"?"setSpeed":"set"+r](t,n);return d["lock"+r](o||500),s}setSpeed(e,t,o,n){let r=u.player();if(!n&&d.lockedPlaybackRate())return console.log("[Tuner] 调速已锁定"),!1;if(S.doTask("playbackRate")||!r)return;let s=d.getSpeed(),a=s;if(e){if(e=Number(e),Number.isNaN(e))return console.log("[Tuner] 速度转换失败"),!1;e<=0?e=.1:e>16&&(e=16),e=Number(e.toFixed(1)),a=e}d.playbackRate=a,g.persistMedia("media.playbackRate",a);let l=!!e||a!==1;if(d.plusSet("playbackRate",a))h.eachOther(r,m=>m.setPlaybackRate(a));else if(d.directSet(r,"playbackRate",a,m=>({get:function(){return a||m.get.apply(r,arguments)},set:function(x){if(typeof x!="number")return!1;if(!Number.isInteger(r._blockSetPlaybackRateTips_)&&(r._blockSetPlaybackRateTips_=0),S.doTask("blockSetPlaybackRate"))return r._blockSetPlaybackRateTips_++,r._blockSetPlaybackRateTips_<3&&console.log("[Tuner] 调速任务接管"),!1;if(E("PlaybackRate"))return r._blockSetPlaybackRateTips_++,r._blockSetPlaybackRateTips_<3&&console.log("[Tuner] 调速开关锁定"),!1;d.setSpeed(x)}})),r._setPlaybackRate_={time:Date.now(),value:a},l&&!o&&E("PlaybackRate")){clearTimeout(d._setPlaybackRateDuplicate_),clearTimeout(d._setPlaybackRateDuplicate2_);let m=()=>{d.unlockPlaybackRate(),d.setSpeed(a,!0,!0),d.lockPlaybackRate(1e3)};d._setPlaybackRateDuplicate_=setTimeout(m,600),d._setPlaybackRateDuplicate2_=setTimeout(m,1200)}return l&&!t&&f.tips("播放速度："+r.playbackRate),d.fixSpeed(s),!0}boost(e){return e=Number(e),e?(d.boostInfo=d.boostInfo||{},d.boostInfo[e]=d.boostInfo[e]||{time:Date.now()-1e3,value:e},Date.now()-d.boostInfo[e].time<300?d.boostInfo[e].value=d.boostInfo[e].value+e:d.boostInfo[e].value=e,d.boostInfo[e].time=Date.now(),d.applyRate(d.boostInfo[e].value)):!1}resetSpeed(e){e=e||u.player(),d.unlockPlaybackRate();let t=Number(e.playbackRate),o=t===1?d.lastPlaybackRate:1;return t!==1&&(d.lastPlaybackRate=t,g.setLocal("media.lastPlaybackRate",t)),d.applyRate(o)}resync(e){return d.applyRate(null,e)}stepSpeed(e){let t=u.player();if(t)return d.applyRate(t.playbackRate+e)}speedUp(e){d.stepSpeed(c.stepValue(e,.1))}slowDown(e){d.stepSpeed(-c.stepValue(e,.1))}getVolume(){let e=g.get("media.volume");if(c.inFrame()||E("Volume")){let t=g.getGlobal("media.volume");t!==null&&(e=t)}return Number(Number(e).toFixed(2))}setVolume(e,t,o){let n=u.player();if(d.lockedVolume())return!1;if(!e&&e!==0&&(e=d.getVolume()),e=Number(Number(e).toFixed(2)),e<0&&(e=0),e>1&&g.get("enhance.allowAcousticGain")){e=Math.ceil(e);try{n._amp_=n._amp_||new X(n)}catch(r){e=1,console.log("[Tuner] 响度增益异常",r)}e>6&&(e=6),(!n._amp_||!n._amp_.setLoudness)&&(e=1)}else e>1&&(e=1);if(d.volume=e,e>1&&n._amp_&&n._amp_.setLoudness)return n._amp_.setLoudness(e),o||(n.muted=!1),!t&&f.tips("音量："+parseInt(String(e*100))+"%"),!0;g.persistMedia("media.volume",e,E("Volume")),d.plusSet("volume",e)?h.eachOther(n,r=>r.setVolume(e)):d.directSet(n,"volume",e,r=>({get:function(){return r.get.apply(n,arguments)},set:function(s){if(typeof s!="number"||s<0||Ee("Volume"))return!1;d.setVolume(s,!1,!0)}})),o||(n.muted=!1),!t&&f.tips("音量："+parseInt(String(n.volume*100))+"%")}stepVolume(e){let t=u.player();if(!t)return;let o=t.volume+e;return d.volume>1&&t._amp_&&(o=Number(d.volume)+e,e<0&&(o=Math.floor(o))),d.applyProp("volume",o,500)}volumeUp(e){d.stepVolume(c.stepValue(e,.2))}volumeDown(e){d.stepVolume(-c.stepValue(e,.2))}timeInfo(){let e=u.player();return e?(e.timeInfo=e.timeInfo||{},e.timeInfo):null}setCurrentTime(e){if(!e&&e!==0)return;e=Number(e);let t=Math.abs(Number(e.toFixed(1))),o=u.player();if(d.lockedCurrentTime())return!1;if(!S.doTask("currentTime")){if(d.plusSet("currentTime",t))return!0;d.directSet(o,"currentTime",t,n=>({enumerable:!0,get:function(){return n.get.apply(o,arguments)},set:function(r){return typeof r!="number"||Ee("CurrentTime")||d.lockedCurrentTime()?!1:(o.timeInfo.time=Date.now(),o.timeInfo.value=r,n.set.apply(o,arguments))}}))}}seekBy(e,t){let o=u.player();if(!o)return;let n=o.currentTime+e;n<1&&(n=0),d.applyProp("currentTime",n,500),!t&&f.tips((e>0?"前进：":"后退：")+Math.abs(e)+"秒")}seekForward(e,t){S.doTask("addCurrentTime")||d.seekBy(c.stepValue(e,d.skipStep),t)}seekBack(e){S.doTask("subtractCurrentTime")||d.seekBy(-c.stepValue(e,d.skipStep))}freezeFrame(e){e=e||1;let t=u.player();t.currentTime+=Number(e/d.fps),t.paused||t.pause(),t._hangUp_&&t._hangUp_("play",400),e===1?f.tips("定位：下一帧"):e===-1?f.tips("定位：上一帧"):f.tips("定格帧画面："+e)}toggleBuffered(){d.followBuffer=!d.followBuffer,f.tips(d.followBuffer?"自动跟随跳转到缓冲区时间":"禁用自动跟随跳转到缓冲区时间")}allowRestore(){let e=g.get(Ze());return e===null||e}toggleRestore(){let e=c.crossSite()?!1:!d.allowRestore();g.set(Ze(),e),e?(f.tips("允许自动恢复播放进度"),d.restoreProgress(u.player())):f.tips("禁止自动恢复播放进度")}getProgress(e){let t=g.get("media.progress")||{};if(!e)return t;let o=ae(e.duration);return!t[o]||Number.isNaN(Number(e.duration))||Number(t[o].duration)!==Number(e.duration)?e.currentTime:t[o].progress}trimProgress(e){let t=Object.keys(e);if(t.length<=10)return e;let o=Math.min(...t.map(n=>(e[n]||{}).t).filter(Boolean));return t.forEach(n=>{e[n]&&e[n].t===o&&delete e[n]}),e}recordProgress(e){clearTimeout(e._playProgressTimer_);function t(o){o._playProgressTimer_=setTimeout(function(){let n=!o.duration||Number.isNaN(Number(o.duration))||o.duration<120,r=document.visibilityState!=="visible"&&o.paused;if(!d.allowRestore()||n||r)return t(o),!0;let s=d.getProgress(),a=ae(o.duration);s[a]||(d._firstProgressRecord_=a,d._hasRestorePlayProgress_=a),d.trimProgress(s),s[a]={progress:o.currentTime,duration:o.duration,t:new Date().getTime()},g.setLocal("media.progress",s),t(o)},1e3*2)}t(e)}restoreProgress(e){if(!e||!e.duration||Number.isNaN(e.duration))return;let t=Number(d.getProgress(e));if(!t||Number.isNaN(t)||t<10||t>=e.duration)return;if(Math.abs(t-e.currentTime)<2)return!1;let o=ae(e.duration);if(d._hasRestorePlayProgress_=d._hasRestorePlayProgress_||"",d._hasRestorePlayProgress_===o||d._firstProgressRecord_===o)return d._hasRestorePlayProgress_===o&&(d._firstProgressRecord_=""),!1;d.allowRestore()?(e.currentTime=t-1.5,d._hasRestorePlayProgress_=o,f.tips("为你恢复上次播放进度")):f.tips("恢复播放进度功能已禁用，可通过菜单或 SHIFT+R 开启该功能")}},d=null,Le=()=>(d=new A,d);Object.keys(V).forEach(i=>{let e=c.firstUpper(i);A.prototype["lock"+e]=(t=200)=>d.lock(i,t),A.prototype["unlock"+e]=()=>d.unlock(i),A.prototype["locked"+e]=()=>d.locked(i)});var le=class i{enhancer;playerInstance;intersectionObserver;exitTime;autoPlayed;constructor(){this.enhancer=null,this.playerInstance=null,this.intersectionObserver=new IntersectionObserver(e=>u.onIntersect(e),{threshold:[0,.1,.2,.3,.4,.5,.6,.7,.8,.9,1]}),this.exitTime=null,this.autoPlayed=!1}player(){if(!u.playerInstance){let t=u.listPlayers();t.length&&u.takeInstance(t[t.length-1])}let e=u.playerInstance;return e&&!u.enhancer&&(u.enhancer=h.mediaPlus(e)),e}isAudioInstance(){return c.isAudio(u.player())}listPlayers(){let e=h.mediaElementList;function t(o){J.forEach(n=>{o.querySelectorAll(n).forEach(function(r){r.tagName.toLowerCase()==="bwp-video"&&(r.HTMLVideoElement=!0),c.isMedia(r)&&!e.includes(r)&&e.push(r)})})}return t(document),window._shadowDomList_&&window._shadowDomList_.forEach(function(o){t(o)}),e}getWrap(){let e=u.player();if(!e)return;let t=null,o=e.getBoundingClientRect();return c.eachParent(e,function(n){if(n===document||!n.getBoundingClientRect)return;let r=n.getBoundingClientRect();r.width&&r.height&&r.width===o.width&&r.height===o.height&&(t=n)}),t}initInstance(){let e=u.playerInstance;e&&(u.enhancer=h.mediaPlus(e),d.playbackRate=d.getSpeed(),y.isFocus(),u.proxyPlay(e),d.resync(),y.mountRunner(),S.siteConf().init&&S.doTask("init",e),u.once(e,"__wired__",()=>{e._fullScreen_=new Z(e),e._fullPageScreen_=new Z(e,!0),e.addEventListener("canplay",()=>u.autoPlay(e));let t=0;e.addEventListener("playing",function(l){d.resync(t>0),E("Volume")&&l.target.muted===!1&&d.setVolume(g.getGlobal("media.volume"),!0),E("CurrentTime")&&d.lockCurrentTime(),d.restoreProgress(e),t++===0&&setTimeout(()=>{d.recordProgress(e)},2e3)}),["enterpictureinpicture","leavepictureinpicture"].forEach(l=>{e.addEventListener(l,()=>{let m=l==="enterpictureinpicture";m||(u.exitTime=Date.now()),M.send($,{usePictureInPicture:m}),console.log("[Player] 画中画切换",l,e)})});function o(l){let m=l.currentSrc||l.src;m&&(l.srcList=l.srcList||[m],l.srcList.includes(m)||l.srcList.push(m))}function n(l){if(l.buffered.length>0){let m=l.buffered.end(l.buffered.length-1);l.bufferedTime=m}d.followBuffer&&l.bufferedTime&&u.player()===l&&l.bufferedTime<l.duration-1&&l.currentTime<l.bufferedTime-1&&d.setCurrentTime(l.bufferedTime)}let r={loadeddata:()=>[`${e.src} video duration: ${e.duration} video dom:`,e],durationchange:()=>[`${e.duration}`],loadstart:()=>[e.currentSrc,e.src]};Object.keys(r).forEach(l=>{e.addEventListener(l,()=>{console.log("[Player] 媒体事件",l,...r[l]()),o(e)})});let s=Date.now(),a=()=>{_.bindElement(e)};e.addEventListener("timeupdate",()=>{o(e),a()}),e.addEventListener("progress",()=>{n(e),a(),Date.now()-s>1e3*10&&(s=Date.now(),_.prune())})}))}once(e,t,o){return e[t]?!1:(e[t]=!0,o(),!0)}onceOn(e,t,o,n){return u.once(e,t,()=>e.addEventListener(o,n))}justExited(){return u.exitTime&&Date.now()-u.exitTime<1e3*10}proxyPlay(e){e&&(["play","pause"].forEach(t=>{let o="origin_"+t;if(Reflect.has(e,t)&&!Reflect.has(e,o)){e[o]=e[t];let n=new k.Proxy(e[t],{apply(r,s,a){let l=(e._hangUpInfo_||{})[t];return l&&l.timeout>=Date.now()?(console.log("[Player] 调用挂起",t),!1):r.apply(s||e,a)}});e[t]=n}}),e._hangUp_||(e._hangUpInfo_={},e._hangUp_=function(t,o){o=Number(o)||200,e._hangUpInfo_[t]={timeout:Date.now()+o}},e._unHangUp_=function(t){e._hangUpInfo_&&e._hangUpInfo_[t]&&(e._hangUpInfo_[t].timeout=Date.now()-1)}))}printInfo(e){let t=e||u.player(),o={curPlayer:t,srcList:t.srcList,mediaSource:_,window};console.log("[Player] 实例信息",o)}takeInstance(e){u.playerInstance=e,u.initInstance()}onIntersect(e){let t=0;e.forEach(o=>{if(o.target._intersectionInfo_=o,o.intersectionRatio>t&&o.intersectionRatio>.4){t=o.intersectionRatio;let n=u.player();if(n&&n._intersectionInfo_&&t<n._intersectionInfo_.intersectionRatio)return;u.claim(o.target)&&console.log("[Player] 实例切换",o)}})}claim(e){if(!e||!e.getBoundingClientRect||u.player()===e)return!1;if(!u.playerInstance&&c.isMedia(e))return u.takeInstance(e),!0;if(c.isVideo(e)){let t=f.tipsHost(e),o=e.getBoundingClientRect(),n=t&&t.getBoundingClientRect();o&&o.width>200&&n&&n.width>200&&u.takeInstance(e)}else if(c.isAudio(e)){let t=u.playerInstance;(c.isAudio(t)||c.isVideo(t)&&!t.isConnected)&&u.takeInstance(e)}}detectPlayer(){let e=u.listPlayers();if(e.length&&(e.length===1&&u.takeInstance(e[0]),e.forEach(function(t){u.onceOn(t,"_hasMouseRedirectEvent_","mouseenter",o=>u.claim(o.target)),u.onceOn(t,"_hasPlayingRedirectEvent_","playing",o=>{let n=o.target;if(n.duration&&n.duration<8)return!1;u.claim(n)}),u.once(t,"_hasIntersectionObserver_",()=>u.intersectionObserver.observe(t))}),c.crossSite())){let t=u.playerInstance;t&&M.send("videoDetected",{src:t.src})}}autoPlay(e){let t=e||u.player(),o=S.siteConf();if(o.autoPlay&&g.getLocal("media.autoPlay")===null&&g.setLocal("media.autoPlay",!0),!g.get("media.autoPlay")||!e&&u.autoPlayed||!t||e&&e!==u.player()||document.hidden||!c.inView(t)||c.inFrame()||!o.autoPlay)return!1;if(u.autoPlayed=!0,!!t.paused&&(S.doTask("autoPlay"),!!t.paused)){if(t._initAutoPlayCount_=(t._initAutoPlayCount_||0)+1,t._initAutoPlayCount_>=10)return!1;setTimeout(function(){u.autoPlay(t)},200)}}toggleScreen(e,t){let o=u.player();!S.doTask(e)&&o&&o[t]&&o[t].toggle()}maximize(){return u.toggleScreen("fullScreen","_fullScreen_")}webMaximize(){return u.toggleScreen("webFullScreen","_fullPageScreen_")}togglePicture(){let e=u.player(),t=window._isPictureInPicture_&&document.pictureInPictureElement,o=t?document.exitPictureInPicture():e&&e.requestPictureInPicture&&e.requestPictureInPicture();if(!o)return;let n=s=>()=>{window._isPictureInPicture_=s},r=s=>{window._isPictureInPicture_=null,console.log("[Player] 画中画切换异常",s)};o.then(n(t?null:!0)).catch(r)}nextVideo(){S.doTask("next")||console.log("[Player] 下一集不支持")}switchPlay(){let e=u.player();if(S.doTask("switchPlay"))return;let t=e.paused,o=t?"play":"pause",n=t?"pause":"play",r=u.enhancer;S.doTask(o)||(r&&r.applyPlay&&r.applyPause?(t?r.lockPause(400):r.lockPlay(400),c.swallow(t?r.applyPlay():r.applyPause(),"切换播放状态")):(e._hangUp_&&(e._hangUp_(n,400),e._unHangUp_(o)),c.swallow(t?e.play():e.pause(),"切换播放状态")),f.tips(t?"播放":"暂停")),S.doTask(t?"afterPlay":"afterPause")}mediaDownload(){if(!g.get("enhance.allowExperimentFeatures")){G(()=>U("global","enhance.allowExperimentFeatures",!0));return}console.log("[Player] 流下载启用"),i.downloadMedia(u.player())}capture(){let e=u.player();if(!u.grabCanvas(e,!0)){f.tips("当前没有可截取的画面，请稍后再试");return}!e.paused&&!document.pictureInPictureElement&&document.visibilityState!=="visible"&&d.freezeFrame()}static async setClipboard(e){try{return navigator.clipboard?(await navigator.clipboard.write([new ClipboardItem({[e.type]:e})]),console.log("[Player] 剪贴板写入成功",e.type),!0):(console.log("[Player] 剪贴板不可用","https://developer.mozilla.org/en-US/docs/Web/API/Clipboard"),!1)}catch(t){return console.log("[Player] 剪贴板写入失败",e&&e.type,t),!1}}grabCanvas(e,t,o){if(!e)return!1;let n=`${Math.floor(e.currentTime/60)}'${(e.currentTime%60).toFixed(3)}''`,r=o||`${document.title}_${n}`;e.setAttribute("crossorigin","anonymous");let s=document.createElement("canvas");return s.width=e.videoWidth,s.height=e.videoHeight,!s.width||!s.height?(console.log("[Player] 截图画面缺失"),!1):(s.getContext("2d").drawImage(e,0,0,s.width,s.height),t?u.saveCanvas(s,r,e):u.previe(s,r),s)}previe(e,t){e.style="max-width:100%";let o=window.open("","_blank");o.document.title=`capture previe - ${t||"Untitled"}`,o.document.body.style.textAlign="center",o.document.body.style.background="#000",o.document.body.appendChild(e)}saveCanvas(e,t,o){t=t||"videoCapturer_"+Date.now();function n(r,s){return r?!0:(console.log("[Player] 画布导出失败",s,o),!1)}try{e.toBlob(function(r){n(r,"复制到剪贴板")&&i.setClipboard(r)},"image/png",.99)}catch(r){console.log("[Player] 剪贴板复制失败",r)}try{e.toBlob(function(r){if(!n(r,"下载截图"))return u.previe(e,t);let s=document.createElement("a");s.download=`${t}.jpg`,s.href=URL.createObjectURL(r),s.click()},"image/jpeg",.99)}catch(r){u.previe(e,t),console.log("[Player] 截图下载受限",o,r,"https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS")}}static saveFile(e,t){let o=document.createElement("a");o.href=e,o.target="_blank",o.download=t,o.click()}static downloadMedia(e,t,o){let n=e.src||e.currentSrc,r=ce.get(n)||{};if(n&&!n.startsWith("blob:")){let s=e instanceof HTMLVideoElement,a={type:s?"video":"audio",format:s?"mp4":"mp3"},l=`${t||e.getAttribute("data-title")||document.title||Date.now()}_${a.type}.${a.format}`;if(o==="blob"||e.duration<300){if(r.downloading&&Date.now()-r.downloading<1e3*1)return!1;l.endsWith(a.format)||(l=l+"."+a.format);let m=n;n.startsWith("http://")&&location.href.startsWith("https://")&&(m=n.replace("http://","https://"));let x=b=>{Object.assign(r,b),ce.set(n,r)};x({downloading:Date.now()}),fetch(m).then(b=>b.blob()).then(b=>{let P=window.URL.createObjectURL(b);u.saveFile(P,l),x({downloading:void 0,hasDownload:!0}),window.URL.revokeObjectURL(P)}).catch(b=>{console.log("[Player] fetch下载失败",b),u.saveFile(n,l),x({downloading:void 0,hasDownload:!0})})}else u.saveFile(n,l)}else _.hasInit()?_.downloadStream(e,t):console.log("[Player] 下载通道缺失",e)}},u=null,De=()=>(u=new le,u),Oe=[],et=!1;window.addEventListener("keyup",i=>{i.key&&i.key.toLowerCase()==="escape"&&Oe.forEach(e=>e.onEscape())},!0);var Z=class{dom;shadowRoot;fullStatus;pageMode;_container_;constructor(e,t){this.dom=e,this.shadowRoot=null,this.fullStatus=!1,this.pageMode=t||!1;let o=`
+    `;
+      const tips = document.createElement("div");
+      tips.setAttribute("style", tipsStyle);
+      tips.setAttribute("class", menu.tipsClassName);
+      parentNode.appendChild(tips);
+    }
+    // 将菜单浮层定位到指定坐标，并确保完整显示在视口内
+    placeMenu(menuEl, x, y) {
+      menuEl.style.left = "0px";
+      menuEl.style.top = "0px";
+      const rect = menuEl.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      let left = x;
+      if (left + rect.width > vw - 8) {
+        left = vw - rect.width - 8;
+      }
+      if (left < 8) {
+        left = 8;
+      }
+      let top = y;
+      if (top + rect.height > vh - 8) {
+        top = vh - rect.height - 8;
+      }
+      if (top < 8) {
+        top = 8;
+      }
+      menuEl.style.left = left + "px";
+      menuEl.style.top = top + "px";
+    }
+    // 关闭第level层及更深的菜单浮层
+    closeFrom(level) {
+      for (let i = menu.menuStack.length - 1; i >= level; i--) {
+        const el = menu.menuStack[i];
+        el && el.remove();
+        menu.menuStack.splice(i, 1);
+      }
+    }
+    // 关掉整个菜单栈并清掉打开标记
+    close() {
+      menu.closeFrom(0);
+      menu.isOpen = false;
+    }
+    //   渲染一层菜单浮层：nodes 结构 {title, fn, children, divider}，level 为层级，(x, y) 为期望坐标全屏时要挂到全屏元素内部，否则菜单会被 top layer 遮挡
+    renderNodes(nodes, level, x, y) {
+      const mountRoot = document.fullscreenElement || document.documentElement;
+      if (!(menu.host && menu.host.isConnected && menu.host.parentNode === mountRoot && menu.shadow)) {
+        if (menu.host && menu.host.isConnected) {
+          menu.host.parentNode.removeChild(menu.host);
+        }
+        menu.host = document.createElement("div");
+        menu.host.style.cssText = "position: fixed; left: 0; top: 0; width: 0; height: 0; z-index: 2147483647;";
+        mountRoot.appendChild(menu.host);
+        if (menu.host.attachShadow) {
+          menu.shadow = menu.host.attachShadow({ mode: "open" });
+        } else {
+          menu.shadow = menu.host;
+        }
+        const style = document.createElement("style");
+        style.textContent = menuStyle;
+        menu.shadow.appendChild(style);
+      }
+      const menuEl = Utils.el("div", "r6pcm-menu");
+      nodes.forEach((node) => {
+        if (node.divider) {
+          const divider = Utils.el("div", "r6pcm-divider");
+          menuEl.appendChild(divider);
+          return;
+        }
+        const row = Utils.el("div", "r6pcm-item");
+        const label = Utils.el("span", "r6pcm-item__label");
+        label.textContent = typeof node.title === "function" ? node.title() : node.title || "";
+        row.appendChild(label);
+        if (Array.isArray(node.children) && node.children.length) {
+          const arrow = Utils.el("span", "r6pcm-item__arrow");
+          arrow.textContent = "▸";
+          row.appendChild(arrow);
+          row.addEventListener("mouseenter", () => {
+            menu.closeFrom(level + 1);
+            const rowRect = row.getBoundingClientRect();
+            const subEl = menu.renderNodes(node.children, level + 1, rowRect.right + 2, rowRect.top - 6);
+            const subRect = subEl.getBoundingClientRect();
+            if (subRect.right > window.innerWidth - 8) {
+              menu.placeMenu(subEl, rowRect.left - subRect.width - 2, rowRect.top - 6);
+            }
+          });
+        } else {
+          row.addEventListener("mouseenter", () => {
+            menu.closeFrom(level + 1);
+          });
+          if (node.fn instanceof Function) {
+            row.addEventListener("click", (event) => {
+              event.stopPropagation();
+              menu.close();
+              setTimeout(() => {
+                try {
+                  node.fn();
+                } catch (err) {
+                  console.log("[Menu] 菜单动作异常", err);
+                }
+              }, 50);
+            });
+          }
+        }
+        menuEl.appendChild(row);
+      });
+      menu.shadow.appendChild(menuEl);
+      menu.placeMenu(menuEl, x, y);
+      menu.menuStack[level] = menuEl;
+      menu.isOpen = true;
+      return menuEl;
+    }
+    // 在 (x, y) 处打开菜单：先清旧栈，再渲染功能树第一层；全局关闭事件（点外部 / Esc / 滚动 / 缩放 / 全屏切换 / 失焦）只挂一次
+    open(x, y) {
+      menu.close();
+      menu.renderNodes(_MenuControl.buildTree(), 0, x, y);
+      if (menu.closeBound) return;
+      menu.closeBound = true;
+      window.addEventListener("mousedown", (event) => {
+        if (!menu.isOpen) return;
+        if (!Utils.eventPath(event).includes(menu.host)) {
+          menu.close();
+        }
+      }, true);
+      window.addEventListener("keydown", (event) => {
+        if (menu.isOpen && event.key === "Escape") {
+          menu.close();
+        }
+      }, true);
+      window.addEventListener("scroll", () => {
+        menu.isOpen && menu.close();
+      }, true);
+      window.addEventListener("resize", () => {
+        menu.isOpen && menu.close();
+      });
+      document.addEventListener("fullscreenchange", () => {
+        menu.isOpen && menu.close();
+      });
+      window.addEventListener("blur", () => {
+        menu.isOpen && menu.close();
+      });
+    }
+    // 功能树（单一数据源）：视频右键的多级增强菜单直接渲染该树
+    static buildTree() {
+      return [
+        {
+          title: "▶ 播放控制",
+          children: [
+            menuCmd("⏯ 播放 / 暂停", "switchPlay"),
+            menuCmd("⏩ 快进 5 秒", "seekForward"),
+            menuCmd("⏭ 快进 30 秒", "seekForward", 30),
+            menuCmd("⏪ 后退 5 秒", "seekBack"),
+            menuCmd("⏮ 后退 30 秒", "seekBack", -30),
+            { divider: true },
+            menuCmd("▶| 下一帧", "freezeFrame", 1),
+            menuCmd("|◀ 上一帧", "freezeFrame", -1),
+            menuCmd("⏭ 播放下一集（需网站支持）", "nextVideo")
+          ]
+        },
+        {
+          title: "🎚 倍速",
+          children: [
+            menuCmd("🐢 减速播放 -0.1", "slowDown"),
+            menuCmd("🐇 加速播放 +0.1", "speedUp"),
+            menuCmd("↩️ 恢复正常速度（1x / 上次倍速）", "resetSpeed"),
+            { divider: true },
+            ...["0.5", "0.75", "1.0", "1.25", "1.5", "2.0", "3.0", "4.0", "8.0", "16.0"].map((r) => menuCmd(r + "x", "applyRate", Number(r))),
+            { divider: true },
+            ...["1", "2", "3", "4"].map((n) => menuCmd("🚀 快速跳速 " + n + "x（连按叠加）", "boost", Number(n)))
+          ]
+        },
+        {
+          title: "🔊 音量",
+          children: [menuCmd("🔊 音量 +20%", "volumeUp", 0.2), menuCmd("🔉 音量 -20%", "volumeDown", -0.2), menuCmd("🔊 音量 +5%", "volumeUp", 0.05), menuCmd("🔉 音量 -5%", "volumeDown", -0.05)]
+        },
+        {
+          title: "🖼 画面",
+          children: [
+            menuCmd("📷 截图（复制到剪贴板并下载）", "capture"),
+            menuCmd("📺 画中画", "togglePicture"),
+            menuCmd("⛶ 全屏", "maximize"),
+            menuCmd("🖥 网页全屏", "webMaximize"),
+            { divider: true },
+            menuCmd("🔄 画面旋转 90°", "setRotate"),
+            menuCmd("↔️ 画面水平镜像翻转", "setMirror"),
+            menuCmd("↕️ 画面垂直镜像翻转", "setMirror", true),
+            { divider: true },
+            menuCmd("🔍 放大画面 +0.05", "zoomIn"),
+            menuCmd("🔍 缩小画面 -0.05", "zoomOut"),
+            menuCmd("🎯 恢复画面（缩放位移复位）", "resetTransform"),
+            { divider: true },
+            ...[["➡️", "右", "Right"], ["⬅️", "左", "Left"], ["⬆️", "上", "Up"], ["⬇️", "下", "Down"]].map(([icon, name, dir]) => menuCmd(icon + " 画面" + name + "移 10px", "move" + dir))
+          ]
+        },
+        {
+          title: "🎨 滤镜",
+          children: [
+            ...filterDefs.flatMap((def) => [menuCmd(def.up + " 增加" + def.noun, def.name + "Up"), menuCmd(def.down + " 减少" + def.noun, def.name + "Down")]),
+            { divider: true },
+            menuCmd("♻️ 图像复位（滤镜+画面）", "resetPicture")
+          ]
+        },
+        { title: "⬇️ 下载与进度", children: [menuCmd("⬇️ 下载音视频（实验性功能）", "mediaDownload"), { divider: true }, menuCmd("启用/禁用：自动跟随跳转到缓冲区时间", "toggleBuffered"), menuCmd("🔁 允许/禁止自动恢复播放进度", "toggleRestore")] },
+        { title: "⌨️ 快捷键", children: [menuCmd(() => `${input.keysPaused ? "启用快捷键" : "禁用快捷键"}（临时）`, "toggleHotkeys"), menuCmd(() => `${input.enable ? "禁用" : "启用"} r6Player 增强（Ctrl+空格）`, "toggleEnhance")] },
+        { title: "⚙️ 设置", children: menuItems() },
+        { title: "ℹ️ 关于", children: [menuCmd("🖨 打印播放器信息（调试）", "printInfo")] }
+      ];
+    }
+    // 初始化视频右键菜单：window 捕获阶段接管 contextmenu，先于网站自身处理
+    static init() {
+      if (contextMenuInited) return;
+      contextMenuInited = true;
+      window.addEventListener("contextmenu", (event) => {
+        if (!menuOn()) {
+          menu.close();
+          return;
+        }
+        const mediaEl = Utils.eventPath(event).find((node) => node && Utils.isMedia(node));
+        const selection = window.getSelection && window.getSelection();
+        if (!mediaEl || !Utils.onMedia(mediaEl, event.clientX, event.clientY) || selection && !selection.isCollapsed) {
+          menu.close();
+          return;
+        }
+        if (activePlayer.player() !== mediaEl) {
+          activePlayer.claim(mediaEl);
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        menu.open(event.clientX, event.clientY);
+      }, true);
+    }
+  };
+  var menu = null;
+  var createMenu = () => {
+    menu = new MenuControl();
+    return menu;
+  };
+
+  // Tuner.ts
+  var Tuner_exports = {};
+  __export(Tuner_exports, {
+    TunerControl: () => TunerControl,
+    createTuner: () => createTuner,
+    mediaProps: () => mediaProps,
+    progressKey: () => progressKey,
+    takenOver: () => takenOver,
+    tuner: () => tuner
+  });
+  var mediaProps = { playbackRate: () => tuner.playbackRateInfo, volume: () => tuner.volumeInfo, currentTime: () => tuner.timeInfo() };
+  var progressKey = (duration) => window.location.href + duration;
+  var restoreKey = () => "media.allowRestorePlayProgress." + location.host;
+  var takenOver = (api) => taskCenter.doTask("blockSet" + api) || blocksSet(api);
+  var TunerControl = class {
+    playbackRate;
+    lastPlaybackRate;
+    playbackRateInfo;
+    boostInfo;
+    _setPlaybackRateDuplicate_;
+    _setPlaybackRateDuplicate2_;
+    volume;
+    volumeInfo;
+    skipStep;
+    fps;
+    followBuffer;
+    _firstProgressRecord_;
+    _hasRestorePlayProgress_;
+    constructor() {
+      this.playbackRate = configManager.get("media.playbackRate");
+      this.lastPlaybackRate = configManager.get("media.lastPlaybackRate");
+      this.playbackRateInfo = { lockTimeout: Date.now() - 1, time: Date.now(), value: -1 };
+      this.boostInfo = null;
+      this._setPlaybackRateDuplicate_ = null;
+      this._setPlaybackRateDuplicate2_ = null;
+      this.volume = configManager.get("media.volume");
+      this.volumeInfo = { lockTimeout: Date.now() - 1, time: Date.now(), value: -1 };
+      this.skipStep = 5;
+      this.fps = 30;
+      this.followBuffer = false;
+      this._firstProgressRecord_ = null;
+      this._hasRestorePlayProgress_ = null;
+    }
+    // 取当前倍速：iframe 里优先用全局层的值，统一保留一位小数
+    getSpeed() {
+      let playbackRate = configManager.get("media.playbackRate") || tuner.playbackRate;
+      if (Utils.inFrame()) {
+        const globalPlaybackRate = configManager.getGlobal("media.playbackRate");
+        if (globalPlaybackRate) {
+          playbackRate = globalPlaybackRate;
+        }
+      }
+      return Number(Number(playbackRate).toFixed(1));
+    }
+    // 倍速、音量、进度的锁是同一套动作：有增强 API 交给 API，否则写进各自的 info.lockTimeout
+    lock(prop, timeout = 200) {
+      const api = Utils.firstUpper(prop);
+      if (activePlayer.enhancer) {
+        if (blocksSet(api)) {
+          timeout = 1e3 * 60 * 60 * 24 * 365;
+        }
+        activePlayer.enhancer["lock" + api](timeout);
+        return true;
+      }
+      const info = mediaProps[prop]();
+      if (info) {
+        info.lockTimeout = Date.now() + timeout;
+      }
+    }
+    // 解锁：有增强 API 就调它，否则把 info.lockTimeout 拨到过去，立刻失效
+    unlock(prop) {
+      if (activePlayer.enhancer) {
+        activePlayer.enhancer["unlock" + Utils.firstUpper(prop)]();
+        return true;
+      }
+      const info = mediaProps[prop]();
+      if (info) {
+        info.lockTimeout = Date.now() - 1;
+      }
+    }
+    // 查这个属性是否还在锁定期：有增强 API 问它，否则看 info.lockTimeout 有没有到期
+    locked(prop) {
+      if (activePlayer.enhancer) {
+        return activePlayer.enhancer["locked" + Utils.firstUpper(prop)]();
+      }
+      const info = mediaProps[prop]();
+      return !!(info && info.lockTimeout) && Date.now() - info.lockTimeout < 0;
+    }
+    // 把媒体元素的原生属性接管到实例上：以原型描述符为底装给定的读写，三个属性只差描述符内容
+    proxyProp(player, name, describe) {
+      try {
+        const native = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, name);
+        original.Object.defineProperty.call(Object, player, name, Object.assign({ configurable: true }, describe(native)));
+      } catch (e) {
+        console.log("[Tuner] 属性接管失败", name, e);
+      }
+    }
+    // 写媒体属性的两条路：增强 API 在位时转交给它，否则直写实例并接管该属性
+    plusSet(prop, value) {
+      if (!activePlayer.enhancer) {
+        return false;
+      }
+      activePlayer.enhancer["set" + Utils.firstUpper(prop)](value);
+      return true;
+    }
+    // 直写之前先删掉实例上的同名属性：站点可能在那里装了拦截器，删掉才轮得到原型
+    directSet(player, prop, value, describe) {
+      delete player[prop];
+      player[prop] = value;
+      const info = mediaProps[prop]();
+      if (info) {
+        info.time = Date.now();
+        info.value = value;
+      }
+      tuner.proxyProp(player, prop, describe);
+    }
+    // 用户主动调速的统一走法：先解上一轮的锁再设值，设完立刻锁回去，否则会被站点的调速逻辑改回；num 为 null 表示按当前记录值重设
+    applyRate(num, notips, lockTime) {
+      return tuner.applyProp("playbackRate", num, lockTime || 1e3, notips);
+    }
+    // 解决高低倍速频繁切换后，音画不同步的问题
+    fixSpeed(oldSpeed) {
+      if (Math.abs(tuner.getSpeed() - oldSpeed) > 1) {
+        tuner.seekForward(0.1, true);
+      }
+    }
+    // 三个属性共用的那一套：先解开上一轮的锁再设值，设完立刻锁回去（倍速的设值器叫 setSpeed，其余按属性名派生）
+    applyProp(prop, value, lockTime, notips) {
+      const api = Utils.firstUpper(prop);
+      tuner["unlock" + api]();
+      const suc = tuner[prop === "playbackRate" ? "setSpeed" : "set" + api](value, notips);
+      tuner["lock" + api](lockTime || 500);
+      return suc;
+    }
+    // 设置播放速度
+    setSpeed(num, notips, duplicate, skipLock) {
+      const player = activePlayer.player();
+      if (!skipLock && tuner.lockedPlaybackRate()) {
+        console.log("[Tuner] 调速已锁定");
+        return false;
+      }
+      if (taskCenter.doTask("playbackRate")) {
+        return;
+      }
+      if (!player) return;
+      const oldSpeed = tuner.getSpeed();
+      let curPlaybackRate = oldSpeed;
+      if (num) {
+        num = Number(num);
+        if (Number.isNaN(num)) {
+          console.log("[Tuner] 速度转换失败");
+          return false;
+        }
+        if (num <= 0) {
+          num = 0.1;
+        } else if (num > 16) {
+          num = 16;
+        }
+        num = Number(num.toFixed(1));
+        curPlaybackRate = num;
+      }
+      tuner.playbackRate = curPlaybackRate;
+      configManager.persistMedia("media.playbackRate", curPlaybackRate);
+      const changed = Boolean(num) || curPlaybackRate !== 1;
+      if (tuner.plusSet("playbackRate", curPlaybackRate)) {
+        mediaCore.eachOther(player, (api) => api.setPlaybackRate(curPlaybackRate));
+      } else {
+        tuner.directSet(player, "playbackRate", curPlaybackRate, (native) => ({
+          get: function() {
+            return curPlaybackRate || native.get.apply(player, arguments);
+          },
+          set: function(val) {
+            if (typeof val !== "number") {
+              return false;
+            }
+            !Number.isInteger(player._blockSetPlaybackRateTips_) && (player._blockSetPlaybackRateTips_ = 0);
+            if (taskCenter.doTask("blockSetPlaybackRate")) {
+              player._blockSetPlaybackRateTips_++;
+              player._blockSetPlaybackRateTips_ < 3 && console.log("[Tuner] 调速任务接管");
+              return false;
+            }
+            if (blocksSet("PlaybackRate")) {
+              player._blockSetPlaybackRateTips_++;
+              player._blockSetPlaybackRateTips_ < 3 && console.log("[Tuner] 调速开关锁定");
+              return false;
+            } else {
+              tuner.setSpeed(val);
+            }
+          }
+        }));
+        player._setPlaybackRate_ = { time: Date.now(), value: curPlaybackRate };
+        if (changed && !duplicate && blocksSet("PlaybackRate")) {
+          clearTimeout(tuner._setPlaybackRateDuplicate_);
+          clearTimeout(tuner._setPlaybackRateDuplicate2_);
+          const duplicatePlaybackRate = () => {
+            tuner.unlockPlaybackRate();
+            tuner.setSpeed(curPlaybackRate, true, true);
+            tuner.lockPlaybackRate(1e3);
+          };
+          tuner._setPlaybackRateDuplicate_ = setTimeout(duplicatePlaybackRate, 600);
+          tuner._setPlaybackRateDuplicate2_ = setTimeout(duplicatePlaybackRate, 1200);
+        }
+      }
+      changed && !notips && menu.tips("播放速度：" + player.playbackRate);
+      tuner.fixSpeed(oldSpeed);
+      return true;
+    }
+    // 加强版调速：短时间内设同一个值就叠加放大，用于广告快进、片头片尾速看
+    boost(num) {
+      num = Number(num);
+      if (!num) {
+        return false;
+      }
+      tuner.boostInfo = tuner.boostInfo || {};
+      tuner.boostInfo[num] = tuner.boostInfo[num] || { time: Date.now() - 1e3, value: num };
+      if (Date.now() - tuner.boostInfo[num].time < 300) {
+        tuner.boostInfo[num].value = tuner.boostInfo[num].value + num;
+      } else {
+        tuner.boostInfo[num].value = num;
+      }
+      tuner.boostInfo[num].time = Date.now();
+      return tuner.applyRate(tuner.boostInfo[num].value);
+    }
+    // 恢复播放速度，还原到1倍速度、或恢复到上次的倍速
+    resetSpeed(player) {
+      player = player || activePlayer.player();
+      tuner.unlockPlaybackRate();
+      const oldSpeed = Number(player.playbackRate);
+      const playbackRate = oldSpeed === 1 ? tuner.lastPlaybackRate : 1;
+      if (oldSpeed !== 1) {
+        tuner.lastPlaybackRate = oldSpeed;
+        configManager.setLocal("media.lastPlaybackRate", oldSpeed);
+      }
+      return tuner.applyRate(playbackRate);
+    }
+    // 把当前设定的倍速重新同步给播放器，并短暂锁定避免被外部逻辑改回去
+    resync(notips) {
+      return tuner.applyRate(null, notips);
+    }
+    // 在当前倍速上步进一格，并短暂锁定避免外部调速逻辑干扰
+    stepSpeed(delta) {
+      const player = activePlayer.player();
+      if (!player) return;
+      return tuner.applyRate(player.playbackRate + delta);
+    }
+    // 提升播放速率
+    speedUp(num) {
+      tuner.stepSpeed(Utils.stepValue(num, 0.1));
+    }
+    // 降低播放速率
+    slowDown(num) {
+      tuner.stepSpeed(-Utils.stepValue(num, 0.1));
+    }
+    // 取当前音量：iframe 里、或站点接管音量时优先用全局层的值，保留两位小数
+    getVolume() {
+      let volume = configManager.get("media.volume");
+      if (Utils.inFrame() || blocksSet("Volume")) {
+        const globalVolume = configManager.getGlobal("media.volume");
+        if (globalVolume !== null) {
+          volume = globalVolume;
+        }
+      }
+      return Number(Number(volume).toFixed(2));
+    }
+    // 设置声音大小
+    setVolume(num, notips, outerCall) {
+      const player = activePlayer.player();
+      if (tuner.lockedVolume()) {
+        return false;
+      }
+      if (!num && num !== 0) {
+        num = tuner.getVolume();
+      }
+      num = Number(Number(num).toFixed(2));
+      if (num < 0) {
+        num = 0;
+      }
+      if (num > 1 && configManager.get("enhance.allowAcousticGain")) {
+        num = Math.ceil(num);
+        try {
+          player._amp_ = player._amp_ || new Amplifier(player);
+        } catch (e) {
+          num = 1;
+          console.log("[Tuner] 响度增益异常", e);
+        }
+        if (num > 6) {
+          num = 6;
+        }
+        if (!player._amp_ || !player._amp_.setLoudness) {
+          num = 1;
+        }
+      } else if (num > 1) {
+        num = 1;
+      }
+      tuner.volume = num;
+      if (num > 1 && player._amp_ && player._amp_.setLoudness) {
+        player._amp_.setLoudness(num);
+        if (!outerCall) {
+          player.muted = false;
+        }
+        !notips && menu.tips("音量：" + parseInt(String(num * 100)) + "%");
+        return true;
+      }
+      configManager.persistMedia("media.volume", num, blocksSet("Volume"));
+      if (tuner.plusSet("volume", num)) {
+        mediaCore.eachOther(player, (api) => api.setVolume(num));
+      } else {
+        tuner.directSet(player, "volume", num, (native) => ({
+          get: function() {
+            return native.get.apply(player, arguments);
+          },
+          set: function(val) {
+            if (typeof val !== "number" || val < 0) {
+              return false;
+            }
+            if (takenOver("Volume")) {
+              return false;
+            } else {
+              tuner.setVolume(val, false, true);
+            }
+          }
+        }));
+      }
+      if (!outerCall) {
+        player.muted = false;
+      }
+      !notips && menu.tips("音量：" + parseInt(String(player.volume * 100)) + "%");
+    }
+    // 在当前音量上步进一格：超过 1 倍的是响度增益值，步进要基于增益值
+    stepVolume(delta) {
+      const player = activePlayer.player();
+      if (!player) return;
+      let target = player.volume + delta;
+      if (tuner.volume > 1 && player._amp_) {
+        target = Number(tuner.volume) + delta;
+        if (delta < 0) {
+          target = Math.floor(target);
+        }
+      }
+      return tuner.applyProp("volume", target, 500);
+    }
+    // 提高音量，没给步长就按 20% 走
+    volumeUp(num) {
+      tuner.stepVolume(Utils.stepValue(num, 0.2));
+    }
+    // 降低音量，没给步长就按 20% 走
+    volumeDown(num) {
+      tuner.stepVolume(-Utils.stepValue(num, 0.2));
+    }
+    // 进度相关状态在实例上的落脚点：没有增强 API 时靠它记下锁定到期时间与最近一次设值
+    timeInfo() {
+      const player = activePlayer.player();
+      if (!player) return null;
+      player.timeInfo = player.timeInfo || {};
+      return player.timeInfo;
+    }
+    // 设置播放进度
+    setCurrentTime(num) {
+      if (!num && num !== 0) return;
+      num = Number(num);
+      const _num = Math.abs(Number(num.toFixed(1)));
+      const player = activePlayer.player();
+      if (tuner.lockedCurrentTime()) {
+        return false;
+      }
+      if (taskCenter.doTask("currentTime")) {
+        return;
+      }
+      if (tuner.plusSet("currentTime", _num)) {
+        return true;
+      }
+      tuner.directSet(player, "currentTime", _num, (native) => ({
+        enumerable: true,
+        get: function() {
+          return native.get.apply(player, arguments);
+        },
+        set: function(val) {
+          if (typeof val !== "number" || takenOver("CurrentTime")) {
+            return false;
+          }
+          if (tuner.lockedCurrentTime()) {
+            return false;
+          }
+          player.timeInfo.time = Date.now();
+          player.timeInfo.value = val;
+          return native.set.apply(player, arguments);
+        }
+      }));
+    }
+    // 在当前进度上步进 delta 秒，delta 为负即后退
+    seekBy(delta, hideTips) {
+      const player = activePlayer.player();
+      if (!player) return;
+      let target = player.currentTime + delta;
+      if (target < 1) {
+        target = 0;
+      }
+      tuner.applyProp("currentTime", target, 500);
+      !hideTips && menu.tips((delta > 0 ? "前进：" : "后退：") + Math.abs(delta) + "秒");
+    }
+    // 前进：任务配置中心接管了就不动，否则按给定秒数或默认步长跳
+    seekForward(num, hideTips) {
+      if (taskCenter.doTask("addCurrentTime")) {
+        return;
+      }
+      tuner.seekBy(Utils.stepValue(num, tuner.skipStep), hideTips);
+    }
+    // 后退：任务配置中心接管了就不动，否则按给定秒数或默认步长退
+    seekBack(num) {
+      if (taskCenter.doTask("subtractCurrentTime")) {
+        return;
+      }
+      tuner.seekBy(-Utils.stepValue(num, tuner.skipStep));
+    }
+    // 定格帧画面：perFps 为 1 定格到下一帧、-1 到上一帧
+    freezeFrame(perFps) {
+      perFps = perFps || 1;
+      const player = activePlayer.player();
+      player.currentTime += Number(perFps / tuner.fps);
+      if (!player.paused) player.pause();
+      player._hangUp_ && player._hangUp_("play", 400);
+      if (perFps === 1) {
+        menu.tips("定位：下一帧");
+      } else if (perFps === -1) {
+        menu.tips("定位：上一帧");
+      } else {
+        menu.tips("定格帧画面：" + perFps);
+      }
+    }
+    // 切换「自动跟随跳转到缓冲区时间」开关，并提示当前状态
+    toggleBuffered() {
+      tuner.followBuffer = !tuner.followBuffer;
+      menu.tips(tuner.followBuffer ? "自动跟随跳转到缓冲区时间" : "禁用自动跟随跳转到缓冲区时间");
+    }
+    // 本站是否允许自动恢复播放进度：没写过这一项就算允许
+    allowRestore() {
+      const allowRestoreVal = configManager.get(restoreKey());
+      return allowRestoreVal === null || allowRestoreVal;
+    }
+    // 切换自动恢复播放进度的状态
+    toggleRestore() {
+      const allowRestore = Utils.crossSite() ? false : !tuner.allowRestore();
+      configManager.set(restoreKey(), allowRestore);
+      if (allowRestore) {
+        menu.tips("允许自动恢复播放进度");
+        tuner.restoreProgress(activePlayer.player());
+      } else {
+        menu.tips("禁止自动恢复播放进度");
+      }
+    }
+    // 取播放进度（不传 player 就返回整张进度表）
+    getProgress(player) {
+      const progressMap = configManager.get("media.progress") || {};
+      if (!player) {
+        return progressMap;
+      }
+      const keyName = progressKey(player.duration);
+      if (!progressMap[keyName] || Number.isNaN(Number(player.duration)) || Number(progressMap[keyName].duration) !== Number(player.duration)) {
+        return player.currentTime;
+      }
+      return progressMap[keyName].progress;
+    }
+    // 进度表超限就按记录时间淘汰最早的那一批（并列一起淘汰，与原实现一致）
+    trimProgress(progressMap) {
+      const keys = Object.keys(progressMap);
+      if (keys.length <= 10) {
+        return progressMap;
+      }
+      const oldest = Math.min(...keys.map((k) => (progressMap[k] || {}).t).filter(Boolean));
+      keys.forEach((k) => {
+        if (progressMap[k] && progressMap[k].t === oldest) {
+          delete progressMap[k];
+        }
+      });
+      return progressMap;
+    }
+    // 播放进度记录器
+    recordProgress(player) {
+      clearTimeout(player._playProgressTimer_);
+      function recorder(player2) {
+        player2._playProgressTimer_ = setTimeout(function() {
+          const isToShort = !player2.duration || Number.isNaN(Number(player2.duration)) || player2.duration < 120;
+          const isLeave = document.visibilityState !== "visible" && player2.paused;
+          if (!tuner.allowRestore() || isToShort || isLeave) {
+            recorder(player2);
+            return true;
+          }
+          const progressMap = tuner.getProgress();
+          const keyName = progressKey(player2.duration);
+          if (!progressMap[keyName]) {
+            tuner._firstProgressRecord_ = keyName;
+            tuner._hasRestorePlayProgress_ = keyName;
+          }
+          tuner.trimProgress(progressMap);
+          progressMap[keyName] = { progress: player2.currentTime, duration: player2.duration, t: (/* @__PURE__ */ new Date()).getTime() };
+          configManager.setLocal("media.progress", progressMap);
+          recorder(player2);
+        }, 1e3 * 2);
+      }
+      recorder(player);
+    }
+    // 设置播放进度
+    restoreProgress(player) {
+      if (!player || !player.duration || Number.isNaN(player.duration)) return;
+      const curTime = Number(tuner.getProgress(player));
+      if (!curTime || Number.isNaN(curTime) || curTime < 10 || curTime >= player.duration) return;
+      if (Math.abs(curTime - player.currentTime) < 2) {
+        return false;
+      }
+      const keyName = progressKey(player.duration);
+      tuner._hasRestorePlayProgress_ = tuner._hasRestorePlayProgress_ || "";
+      if (tuner._hasRestorePlayProgress_ === keyName || tuner._firstProgressRecord_ === keyName) {
+        if (tuner._hasRestorePlayProgress_ === keyName) {
+          tuner._firstProgressRecord_ = "";
+        }
+        return false;
+      }
+      if (tuner.allowRestore()) {
+        player.currentTime = curTime - 1.5;
+        tuner._hasRestorePlayProgress_ = keyName;
+        menu.tips("为你恢复上次播放进度");
+      } else {
+        menu.tips("恢复播放进度功能已禁用，可通过菜单或 SHIFT+R 开启该功能");
+      }
+    }
+  };
+  var tuner = null;
+  var createTuner = () => {
+    tuner = new TunerControl();
+    return tuner;
+  };
+  Object.keys(mediaProps).forEach((prop) => {
+    const api = Utils.firstUpper(prop);
+    TunerControl.prototype["lock" + api] = (timeout = 200) => tuner.lock(prop, timeout);
+    TunerControl.prototype["unlock" + api] = () => tuner.unlock(prop);
+    TunerControl.prototype["locked" + api] = () => tuner.locked(prop);
+  });
+
+  // Player.ts
+  var PlayerControl = class _PlayerControl {
+    enhancer;
+    playerInstance;
+    intersectionObserver;
+    exitTime;
+    autoPlayed;
+    constructor() {
+      this.enhancer = null;
+      this.playerInstance = null;
+      this.intersectionObserver = new IntersectionObserver((entries) => activePlayer.onIntersect(entries), { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] });
+      this.exitTime = null;
+      this.autoPlayed = false;
+    }
+    // 获取当前播放器的实例
+    player() {
+      if (!activePlayer.playerInstance) {
+        const mediaList = activePlayer.listPlayers();
+        if (mediaList.length) {
+          activePlayer.takeInstance(mediaList[mediaList.length - 1]);
+        }
+      }
+      const playerInstance = activePlayer.playerInstance;
+      if (playerInstance && !activePlayer.enhancer) {
+        activePlayer.enhancer = mediaCore.mediaPlus(playerInstance);
+      }
+      return playerInstance;
+    }
+    // 当前认领的实例是不是音频元素
+    isAudioInstance() {
+      return Utils.isAudio(activePlayer.player());
+    }
+    // 每个网页可能存在的多个video播放器
+    listPlayers() {
+      const list = mediaCore.mediaElementList;
+      function findPlayer(context) {
+        supportMediaTags.forEach((tagName) => {
+          context.querySelectorAll(tagName).forEach(function(player) {
+            if (player.tagName.toLowerCase() === "bwp-video") {
+              player.HTMLVideoElement = true;
+            }
+            if (Utils.isMedia(player) && !list.includes(player)) {
+              list.push(player);
+            }
+          });
+        });
+      }
+      findPlayer(document);
+      if (window._shadowDomList_) {
+        window._shadowDomList_.forEach(function(shadowRoot) {
+          findPlayer(shadowRoot);
+        });
+      }
+      return list;
+    }
+    // 沿父链找与播放器等宽等高的包裹节点，找不到返回 null
+    getWrap() {
+      const player = activePlayer.player();
+      if (!player) return;
+      let wrapDom = null;
+      const playerBox = player.getBoundingClientRect();
+      Utils.eachParent(player, function(parent) {
+        if (parent === document || !parent.getBoundingClientRect) return;
+        const parentBox = parent.getBoundingClientRect();
+        if (parentBox.width && parentBox.height && parentBox.width === playerBox.width && parentBox.height === playerBox.height) {
+          wrapDom = parent;
+        }
+      });
+      return wrapDom;
+    }
+    // 初始化播放器实例：每次认领都重做的同步在门外，事件监听与全屏对象由一面旗管住，同一元素只装一次
+    initInstance() {
+      const player = activePlayer.playerInstance;
+      if (!player) return;
+      activePlayer.enhancer = mediaCore.mediaPlus(player);
+      tuner.playbackRate = tuner.getSpeed();
+      input.isFocus();
+      activePlayer.proxyPlay(player);
+      tuner.resync();
+      input.mountRunner();
+      if (taskCenter.siteConf().init) {
+        taskCenter.doTask("init", player);
+      }
+      activePlayer.once(player, "__wired__", () => {
+        player._fullScreen_ = new FullScreen(player);
+        player._fullPageScreen_ = new FullScreen(player, true);
+        player.addEventListener("canplay", () => activePlayer.autoPlay(player));
+        let setPlaybackRateOnPlayingCount = 0;
+        player.addEventListener("playing", function(event) {
+          tuner.resync(setPlaybackRateOnPlayingCount > 0);
+          if (blocksSet("Volume") && event.target.muted === false) {
+            tuner.setVolume(configManager.getGlobal("media.volume"), true);
+          }
+          if (blocksSet("CurrentTime")) {
+            tuner.lockCurrentTime();
+          }
+          tuner.restoreProgress(player);
+          if (setPlaybackRateOnPlayingCount++ === 0) {
+            setTimeout(() => {
+              tuner.recordProgress(player);
+            }, 2e3);
+          }
+        });
+        ["enterpictureinpicture", "leavepictureinpicture"].forEach((name) => {
+          player.addEventListener(name, () => {
+            const usePictureInPicture = name === "enterpictureinpicture";
+            if (!usePictureInPicture) {
+              activePlayer.exitTime = Date.now();
+            }
+            pageBridge.send(pictureKey, { usePictureInPicture });
+            console.log("[Player] 画中画切换", name, player);
+          });
+        });
+        function srcRecord(player2) {
+          const src = player2.currentSrc || player2.src;
+          if (!src) {
+            return;
+          }
+          player2.srcList = player2.srcList || [src];
+          if (!player2.srcList.includes(src)) {
+            player2.srcList.push(src);
+          }
+        }
+        function updateBufferedTime(player2) {
+          if (player2.buffered.length > 0) {
+            const bufferedTime = player2.buffered.end(player2.buffered.length - 1);
+            player2.bufferedTime = bufferedTime;
+          }
+          if (tuner.followBuffer && player2.bufferedTime && activePlayer.player() === player2 && player2.bufferedTime < player2.duration - 1 && player2.currentTime < player2.bufferedTime - 1) {
+            tuner.setCurrentTime(player2.bufferedTime);
+          }
+        }
+        const srcLogArgs = { loadeddata: () => [`${player.src} video duration: ${player.duration} video dom:`, player], durationchange: () => [`${player.duration}`], loadstart: () => [player.currentSrc, player.src] };
+        Object.keys(srcLogArgs).forEach((name) => {
+          player.addEventListener(name, () => {
+            console.log("[Player] 媒体事件", name, ...srcLogArgs[name]());
+            srcRecord(player);
+          });
+        });
+        let lastCleanMediaSourceDataTime = Date.now();
+        const syncMediaSource = () => {
+          mediaSource.bindElement(player);
+        };
+        player.addEventListener("timeupdate", () => {
+          srcRecord(player);
+          syncMediaSource();
+        });
+        player.addEventListener("progress", () => {
+          updateBufferedTime(player);
+          syncMediaSource();
+          if (Date.now() - lastCleanMediaSourceDataTime > 1e3 * 10) {
+            lastCleanMediaSourceDataTime = Date.now();
+            mediaSource.prune();
+          }
+        });
+      });
+    }
+    // 同一个实例上同一件事只做一次：标记位写在实例上，做过直接跳过
+    once(player, flag, action) {
+      if (player[flag]) {
+        return false;
+      }
+      player[flag] = true;
+      action();
+      return true;
+    }
+    // 「同一类监听只装一次」的常用写法
+    onceOn(player, flag, event, handler) {
+      return activePlayer.once(player, flag, () => player.addEventListener(event, handler));
+    }
+    // 刚关闭画中画不久，此段时间内允许跨TAB控制
+    justExited() {
+      return activePlayer.exitTime && Date.now() - activePlayer.exitTime < 1e3 * 10;
+    }
+    // 对播放器实例的 play/pause 做代理，顺带实现 _hangUp_ 挂起
+    proxyPlay(player) {
+      if (!player) return;
+      ["play", "pause"].forEach((key) => {
+        const originKey = "origin_" + key;
+        if (Reflect.has(player, key) && !Reflect.has(player, originKey)) {
+          player[originKey] = player[key];
+          const proxy = new original.Proxy(player[key], {
+            // play / pause 的代理：命中挂起窗口就拦掉这次调用，其余照原样转给实例
+            apply(target, ctx, args) {
+              const hangUpDetail = (player._hangUpInfo_ || {})[key];
+              if (hangUpDetail && hangUpDetail.timeout >= Date.now()) {
+                console.log("[Player] 调用挂起", key);
+                return false;
+              }
+              return target.apply(ctx || player, args);
+            }
+          });
+          player[key] = proxy;
+        }
+      });
+      if (!player._hangUp_) {
+        player._hangUpInfo_ = {};
+        player._hangUp_ = function(name, timeout) {
+          timeout = Number(timeout) || 200;
+          player._hangUpInfo_[name] = { timeout: Date.now() + timeout };
+        };
+        player._unHangUp_ = function(name) {
+          if (player._hangUpInfo_ && player._hangUpInfo_[name]) {
+            player._hangUpInfo_[name].timeout = Date.now() - 1;
+          }
+        };
+      }
+    }
+    // 把当前实例、换源历史与运行环境打到调试日志
+    printInfo(p) {
+      const player = p || activePlayer.player();
+      const info = { curPlayer: player, srcList: player.srcList, mediaSource, window };
+      console.log("[Player] 实例信息", info);
+    }
+    // 认下当前实例：换实例就得把它重新接一遍线
+    takeInstance(el) {
+      activePlayer.playerInstance = el;
+      activePlayer.initInstance();
+    }
+    // 视口观察回调：一轮 entries 里只认「可见比例最大且超过 0.4」的那个元素
+    onIntersect(entries) {
+      let tmpIntersectionRatio = 0;
+      entries.forEach((entrie) => {
+        entrie.target._intersectionInfo_ = entrie;
+        if (entrie.intersectionRatio > tmpIntersectionRatio && entrie.intersectionRatio > 0.4) {
+          tmpIntersectionRatio = entrie.intersectionRatio;
+          const oldPlayer = activePlayer.player();
+          if (oldPlayer && oldPlayer._intersectionInfo_ && tmpIntersectionRatio < oldPlayer._intersectionInfo_.intersectionRatio) {
+            return;
+          }
+          const toggleResult = activePlayer.claim(entrie.target);
+          toggleResult && console.log("[Player] 实例切换", entrie);
+        }
+      });
+    }
+    // 判定要不要把这个元素认领为当前实例：视频看尺寸够不够大，音频只在原本就是音频、或原实例已脱离文档时才换
+    claim(el) {
+      if (!el || !el.getBoundingClientRect) {
+        return false;
+      }
+      if (activePlayer.player() === el) {
+        return false;
+      }
+      if (!activePlayer.playerInstance && Utils.isMedia(el)) {
+        activePlayer.takeInstance(el);
+        return true;
+      }
+      if (Utils.isVideo(el)) {
+        const container = menu.tipsHost(el);
+        const elInfo = el.getBoundingClientRect();
+        const parentElInfo = container && container.getBoundingClientRect();
+        if (elInfo && elInfo.width > 200 && parentElInfo && parentElInfo.width > 200) {
+          activePlayer.takeInstance(el);
+        }
+      } else if (Utils.isAudio(el)) {
+        const cur = activePlayer.playerInstance;
+        if (Utils.isAudio(cur) || Utils.isVideo(cur) && !cur.isConnected) {
+          activePlayer.takeInstance(el);
+        }
+      }
+    }
+    // 检出页面上可接管的播放器实例
+    detectPlayer() {
+      const playerList = activePlayer.listPlayers();
+      if (playerList.length) {
+        if (playerList.length === 1) {
+          activePlayer.takeInstance(playerList[0]);
+        }
+        playerList.forEach(function(player) {
+          activePlayer.onceOn(player, "_hasMouseRedirectEvent_", "mouseenter", (event) => activePlayer.claim(event.target));
+          activePlayer.onceOn(player, "_hasPlayingRedirectEvent_", "playing", (event) => {
+            const media = event.target;
+            if (media.duration && media.duration < 8) {
+              return false;
+            }
+            activePlayer.claim(media);
+          });
+          activePlayer.once(player, "_hasIntersectionObserver_", () => activePlayer.intersectionObserver.observe(player));
+        });
+        if (Utils.crossSite()) {
+          const curPlayer = activePlayer.playerInstance;
+          if (curPlayer) {
+            pageBridge.send("videoDetected", { src: curPlayer.src });
+          }
+        }
+      }
+    }
+    // 自动播放：只有站点任务表配了 autoPlay 才走，按钮未就绪时轮询重试
+    autoPlay(p) {
+      const player = p || activePlayer.player();
+      const taskConf2 = taskCenter.siteConf();
+      if (taskConf2.autoPlay && configManager.getLocal("media.autoPlay") === null) {
+        configManager.setLocal("media.autoPlay", true);
+      }
+      if (!configManager.get("media.autoPlay") || !p && activePlayer.autoPlayed || !player || p && p !== activePlayer.player() || document.hidden) {
+        return false;
+      }
+      if (!Utils.inView(player) || Utils.inFrame()) {
+        return false;
+      }
+      if (!taskConf2.autoPlay) {
+        return false;
+      }
+      activePlayer.autoPlayed = true;
+      if (!player.paused) {
+        return;
+      }
+      taskCenter.doTask("autoPlay");
+      if (!player.paused) {
+        return;
+      }
+      player._initAutoPlayCount_ = (player._initAutoPlayCount_ || 0) + 1;
+      if (player._initAutoPlayCount_ >= 10) {
+        return false;
+      }
+      setTimeout(function() {
+        activePlayer.autoPlay(player);
+      }, 200);
+    }
+    // 全屏与网页全屏只差一个站点任务和一种包裹实例，其余逻辑同构
+    toggleScreen(task, screenKey) {
+      const player = activePlayer.player();
+      if (!taskCenter.doTask(task) && player && player[screenKey]) {
+        player[screenKey].toggle();
+      }
+    }
+    // 设置视频全屏
+    maximize() {
+      return activePlayer.toggleScreen("fullScreen", "_fullScreen_");
+    }
+    // 设置页面全屏
+    webMaximize() {
+      return activePlayer.toggleScreen("webFullScreen", "_fullPageScreen_");
+    }
+    // 切换画中画
+    togglePicture() {
+      const player = activePlayer.player();
+      const exiting = window._isPictureInPicture_ && document.pictureInPictureElement;
+      const task = exiting ? document.exitPictureInPicture() : player && player.requestPictureInPicture && player.requestPictureInPicture();
+      if (!task) {
+        return;
+      }
+      const settle = (state) => () => {
+        window._isPictureInPicture_ = state;
+      };
+      const failed = (e) => {
+        window._isPictureInPicture_ = null;
+        console.log("[Player] 画中画切换异常", e);
+      };
+      task.then(settle(exiting ? null : true)).catch(failed);
+    }
+    // 播放下一个视频，默认是没有这个功能的，只有在任务中心里配置了next字段才会有该功能
+    nextVideo() {
+      const isDo = taskCenter.doTask("next");
+      if (!isDo) {
+        console.log("[Player] 下一集不支持");
+      }
+    }
+    // 切换播放状态
+    switchPlay() {
+      const player = activePlayer.player();
+      if (taskCenter.doTask("switchPlay")) {
+        return;
+      }
+      const isPlay = player.paused;
+      const action = isPlay ? "play" : "pause";
+      const other = isPlay ? "pause" : "play";
+      const api = activePlayer.enhancer;
+      if (!taskCenter.doTask(action)) {
+        if (api && api.applyPlay && api.applyPause) {
+          isPlay ? api.lockPause(400) : api.lockPlay(400);
+          Utils.swallow(isPlay ? api.applyPlay() : api.applyPause(), "切换播放状态");
+        } else {
+          if (player._hangUp_) {
+            player._hangUp_(other, 400);
+            player._unHangUp_(action);
+          }
+          Utils.swallow(isPlay ? player.play() : player.pause(), "切换播放状态");
+        }
+        menu.tips(isPlay ? "播放" : "暂停");
+      }
+      taskCenter.doTask(isPlay ? "afterPlay" : "afterPause");
+    }
+    // 菜单里的下载入口：没开实验性功能就直接开启并重载
+    mediaDownload() {
+      if (!configManager.get("enhance.allowExperimentFeatures")) {
+        applyReload(() => configSave("global", "enhance.allowExperimentFeatures", true));
+        return;
+      }
+      console.log("[Player] 流下载启用");
+      _PlayerControl.downloadMedia(activePlayer.player());
+    }
+    // 截图入口：抓不到画面就提示；后台页里先冻帧再截
+    capture() {
+      const player = activePlayer.player();
+      const canvas = activePlayer.grabCanvas(player, true);
+      if (!canvas) {
+        menu.tips("当前没有可截取的画面，请稍后再试");
+        return;
+      }
+      if (!player.paused && !document.pictureInPictureElement && document.visibilityState !== "visible") {
+        tuner.freezeFrame();
+      }
+    }
+    // 把截图写进剪贴板：无权限、没有用户手势、剪贴板API不可用都是正常情况，不该变成未捕获拒绝
+    static async setClipboard(blob) {
+      try {
+        if (!navigator.clipboard) {
+          console.log("[Player] 剪贴板不可用", "https://developer.mozilla.org/en-US/docs/Web/API/Clipboard");
+          return false;
+        }
+        await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+        console.log("[Player] 剪贴板写入成功", blob.type);
+        return true;
+      } catch (e) {
+        console.log("[Player] 剪贴板写入失败", blob && blob.type, e);
+        return false;
+      }
+    }
+    // 截图：把当前帧画进 canvas，download 为真则落盘，否则开预览页
+    grabCanvas(video, download, title) {
+      if (!video) return false;
+      const currentTime = `${Math.floor(video.currentTime / 60)}'${(video.currentTime % 60).toFixed(3)}''`;
+      const captureTitle = title || `${document.title}_${currentTime}`;
+      video.setAttribute("crossorigin", "anonymous");
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      if (!canvas.width || !canvas.height) {
+        console.log("[Player] 截图画面缺失");
+        return false;
+      }
+      const context = canvas.getContext("2d");
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      if (download) {
+        activePlayer.saveCanvas(canvas, captureTitle, video);
+      } else {
+        activePlayer.previe(canvas, captureTitle);
+      }
+      return canvas;
+    }
+    // 预览截图
+    previe(canvas, title) {
+      canvas.style = "max-width:100%";
+      const previewPage = window.open("", "_blank");
+      previewPage.document.title = `capture previe - ${title || "Untitled"}`;
+      previewPage.document.body.style.textAlign = "center";
+      previewPage.document.body.style.background = "#000";
+      previewPage.document.body.appendChild(canvas);
+    }
+    // canvas 下载截图：先复制到剪贴板再下载，避免下载导致页面失焦
+    saveCanvas(canvas, title, video) {
+      title = title || "videoCapturer_" + Date.now();
+      function isUsable(blob, action) {
+        if (blob) return true;
+        console.log("[Player] 画布导出失败", action, video);
+        return false;
+      }
+      try {
+        canvas.toBlob(function(blob) {
+          if (!isUsable(blob, "复制到剪贴板")) {
+            return;
+          }
+          _PlayerControl.setClipboard(blob);
+        }, "image/png", 0.99);
+      } catch (e) {
+        console.log("[Player] 剪贴板复制失败", e);
+      }
+      try {
+        canvas.toBlob(function(blob) {
+          if (!isUsable(blob, "下载截图")) {
+            return activePlayer.previe(canvas, title);
+          }
+          const el = document.createElement("a");
+          el.download = `${title}.jpg`;
+          el.href = URL.createObjectURL(blob);
+          el.click();
+        }, "image/jpeg", 0.99);
+      } catch (e) {
+        activePlayer.previe(canvas, title);
+        console.log("[Player] 截图下载受限", video, e, "https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS");
+      }
+    }
+    // 造一个 a 标签触发浏览器下载
+    static saveFile(url, title) {
+      const downloadEl = document.createElement("a");
+      downloadEl.href = url;
+      downloadEl.target = "_blank";
+      downloadEl.download = title;
+      downloadEl.click();
+    }
+    // 下载媒体：blob 与短视频走 fetch 再落盘，长视频直接交回浏览器；重复下载按状态逐级确认
+    static downloadMedia(mediaEl, title, downloadType) {
+      const mediaUrl = mediaEl.src || mediaEl.currentSrc;
+      const mediaState = downloadState.get(mediaUrl) || {};
+      if (mediaUrl && !mediaUrl.startsWith("blob:")) {
+        const isVideo = mediaEl instanceof HTMLVideoElement;
+        const mediaInfo = { type: isVideo ? "video" : "audio", format: isVideo ? "mp4" : "mp3" };
+        let mediaTitle = `${title || mediaEl.getAttribute("data-title") || document.title || Date.now()}_${mediaInfo.type}.${mediaInfo.format}`;
+        if (downloadType === "blob" || mediaEl.duration < 60 * 5) {
+          if (mediaState.downloading && Date.now() - mediaState.downloading < 1e3 * 1) {
+            return false;
+          }
+          if (!mediaTitle.endsWith(mediaInfo.format)) {
+            mediaTitle = mediaTitle + "." + mediaInfo.format;
+          }
+          let fetchUrl = mediaUrl;
+          if (mediaUrl.startsWith("http://") && location.href.startsWith("https://")) {
+            fetchUrl = mediaUrl.replace("http://", "https://");
+          }
+          const mark = (patch) => {
+            Object.assign(mediaState, patch);
+            downloadState.set(mediaUrl, mediaState);
+          };
+          mark({ downloading: Date.now() });
+          fetch(fetchUrl).then((res) => res.blob()).then((blob) => {
+            const blobUrl = window.URL.createObjectURL(blob);
+            activePlayer.saveFile(blobUrl, mediaTitle);
+            mark({ downloading: void 0, hasDownload: true });
+            window.URL.revokeObjectURL(blobUrl);
+          }).catch((err) => {
+            console.log("[Player] fetch下载失败", err);
+            activePlayer.saveFile(mediaUrl, mediaTitle);
+            mark({ downloading: void 0, hasDownload: true });
+          });
+        } else {
+          activePlayer.saveFile(mediaUrl, mediaTitle);
+        }
+      } else if (mediaSource.hasInit()) {
+        mediaSource.downloadStream(mediaEl, title);
+      } else {
+        console.log("[Player] 下载通道缺失", mediaEl);
+      }
+    }
+  };
+  var activePlayer = null;
+  var createPlayer = () => {
+    activePlayer = new PlayerControl();
+    return activePlayer;
+  };
+  var fullScreenInstances = [];
+  var fullPageStyleInjected = false;
+  window.addEventListener("keyup", (event) => {
+    if (event.key && event.key.toLowerCase() === "escape") {
+      fullScreenInstances.forEach((inst) => inst.onEscape());
+    }
+  }, true);
+  var FullScreen = class {
+    dom;
+    shadowRoot;
+    fullStatus;
+    pageMode;
+    _container_;
+    constructor(dom, pageMode) {
+      this.dom = dom;
+      this.shadowRoot = null;
+      this.fullStatus = false;
+      this.pageMode = pageMode || false;
+      const fullPageStyle = `
       ._webfullscreen_box_size_ {
 				width: 100% !important;
 				height: 100% !important;
@@ -90,8 +2722,1865 @@
 			._webfullscreen_zindex_ {
 				z-index: 999999 !important;
 			}
-		`;!et&&window.GM_addStyle&&(window.GM_addStyle(o),et=!0);let n=c.inShadow(e,!0);n&&(this.shadowRoot=n,c.addStyle(o,"fullPageStyle",n)),Oe.push(this),this.getContainer()}onEscape(){this.isFull()?this.exit():this.isFullScreen()&&this.exitFullScreen()}getContainer(){if(this._container_)return this._container_;let e=this.dom,t=e.getBoundingClientRect(),o=e;return c.eachParent(e,n=>{if(!n||!n.getBoundingClientRect||n.getAttribute("data-fullscreen-container"))return o=n,!0;let s=n.getBoundingClientRect();if(s.width<=t.width&&s.height<=t.height)o=n;else return!0},!0),o.setAttribute("data-fullscreen-container","true"),this._container_=o,o}isFull(){return this.dom.classList.contains("_webfullscreen_")||this.fullStatus}isFullScreen(){return!!(document.fullscreen||document.webkitIsFullScreen||document.mozFullScreen||document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement)}enterFullScreen(){let e=this.getContainer(),t=e.requestFullscreen||e.webkitRequestFullScreen||e.mozRequestFullScreen||e.msRequestFullScreen;c.swallow(t&&t.call(e),"进入全屏")}enter(){if(this.isFull())return;let e=this.getContainer(),t=this.dom===e,o=n=>c.eachParent(n,r=>{r.classList.add("_webfullscreen_"),(e===r||t)&&(t=!0,r.classList.add("_webfullscreen_zindex_"))},!0);if(o(this.dom),this.dom.parentNode){let n=this.dom.getBoundingClientRect();if(this.dom.parentNode.getBoundingClientRect().width-n.width>=5&&this.dom.classList.add("_webfullscreen_"),this.shadowRoot&&this.shadowRoot._shadowHost){let s=this.shadowRoot._shadowHost;s.getBoundingClientRect().width<=n.width&&(s.classList.add("_webfullscreen_"),o(s))}}this.pageMode||this.enterFullScreen(),this.fullStatus=!0}exitFullScreen(){let e=document.exitFullscreen||document.webkitExitFullscreen||document.mozCancelFullScreen||document.msExitFullscreen;c.swallow(e&&e.call(document),"退出全屏")}exit(){let e=t=>c.eachParent(t,o=>{o.classList.remove("_webfullscreen_"),o.classList.remove("_webfullscreen_zindex_")},!0);if(e(this.dom),this.dom.classList.remove("_webfullscreen_"),this.shadowRoot&&this.shadowRoot._shadowHost){let t=this.shadowRoot._shadowHost;t.classList.remove("_webfullscreen_"),e(t)}(!this.pageMode||this.isFullScreen())&&this.exitFullScreen(),this.fullStatus=!1}toggle(){this.isFull()?this.exit():this.enter()}};var C={},z=()=>{u.player().setAttribute("crossOrigin","anonymous")},Fe={fullScreen:".xgplayer-fullscreen",webFullScreen:".xgplayer-page-full-screen",next:[".xgplayer-playswitch-next"]},ue=i=>({register:["escape"],callback:(e,t)=>{let{event:o}=t;o.keyCode===27&&i(e,t)}}),de=(...i)=>()=>{i.forEach(e=>setTimeout(()=>{let t=document.querySelector(e);t&&(t.style.opacity=0)},1e3*5))},Be=()=>{let i=u.player().parentNode.querySelectorAll("button");if(i&&i.length>3)return i[i.length-2].click(),!0},Ne=(i,e,t)=>()=>{let o=u.player();return o._fullScreen_.getContainer().querySelector(`div[title="${o[i]?t:e}"]`).click(),o[i]=!o[i],!0},Ae=(i,e,t)=>o=>{let n=u.player(),r=n&&n.closest(i);if(!r)return;let s=()=>{r.getAttribute("data-title")||t(n,r)&&r.removeEventListener("mouseover",s)};r.addEventListener("mouseover",s),setTimeout(s,e)},tt=Ae('div[data-e2e="feed-item"]',1200,(i,e)=>{let t=e.querySelector(".video-info-detail");if(!t)return!1;let o=t.querySelector(".account-name").innerText.replace(/^@*/,""),n=t.querySelector(".title").innerText.trim();return document.title=c.setTitle(i,e,`${n} - ${o}`),!0}),fe={"youtube.com":{init:function(i){if(C.hasBindSkipAdEvents)return;let e=new Date().getTime(),t=0,o=n=>{if(new Date().getTime()-e<3e3||document.hidden)return!1;n.click(),t++,console.log("[Task] 广告跳过",t)};c.ready(".ytp-ad-skip-button",function(n){o(n)}),c.ready(".ytp-ad-skip-button-modern",function(n){o(n)}),setInterval(function(){let n=document.querySelector(".ytp-ad-skip-button"),r=document.querySelector(".ytp-ad-skip-button-modern");n&&o(n),r&&o(r)},1e3),C.hasBindSkipAdEvents=!0},webFullScreen:"button.ytp-size-button",fullScreen:"button.ytp-fullscreen-button",next:".ytp-next-button",afterPlay:function(i){setTimeout(()=>{d.seekForward(.01,!0)},0);let e=u.player(),t=e.closest(".html5-video-player");if(!t)return;if(t.classList.add("ytp-autohide","playing-mode"),clearTimeout(t.autohideTimer),t.autohideTimer=setTimeout(()=>{t.classList.add("ytp-autohide","playing-mode")},1e3),!t.hasBindCustomEvents){let n=s=>{t.classList.remove("ytp-autohide","ytp-hide-info-bar"),clearTimeout(t.mousemoveTimer),t.mousemoveTimer=setTimeout(()=>{e.paused||t.classList.add("ytp-autohide","ytp-hide-info-bar")},2e3)},r=s=>{u.switchPlay(),n()};e.addEventListener("mousemove",n),e.addEventListener("click",r),t.hasBindCustomEvents=!0}let o=t.querySelector(".ytp-spinner");if(o){let n=()=>{o&&(o.style.visibility="hidden")},r=()=>{o&&(o.style.visibility="visible")};n(),clearTimeout(t.spinnerTimer),t.spinnerTimer=setTimeout(()=>{o.style.display="none",r()},1e3)}},afterPause:function(i){let t=u.player().closest(".html5-video-player");t&&(t.classList.remove("ytp-autohide","playing-mode"),t.classList.add("paused-mode"),clearTimeout(t.autohideTimer))},shortcuts:ue(()=>{document.querySelector(".ytp-upnext").style.display!=="none"&&document.querySelector(".ytp-upnext-cancel-button").click()})},"netflix.com":{fullScreen:"button.button-nfplayerFullscreen",addCurrentTime:"button.button-nfplayerFastForward",subtractCurrentTime:"button.button-nfplayerBackTen",playbackRate:!0,shortcuts:{register:["f"],callback:function(i,e){return!0}}},"bilibili.com":{fullScreen:function(){let i=c.q(".bpx-player-ctrl-full")||c.q(".squirtle-video-fullscreen")||c.q(".bilibili-player-video-btn-fullscreen");if(i)return i.click(),!0},webFullScreen:function(){let i=c.q(".bilibili-player-video-web-fullscreen"),e=c.q(".bpx-player-ctrl-web-enter")||c.q(".squirtle-pagefullscreen-inactive"),t=c.q(".bpx-player-ctrl-web-leave")||c.q(".squirtle-pagefullscreen-active");if(i||e&&t)return(i||(getComputedStyle(t).display==="none"?e:t)).click(),setTimeout(function(){let n=c.q(".bpx-player-dm-input")||c.q(".bilibili-player-video-danmaku-input");n&&n.blur()},1e3*.1),!0},autoPlay:[".bpx-player-ctrl-play",".squirtle-video-start",".bilibili-player-video-btn-start"],switchPlay:[".bpx-player-ctrl-play",".squirtle-video-start",".bilibili-player-video-btn-start"],next:[".bpx-player-ctrl-next",".squirtle-video-next",".bilibili-player-video-btn-next",'.bpx-player-ctrl-btn[aria-label="下一个"]'],shortcuts:ue(()=>{let i=c.q(".bilibili-player-video-web-fullscreen");if(i&&i.classList.contains("closed"))i.click();else{let e=c.q(".bpx-player-ctrl-web-leave")||c.q(".squirtle-pagefullscreen-active");e&&getComputedStyle(e).display!=="none"&&e.click()}})},"t.bilibili.com":{fullScreen:'button[name="fullscreen-button"]'},"live.bilibili.com":{init:function(){JSON._stringifySource_||(JSON._stringifySource_=JSON.stringify,JSON.stringify=function(i){try{return JSON._stringifySource_.apply(this,arguments)}catch(e){console.log("[Task] JSON序列化异常",e,i)}})},fullScreen:".bilibili-live-player-video-controller-fullscreen-btn button",webFullScreen:".bilibili-live-player-video-controller-web-fullscreen-btn button",switchPlay:".bilibili-live-player-video-controller-start-btn button"},"acfun.cn":{fullScreen:'[data-bind-key="screenTip"]',webFullScreen:'[data-bind-key="webTip"]',switchPlay:function(){let i=u.player(),e=i.paused;setTimeout(function(){e===i.paused&&(i.paused?i.play():i.pause())},200)}},"ixigua.com":{fullScreen:["xg-fullscreen.xgplayer-fullscreen",'.xgplayer-control-item__entry[aria-label="全屏"]','.xgplayer-control-item__entry[aria-label="退出全屏"]'],webFullScreen:["xg-cssfullscreen.xgplayer-cssfullscreen",'.xgplayer-control-item__entry[aria-label="剧场模式"]','.xgplayer-control-item__entry[aria-label="退出剧场模式"]']},"tv.sohu.com":{fullScreen:'button[data-title="网页全屏"]',webFullScreen:'button[data-title="全屏"]'},"iqiyi.com":{fullScreen:".iqp-btn-fullscreen",webFullScreen:".iqp-btn-webscreen",next:".iqp-btn-next",init:function(i){de(".iqp-logo-box")(),window.GM_addStyle(`
+		`;
+      if (!fullPageStyleInjected && window.GM_addStyle) {
+        window.GM_addStyle(fullPageStyle);
+        fullPageStyleInjected = true;
+      }
+      const shadowRoot = Utils.inShadow(dom, true);
+      if (shadowRoot) {
+        this.shadowRoot = shadowRoot;
+        Utils.addStyle(fullPageStyle, "fullPageStyle", shadowRoot);
+      }
+      fullScreenInstances.push(this);
+      this.getContainer();
+    }
+    // 按 Esc：先退页面全屏，再退浏览器原生全屏，与原实现每个实例各自的判断一致
+    onEscape() {
+      if (this.isFull()) {
+        this.exit();
+      } else if (this.isFullScreen()) {
+        this.exitFullScreen();
+      }
+    }
+    // 沿父链找包裹容器：第一个比画面小的父节点就是它，标记后缓存下来
+    getContainer() {
+      if (this._container_) return this._container_;
+      const d = this.dom;
+      const domBox = d.getBoundingClientRect();
+      let container = d;
+      Utils.eachParent(d, (parentNode) => {
+        const noParentNode = !parentNode || !parentNode.getBoundingClientRect;
+        if (noParentNode || parentNode.getAttribute("data-fullscreen-container")) {
+          container = parentNode;
+          return true;
+        }
+        const parentBox = parentNode.getBoundingClientRect();
+        const isInsideTheBox = parentBox.width <= domBox.width && parentBox.height <= domBox.height;
+        if (isInsideTheBox) {
+          container = parentNode;
+        } else {
+          return true;
+        }
+      }, true);
+      container.setAttribute("data-fullscreen-container", "true");
+      this._container_ = container;
+      return container;
+    }
+    // 当前是否处于「网页全屏」——脚本自己铺的样式，或本实例的状态位
+    isFull() {
+      return this.dom.classList.contains("_webfullscreen_") || this.fullStatus;
+    }
+    // 浏览器原生全屏是否生效（跨前缀各查一遍）
+    isFullScreen() {
+      return !!(document.fullscreen || document.webkitIsFullScreen || document.mozFullScreen || document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
+    }
+    // 在包裹容器上请求浏览器原生全屏，跨前缀挑一个可用方法
+    enterFullScreen() {
+      const container = this.getContainer();
+      const enterFn = container.requestFullscreen || container.webkitRequestFullScreen || container.mozRequestFullScreen || container.msRequestFullScreen;
+      Utils.swallow(enterFn && enterFn.call(container), "进入全屏");
+    }
+    // 进入网页全屏：沿父链铺全屏样式、容器那层起提层级；页面模式不碰原生全屏
+    enter() {
+      if (this.isFull()) return;
+      const container = this.getContainer();
+      let needSetIndex = this.dom === container;
+      const addFullscreenStyleToParentNode = (node) => Utils.eachParent(node, (parentNode) => {
+        parentNode.classList.add("_webfullscreen_");
+        if (container === parentNode || needSetIndex) {
+          needSetIndex = true;
+          parentNode.classList.add("_webfullscreen_zindex_");
+        }
+      }, true);
+      addFullscreenStyleToParentNode(this.dom);
+      if (this.dom.parentNode) {
+        const domBox = this.dom.getBoundingClientRect();
+        const domParentBox = this.dom.parentNode.getBoundingClientRect();
+        if (domParentBox.width - domBox.width >= 5) {
+          this.dom.classList.add("_webfullscreen_");
+        }
+        if (this.shadowRoot && this.shadowRoot._shadowHost) {
+          const shadowHost = this.shadowRoot._shadowHost;
+          const shadowHostBox = shadowHost.getBoundingClientRect();
+          if (shadowHostBox.width <= domBox.width) {
+            shadowHost.classList.add("_webfullscreen_");
+            addFullscreenStyleToParentNode(shadowHost);
+          }
+        }
+      }
+      if (!this.pageMode) {
+        this.enterFullScreen();
+      }
+      this.fullStatus = true;
+    }
+    // 退出浏览器原生全屏，跨前缀挑一个可用方法
+    exitFullScreen() {
+      const exitFn = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+      Utils.swallow(exitFn && exitFn.call(document), "退出全屏");
+    }
+    // 退出网页全屏：摘掉沿父链铺的样式与层级；页面模式只在原生全屏生效时才退
+    exit() {
+      const removeFullscreenStyleToParentNode = (node) => Utils.eachParent(node, (parentNode) => {
+        parentNode.classList.remove("_webfullscreen_");
+        parentNode.classList.remove("_webfullscreen_zindex_");
+      }, true);
+      removeFullscreenStyleToParentNode(this.dom);
+      this.dom.classList.remove("_webfullscreen_");
+      if (this.shadowRoot && this.shadowRoot._shadowHost) {
+        const shadowHost = this.shadowRoot._shadowHost;
+        shadowHost.classList.remove("_webfullscreen_");
+        removeFullscreenStyleToParentNode(shadowHost);
+      }
+      if (!this.pageMode || this.isFullScreen()) {
+        this.exitFullScreen();
+      }
+      this.fullStatus = false;
+    }
+    // 按当前状态在进 / 退之间翻转
+    toggle() {
+      this.isFull() ? this.exit() : this.enter();
+    }
+  };
+
+  // Task.ts
+  var taskScratch = {};
+  var allowCross = () => {
+    activePlayer.player().setAttribute("crossOrigin", "anonymous");
+  };
+  var xgplayerTask = { fullScreen: ".xgplayer-fullscreen", webFullScreen: ".xgplayer-page-full-screen", next: [".xgplayer-playswitch-next"] };
+  var escapeTask = (body) => ({ register: ["escape"], callback: (taskConf2, data) => {
+    const { event } = data;
+    if (event.keyCode === 27) {
+      body(taskConf2, data);
+    }
+  } });
+  var watermarkTask = (...selectors) => () => {
+    selectors.forEach((sel) => setTimeout(() => {
+      const dom = document.querySelector(sel);
+      if (dom) {
+        dom.style.opacity = 0;
+      }
+    }, 1e3 * 5));
+  };
+  var facebookTask = () => {
+    const actionBtn = activePlayer.player().parentNode.querySelectorAll("button");
+    if (actionBtn && actionBtn.length > 3) {
+      actionBtn[actionBtn.length - 2].click();
+      return true;
+    }
+  };
+  var douyuScreen = (flag, enter, exit) => () => {
+    const player = activePlayer.player();
+    const container = player._fullScreen_.getContainer();
+    container.querySelector(`div[title="${player[flag] ? exit : enter}"]`).click();
+    player[flag] = !player[flag];
+    return true;
+  };
+  var hoverTitle = (wrapSelector, delay, readTitle) => (taskConf2) => {
+    const player = activePlayer.player();
+    const wrapEl = player && player.closest(wrapSelector);
+    if (!wrapEl) return;
+    const run = () => {
+      if (wrapEl.getAttribute("data-title")) {
+        return;
+      }
+      if (readTitle(player, wrapEl)) {
+        wrapEl.removeEventListener("mouseover", run);
+      }
+    };
+    wrapEl.addEventListener("mouseover", run);
+    setTimeout(run, delay);
+  };
+  var douyinTitle = hoverTitle('div[data-e2e="feed-item"]', 1200, (player, wrapEl) => {
+    const videoInfo = wrapEl.querySelector(".video-info-detail");
+    if (!videoInfo) {
+      return false;
+    }
+    const accountName = videoInfo.querySelector(".account-name").innerText.replace(/^@*/, "");
+    const titleText = videoInfo.querySelector(".title").innerText.trim();
+    document.title = Utils.setTitle(player, wrapEl, `${titleText} - ${accountName}`);
+    return true;
+  });
+  var taskConf = {
+    "youtube.com": {
+      init: function(taskConf2) {
+        if (taskScratch.hasBindSkipAdEvents) {
+          return;
+        }
+        const startTime = (/* @__PURE__ */ new Date()).getTime();
+        let skipCount = 0;
+        const skipHandler = (element) => {
+          const endTime = (/* @__PURE__ */ new Date()).getTime();
+          const time = endTime - startTime;
+          if (time < 3e3) {
+            return false;
+          }
+          if (document.hidden) {
+            return false;
+          }
+          element.click();
+          skipCount++;
+          console.log("[Task] 广告跳过", skipCount);
+        };
+        Utils.ready(".ytp-ad-skip-button", function(element) {
+          skipHandler(element);
+        });
+        Utils.ready(".ytp-ad-skip-button-modern", function(element) {
+          skipHandler(element);
+        });
+        setInterval(function() {
+          const adSkipBtn = document.querySelector(".ytp-ad-skip-button");
+          const adSkipBtnModern = document.querySelector(".ytp-ad-skip-button-modern");
+          adSkipBtn && skipHandler(adSkipBtn);
+          adSkipBtnModern && skipHandler(adSkipBtnModern);
+        }, 1e3);
+        taskScratch.hasBindSkipAdEvents = true;
+      },
+      webFullScreen: "button.ytp-size-button",
+      fullScreen: "button.ytp-fullscreen-button",
+      next: ".ytp-next-button",
+      afterPlay: function(taskConf2) {
+        setTimeout(() => {
+          tuner.seekForward(0.01, true);
+        }, 0);
+        const player = activePlayer.player();
+        const playerwWrap = player.closest(".html5-video-player");
+        if (!playerwWrap) {
+          return;
+        }
+        playerwWrap.classList.add("ytp-autohide", "playing-mode");
+        clearTimeout(playerwWrap.autohideTimer);
+        playerwWrap.autohideTimer = setTimeout(() => {
+          playerwWrap.classList.add("ytp-autohide", "playing-mode");
+        }, 1e3);
+        if (!playerwWrap.hasBindCustomEvents) {
+          const mousemoveHander = (event) => {
+            playerwWrap.classList.remove("ytp-autohide", "ytp-hide-info-bar");
+            clearTimeout(playerwWrap.mousemoveTimer);
+            playerwWrap.mousemoveTimer = setTimeout(() => {
+              if (!player.paused) {
+                playerwWrap.classList.add("ytp-autohide", "ytp-hide-info-bar");
+              }
+            }, 1e3 * 2);
+          };
+          const clickHander = (event) => {
+            activePlayer.switchPlay();
+            mousemoveHander();
+          };
+          player.addEventListener("mousemove", mousemoveHander);
+          player.addEventListener("click", clickHander);
+          playerwWrap.hasBindCustomEvents = true;
+        }
+        const spinner = playerwWrap.querySelector(".ytp-spinner");
+        if (spinner) {
+          const hiddenSpinner = () => {
+            spinner && (spinner.style.visibility = "hidden");
+          };
+          const visibleSpinner = () => {
+            spinner && (spinner.style.visibility = "visible");
+          };
+          hiddenSpinner();
+          clearTimeout(playerwWrap.spinnerTimer);
+          playerwWrap.spinnerTimer = setTimeout(() => {
+            spinner.style.display = "none";
+            visibleSpinner();
+          }, 1e3);
+        }
+      },
+      afterPause: function(taskConf2) {
+        const player = activePlayer.player();
+        const playerwWrap = player.closest(".html5-video-player");
+        if (!playerwWrap) return;
+        playerwWrap.classList.remove("ytp-autohide", "playing-mode");
+        playerwWrap.classList.add("paused-mode");
+        clearTimeout(playerwWrap.autohideTimer);
+      },
+      // 按 Esc 取消播放下一个推荐的视频
+      shortcuts: escapeTask(() => {
+        if (document.querySelector(".ytp-upnext").style.display !== "none") {
+          document.querySelector(".ytp-upnext-cancel-button").click();
+        }
+      })
+    },
+    "netflix.com": {
+      fullScreen: "button.button-nfplayerFullscreen",
+      addCurrentTime: "button.button-nfplayerFastForward",
+      subtractCurrentTime: "button.button-nfplayerBackTen",
+      // 使用netflix自身的调速，因为目前插件没法解决调速导致的服务中断问题
+      playbackRate: true,
+      shortcuts: { register: ["f"], callback: function(taskConf2, data) {
+        return true;
+      } }
+    },
+    "bilibili.com": {
+      fullScreen: function() {
+        const fullScreen = Utils.q(".bpx-player-ctrl-full") || Utils.q(".squirtle-video-fullscreen") || Utils.q(".bilibili-player-video-btn-fullscreen");
+        if (fullScreen) {
+          fullScreen.click();
+          return true;
+        }
+      },
+      webFullScreen: function() {
+        const oldWebFullscreen = Utils.q(".bilibili-player-video-web-fullscreen");
+        const webFullscreenEnter = Utils.q(".bpx-player-ctrl-web-enter") || Utils.q(".squirtle-pagefullscreen-inactive");
+        const webFullscreenLeave = Utils.q(".bpx-player-ctrl-web-leave") || Utils.q(".squirtle-pagefullscreen-active");
+        if (oldWebFullscreen || webFullscreenEnter && webFullscreenLeave) {
+          const webFullscreen = oldWebFullscreen || (getComputedStyle(webFullscreenLeave).display === "none" ? webFullscreenEnter : webFullscreenLeave);
+          webFullscreen.click();
+          setTimeout(function() {
+            const danmaku = Utils.q(".bpx-player-dm-input") || Utils.q(".bilibili-player-video-danmaku-input");
+            danmaku && danmaku.blur();
+          }, 1e3 * 0.1);
+          return true;
+        }
+      },
+      autoPlay: [".bpx-player-ctrl-play", ".squirtle-video-start", ".bilibili-player-video-btn-start"],
+      switchPlay: [".bpx-player-ctrl-play", ".squirtle-video-start", ".bilibili-player-video-btn-start"],
+      next: [".bpx-player-ctrl-next", ".squirtle-video-next", ".bilibili-player-video-btn-next", '.bpx-player-ctrl-btn[aria-label="下一个"]'],
+      // 按 Esc 退出网页全屏
+      shortcuts: escapeTask(() => {
+        const oldWebFullscreen = Utils.q(".bilibili-player-video-web-fullscreen");
+        if (oldWebFullscreen && oldWebFullscreen.classList.contains("closed")) {
+          oldWebFullscreen.click();
+        } else {
+          const webFullscreenLeave = Utils.q(".bpx-player-ctrl-web-leave") || Utils.q(".squirtle-pagefullscreen-active");
+          if (webFullscreenLeave && getComputedStyle(webFullscreenLeave).display !== "none") {
+            webFullscreenLeave.click();
+          }
+        }
+      })
+    },
+    "t.bilibili.com": { fullScreen: 'button[name="fullscreen-button"]' },
+    "live.bilibili.com": {
+      init: function() {
+        if (!JSON._stringifySource_) {
+          JSON._stringifySource_ = JSON.stringify;
+          JSON.stringify = function(arg1) {
+            try {
+              return JSON._stringifySource_.apply(this, arguments);
+            } catch (e) {
+              console.log("[Task] JSON序列化异常", e, arg1);
+            }
+          };
+        }
+      },
+      fullScreen: ".bilibili-live-player-video-controller-fullscreen-btn button",
+      webFullScreen: ".bilibili-live-player-video-controller-web-fullscreen-btn button",
+      switchPlay: ".bilibili-live-player-video-controller-start-btn button"
+    },
+    "acfun.cn": {
+      fullScreen: '[data-bind-key="screenTip"]',
+      webFullScreen: '[data-bind-key="webTip"]',
+      switchPlay: function() {
+        const player = activePlayer.player();
+        const status = player.paused;
+        setTimeout(function() {
+          if (status === player.paused) {
+            if (player.paused) {
+              player.play();
+            } else {
+              player.pause();
+            }
+          }
+        }, 200);
+      }
+    },
+    "ixigua.com": {
+      fullScreen: ["xg-fullscreen.xgplayer-fullscreen", '.xgplayer-control-item__entry[aria-label="全屏"]', '.xgplayer-control-item__entry[aria-label="退出全屏"]'],
+      webFullScreen: ["xg-cssfullscreen.xgplayer-cssfullscreen", '.xgplayer-control-item__entry[aria-label="剧场模式"]', '.xgplayer-control-item__entry[aria-label="退出剧场模式"]']
+    },
+    "tv.sohu.com": { fullScreen: 'button[data-title="网页全屏"]', webFullScreen: 'button[data-title="全屏"]' },
+    "iqiyi.com": {
+      fullScreen: ".iqp-btn-fullscreen",
+      webFullScreen: ".iqp-btn-webscreen",
+      next: ".iqp-btn-next",
+      init: function(taskConf2) {
+        watermarkTask(".iqp-logo-box")();
+        window.GM_addStyle(`
           div[templatetype="common_pause"]{ display:none }
           .iqp-logo-box{ display:none !important }
-      `)}},"youku.com":{fullScreen:".control-fullscreen-icon",next:".control-next-video",init:de(".youku-layer-logo")},"ted.com":{fullScreen:"button.Fullscreen"},"qq.com":{pause:".container_inner .txp-shadow-mod",play:".container_inner .txp-shadow-mod",shortcuts:{register:["c","x","z","1","2","3","4"],callback:function(i,e){let{event:t}=e,o=t.key.toLowerCase(),n="customShortcuts_"+o;if(C[n]){if(Date.now()-C[n].time<200)return!1;if(C[n]===d.playbackRate||C[n]===!0){if(window.sessionStorage.playbackRate&&/(c|x|z|1|2|3|4)/.test(o)){let r=Number(window.sessionStorage.playbackRate),s=r-.1>=0?r-.1:.1,a=r+.1<=4?r+.1:4,l=r;switch(o){case"z":l=1;break;case"c":l=a;break;case"x":l=s;break;default:l=Number(o);break}return window.sessionStorage.playbackRate=l,d.seekForward(.01,!0),d.setSpeed(l,!0),!0}C[n]=!0}else C[n]=!1}else return C[n]={time:Date.now(),playbackRate:d.playbackRate},!1}},fullScreen:'txpdiv[data-report="window-fullscreen"]',webFullScreen:'txpdiv[data-report="browser-fullscreen"]',next:'txpdiv[data-report="play-next"]',init:de(".txp-watermark",".txp-watermark-action"),include:/(v.qq|sports.qq)/},"pan.baidu.com":{fullScreen:function(i){u.player().parentNode.querySelector(".vjs-fullscreen-control").click()}},"facebook.com":{fullScreen:Be,webFullScreen:Be,shortcuts:ue(()=>{c.eachParent(u.player(),function(i){if(i.getAttribute("data-fullscreen-container")==="true"){let e=i.parentNode.querySelector("div>a>i>u");return e&&e.parentNode.parentNode.click(),!0}})})},"douyu.com":{fullScreen:Ne("_isFullScreen_","窗口全屏","退出窗口全屏"),webFullScreen:Ne("_isWebFullScreen_","网页全屏","退出网页全屏")},"open.163.com":{init:function(i){u.player().setAttribute("crossOrigin","anonymous")}},"agefans.tv":{init:z},"chaoxing.com":{fullScreen:".vjs-fullscreen-control"},"yixi.tv":{init:z},"douyin.com":{...Fe,init:i=>{z(),tt(i)}},"live.douyin.com":{...Fe,init:z},"zhihu.com":{fullScreen:['button[aria-label="全屏"]','button[aria-label="退出全屏"]'],play:function(i,e){let t=u.player();if(t&&t.parentNode&&t.parentNode.parentNode){let o=t.parentNode.parentNode.querySelector("div~div:nth-child(3)");if(o){let n=o.querySelector("div");n&&n.innerText===""&&n.click()}}},init:z},"weibo.com":{fullScreen:["button.wbpv-fullscreen-control"],webFullScreen:["div.wbpv-open-layer-button"]},"twitter.com":{init:Ae('article[data-testid="tweet"]',600,(i,e)=>{let t=e.querySelector('div[data-testid="tweetText"]');return t?(c.setTitle(i,e,t.innerText.trim()),!0):!1})}},ee=class i{conf;doTaskFunc;constructor(e,t){this.conf=e||{},this.doTaskFunc=t instanceof Function?t:function(){}}getDomain(){let e=window.location.host,t=e,o=e.split(".");return o.length>2&&(o.shift(),t=o.join(".")),t}isMatch(e){let t=window.location.href,o=!1;return!e.include&&!e.exclude?o=!0:(e.include&&e.include.test(t)&&(o=!0),e.exclude&&e.exclude.test(t)&&(o=!1)),o}siteConf(){let e=this.getDomain(),t=this.conf[window.location.host]||this.conf[e];return t&&this.isMatch(t)?t:{}}doTask(e,t){if(!e)return!1;let o=this.siteConf();return!c.isObj(o)||!o[e]?!1:this.doTaskFunc(e,o,t)}static create(){return new i(fe,function(e,t,o){try{let n=t[e];if(e==="shortcuts"){if(c.isObj(n)&&n.callback instanceof Function)return n.callback(t,o)}else if(n instanceof Function)try{return n(t,o)}catch(r){return console.log("[Task] 自定义函数失败",e,t,o,r),!1}else{if(typeof n=="boolean")return n;{let r=[u.getWrap(),document],s=Array.isArray(n)?n:[n];for(let a of s)for(let l of r){let m=l&&l.querySelector(a);if(m)return m.click(),!0}}}}catch(n){return console.log("[Task] 自定义任务失败",e,t,o,n),!1}})}},S=null,Ue=i=>{S=i?ee.create():new ee({},function(){})};var ot={prefix:"_r6player_",config:{enable:!0,media:{autoPlay:!1,playbackRate:1,volume:1,lastPlaybackRate:1.5,progress:{}},enableHotkeys:!0,hotkeys:[{desc:"网页全屏",key:"shift+enter",command:"webMaximize",disabled:!1},{desc:"全屏",key:"enter",command:"maximize"},{desc:"切换画中画模式",key:"shift+p",command:"togglePicture"},{desc:"视频截图",key:"shift+s",command:"capture"},{desc:"启用或禁止自动恢复播放进度功能",key:"shift+r",command:"toggleRestore"},{desc:"垂直镜像翻转",key:"shift+m",command:"setMirror",args:[!0]},{desc:"水平镜像翻转",key:"m",command:"setMirror"},{desc:"下载音视频文件（实验性功能）",key:"shift+d",command:"mediaDownload"},{desc:"缩小视频画面 -0.05",key:"shift+x",command:"zoomOut",args:-.05},{desc:"放大视频画面 +0.05",key:"shift+c",command:"zoomIn",args:.05},{desc:"恢复视频画面",key:"shift+z",command:"resetTransform"},{desc:"画面向右移动10px",key:"shift+arrowright",command:"moveRight",args:10},{desc:"画面向左移动10px",key:"shift+arrowleft",command:"moveLeft",args:-10},{desc:"画面向上移动10px",key:"shift+arrowup",command:"moveUp",args:10},{desc:"画面向下移动10px",key:"shift+arrowdown",command:"moveDown",args:-10},{desc:"前进5秒",key:"arrowright",command:"seekForward",args:5},{desc:"后退5秒",key:"arrowleft",command:"seekBack",args:-5},{desc:"前进30秒",key:"ctrl+arrowright",command:"seekForward",args:[30]},{desc:"后退30秒",key:"ctrl+arrowleft",command:"seekBack",args:[-30]},{desc:"音量升高 5%",key:"arrowup",command:"volumeUp",args:[.05]},{desc:"音量降低 5%",key:"arrowdown",command:"volumeDown",args:[-.05]},{desc:"音量升高 20%",key:"ctrl+arrowup",command:"volumeUp",args:[.2]},{desc:"音量降低 20%",key:"ctrl+arrowdown",command:"volumeDown",args:[-.2]},{desc:"切换暂停/播放",key:"space",command:"switchPlay"},{desc:"减速播放",key:"x",command:"slowDown",args:-.1},{desc:"加速播放",key:"c",command:"speedUp",args:.1},{desc:"正常速度播放",key:"z",command:"resetSpeed"},{desc:"设置1x的播放速度",key:"Digit1",command:"boost",args:1},{desc:"设置1x的播放速度",key:"Numpad1",command:"boost",args:1},{desc:"设置2x的播放速度",key:"Digit2",command:"boost",args:2},{desc:"设置2x的播放速度",key:"Numpad2",command:"boost",args:2},{desc:"设置3x的播放速度",key:"Digit3",command:"boost",args:3},{desc:"设置3x的播放速度",key:"Numpad3",command:"boost",args:3},{desc:"设置4x的播放速度",key:"Digit4",command:"boost",args:4},{desc:"设置4x的播放速度",key:"Numpad4",command:"boost",args:4},{desc:"下一帧",key:"F",command:"freezeFrame",args:1},{desc:"上一帧",key:"D",command:"freezeFrame",args:-1},{desc:"增加亮度",key:"E",command:"brightnessUp"},{desc:"减少亮度",key:"W",command:"brightnessDown"},{desc:"增加对比度",key:"T",command:"contrastUp"},{desc:"减少对比度",key:"R",command:"contrastDown"},{desc:"增加饱和度",key:"U",command:"saturationUp"},{desc:"减少饱和度",key:"Y",command:"saturationDown"},{desc:"增加色相",key:"O",command:"hueUp"},{desc:"减少色相",key:"I",command:"hueDown"},{desc:"模糊增加 1 px",key:"K",command:"blurUp"},{desc:"模糊减少 1 px",key:"J",command:"blurDown"},{desc:"图像复位",key:"Q",command:"resetPicture"},{desc:"画面旋转 90 度",key:"S",command:"setRotate"},{desc:"播放下一集",key:"N",command:"nextVideo"},{desc:"插入debugger断点",key:"ctrl+shift+alt+d",command:"debuggerNow"}],mouse:{enable:!1,longPressTime:600},download:{enable:!0},enhance:{blockSetPlaybackRate:!0,blockSetCurrentTime:!1,blockSetVolume:!1,allowExperimentFeatures:!1,allowExternalCustomConfiguration:!1,allowAcousticGain:!1,allowCrossOriginControl:!0},rightClickMenu:{enable:!0},debug:!1,blacklist:{urls:["https://www.bilibili.com/"],domains:["challenges.cloudflare.com"]}}},me=(function(){let e=c.storageUsable(),t={};return["getItem","setItem","removeItem"].forEach(o=>{let n=e&&localStorage[o];t[o]=n?function(){return n.apply(localStorage,arguments)}:function(){console.log("[Config] localStorage不可用")}}),t})(),pe={local:{label:"localStorage",usable:c.storageUsable,keys:()=>Object.keys(localStorage),get:i=>me.getItem(i),set:(i,e)=>me.setItem(i,c.isObj(e)||c.isArr(e)?JSON.stringify(e):e),del:i=>me.removeItem(i),encoded:!0,fallback:null},global:{label:"globalStorage",usable:()=>window.GM_setValue&&window.GM_getValue&&window.GM_deleteValue&&window.GM_listValues instanceof Function,keys:()=>window.GM_listValues(),get:i=>window.GM_getValue(i),set:(i,e)=>window.GM_setValue(i,e),del:i=>window.GM_deleteValue(i),encoded:!1,fallback:"local"}},he=class{hasExternal;opts;_keyNames;revision;_confObjRevision_;constructor(e){this.hasExternal=!1,this.opts=e,this._keyNames={},this.revision=0,this._confObjRevision_=-1}mergeExternal(e,t="Default"){if(!e||!this.getGlobal("enhance.allowExternalCustomConfiguration"))return!1;let o=c.mergeObj(this.opts.config,e.customConfiguration);this.revision++;let n=c.mergeObj(fe,e.customTaskControlCenter);return S&&(S.conf=n),console.log("[Config] 外部配置合并",o,n),this.hasExternal=!0,!0}confKey(e=""){return this._keyNames[e]||(this._keyNames[e]=this.opts.prefix+e.replace(/\./g,"_"))}getConfPath(e=""){return(e.startsWith(this.opts.prefix)?e.slice(this.opts.prefix.length):e).replace(/_/g,".")}get(e){if(typeof e!="string")return null;let t=this.getLocal(e);if(t!==null)return t;let o=this.getGlobal(e);return o!==null?o:this.getMemory(e)}set(e,t){return this.setLocal(e,t)||this.setGlobal(e,t)}persistMedia(e,t,o){return o||c.inFrame()?this.setGlobal(e,t):this.set(e,t)}list(){return{localConf:this.listLocal(),globalConf:this.listGlobal(),defConfig:this.opts.config}}clear(){this.clearLocal(),this.clearGlobal()}getMemory(e){let t=c.getPath(this.getConfObj(),e);return typeof t>"u"||t===null?null:t}readLayer(e,t){let o=pe[e];if(!o.usable())return o.fallback?this.readLayer(o.fallback,t):null;let n=this.confKey(t),r=o.get(n);if(r===null||typeof r>"u")return this.getMemory(t);if(!o.encoded)return r;try{return JSON.parse(r)}catch{return console.log("[Config] 配置解析异常",n,r),r}}getLocal(e){return this.readLayer("local",e)}getGlobal(e){return this.readLayer("global",e)}writeLayer(e,t,o){let n=pe[e];if(typeof t!="string"||typeof o>"u"||o===null)return!1;c.setPath(this.opts.config,t,o),this.revision++;let r=this.confKey(t);if(!n.usable())return n.fallback?this.writeLayer(n.fallback,t,o):!1;try{return n.set(r,o),!0}catch(s){return console.log("[Config] 配置写入异常",n.label,r,o,s),!1}}setLocal(e,t){return this.writeLayer("local",e,t)}setGlobal(e,t){return this.writeLayer("global",e,t)}listLayer(e){let t=pe[e],o={};return t.usable()&&t.keys().forEach(n=>{if(n.startsWith(this.opts.prefix)){let r=this.getConfPath(n);o[r]=this.readLayer(e,r)}}),o}listLocal(){return this.listLayer("local")}listGlobal(){return this.listLayer("global")}getConfObj(){if(this._confObjRevision_===this.revision)return this.opts.config;this._confObjRevision_=this.revision;let e=this.list();return Object.keys(e.globalConf).forEach(t=>{c.setPath(this.opts.config,t,e.globalConf[t])}),Object.keys(e.localConf).forEach(t=>{c.setPath(this.opts.config,t,e.localConf[t])}),this.opts.config}clearLayer(e){let t=pe[e];t.usable()&&(t.keys().forEach(o=>{o.startsWith(this.opts.prefix)&&t.del(o)}),this.revision++)}clearLocal(){this.clearLayer("local")}clearGlobal(){this.clearLayer("global")}},g=new he(ot),ce=new Map,K=i=>i==="site"?"「仅用于此网站」":"「全局设置」",U=(i,e,t)=>i==="site"?g.setLocal(e,t):g.setGlobal(e,t),G=i=>(i&&i(),window.location.reload(),!0),qe=()=>g.get("blacklist.domains")||[],te=()=>qe().includes(location.host),Q=()=>g.get("rightClickMenu.enable")!==!1,E=i=>g.get("enhance.blockSet"+i)===!0,T=(i,e,t)=>{let o=K(e),n=()=>!g.get(i),r=()=>t[n()?0:1];return{title:()=>`${r()} ${o}`,fn:()=>{G(()=>U(e,i,n()))}}},nt={toggleEnable:{title:()=>`${te()?"启用脚本":"禁用脚本"} ${K("site")}`,fn:()=>{let i=te();G(()=>{let e=qe();U("global","blacklist.domains",i?e.filter(t=>t!==location.host):e.concat(location.host))})}},toggleCurrentTime:T("enhance.blockSetCurrentTime","site",["允许默认播放进度控制逻辑","禁用默认播放进度控制逻辑"]),toggleVolume:T("enhance.blockSetVolume","site",["允许默认音量控制逻辑","禁用默认音量控制逻辑"]),togglePlaybackRate:T("enhance.blockSetPlaybackRate","global",["允许默认速度调节逻辑","禁用默认速度调节逻辑"]),toggleGain:T("enhance.allowAcousticGain","global",["开启音量增益能力","禁用音量增益能力"]),toggleCrossControl:T("enhance.allowCrossOriginControl","global",["开启跨域控制能力","禁用跨域控制能力"]),toggleExperiment:T("enhance.allowExperimentFeatures","global",["开启实验性功能","禁用实验性功能"]),toggleExternal:T("enhance.allowExternalCustomConfiguration","global",["开启外部自定义能力","关闭外部自定义能力"]),toggleDebug:T("debug","global",["开启调试模式","关闭调试模式"]),restoreDefault:{title:"还原全局的默认配置",fn:()=>{g.clear(),G()}},openFrame:{title:"单独打开跨域的页面",fn:()=>{c.openTab(location.href)}},toggleMenu:{title:()=>`${Q()?"禁用":"启用"}视频右键菜单 ${K("global")}`,fn:()=>{let i=Q();U("global","rightClickMenu.enable",!i),f.close()}},toggleHotkeys:T("enableHotkeys","global",["启用快捷键","禁用快捷键"]),siteHotkeys:T("enableHotkeys","site",["启用快捷键","禁用快捷键"]),toggleMouse:T("mouse.enable","global",["启用鼠标控制","禁用鼠标控制"]),siteMouse:T("mouse.enable","site",["启用鼠标控制","禁用鼠标控制"]),setLongPress:{title:()=>`长按多久响应鼠标长按事件 ${K("global")}`,fn:()=>{let i=prompt(`长按多久响应鼠标长按事件 ${K("global")}`,g.get("mouse.longPressTime")||600);i&&(U("global","mouse.longPressTime",Number(i)),window.location.reload())}},toggleDownload:T("download.enable","global",["开启媒体下载","关闭媒体下载"]),siteDownload:T("download.enable","site",["开启媒体下载","关闭媒体下载"])},w=(i,e,...t)=>({title:i,command:e,args:t,fn:()=>oe(e,t)}),rt=[["toggleMenu","toggleEnable"],["togglePlaybackRate","toggleCurrentTime","toggleVolume","toggleGain","toggleCrossControl","toggleExperiment","toggleExternal"],["toggleHotkeys","siteHotkeys","toggleMouse","siteMouse","setLongPress","toggleDownload","siteDownload"],["toggleDebug","restoreDefault","openFrame"]],Re=()=>rt.map(i=>i.map(e=>nt[e])).reduce((i,e,t)=>i.concat(t?{divider:!0}:[],e),[]);var ye=i=>{i.preventDefault(),i.stopPropagation()},I=class i{enable;globalMode;crossDetected;_isFocus;hotkeysRunner;keysPaused;_bound_;_relayed_;_keyIndex_;_indexRevision_;constructor(){this.enable=!0,this.globalMode=!0,this.crossDetected=!1,this._isFocus=!1,this.hotkeysRunner=null,this.keysPaused=!1,this._bound_=!1,this._relayed_=!1,this._keyIndex_=null,this._indexRevision_=-1}static signature(e,t){if(!t)return"";let o=e.filter(Boolean).sort();return o.length?o.join("+")+"+"+t:t}keyIndex(){if(y._indexRevision_!==g.revision){y._indexRevision_=g.revision;let e=new Map;(Array.isArray(g.get("hotkeys"))?g.get("hotkeys"):[]).forEach(t=>{if(!t||t.disabled||typeof t.key!="string")return;let o=Y.parseKeys(t.key,Y.platformMod());if(o.length!==1)return;let n=i.signature(o[0][0],o[0][1]);n&&!e.has(n)&&e.set(n,t)}),y._keyIndex_=e}return y._keyIndex_}findBinding(e){if(!e)return null;let t=y.keyIndex(),o=[];e.ctrlKey&&o.push("ctrl"),e.altKey&&o.push("alt"),e.metaKey&&o.push("meta"),e.shiftKey&&o.push("shift");let n=[e.key,e.code].filter(r=>typeof r=="string").map(r=>i.signature(o,r.toLowerCase())).filter(Boolean);for(let r=0;r<n.length;r++)if(t.has(n[r]))return t.get(n[r]);return null}static isRegistered(e){return!!y.findBinding(e)}toggleHotkeys(){y.keysPaused=!y.keysPaused,f.tips(y.keysPaused?"快捷键已临时禁用":"快捷键已临时启用")}toggleEnhance(){return y.enable=!y.enable,f.tips(y.enable?"启用r6Player插件":"禁用r6Player插件"),y.enable}mountRunner(){y.hotkeysRunner||(y.hotkeysRunner=new Y(g.get("hotkeys")),c.inFrame()&&!c.crossSite()&&y.hotkeysRunner.addWindow(window.top))}isFocus(){let e=u.player();e&&(e.onmouseenter=function(t){y._isFocus=!0},e.onmouseleave=function(t){y._isFocus=!1})}playerTrigger(e,t){if(!e||!t)return!1;let o=y.findBinding(t);return!o||!oe(o.command,o.args)?!1:(t.stopPropagation&&t.stopPropagation(),t.preventDefault&&t.preventDefault(),!0)}siteShortcut(e,t){if(!e||!t)return;let o=t.key.toLowerCase(),n=S.siteConf(),r=c.isObj(n.shortcuts)&&Array.isArray(n.shortcuts.register)&&n.shortcuts.callback instanceof Function,s=[];if(t.ctrlKey&&s.push("ctrl"),t.shiftKey&&s.push("shift"),t.altKey&&s.push("alt"),t.metaKey&&s.push("command"),s.push(o),!(r&&n.shortcuts.register.some(m=>{let x=m.split("+");return x.length===s.length&&x.every(b=>s.includes(b))})))return!1;let l=S.doTask("shortcuts",{event:t,player:e});return l&&ye(t),l}keydownEvent(e){let t=e.keyCode,o=u.player();if(!(y.keysPaused||c.editable(c.eventTarget(e)))){if(M.send("globalKeydownEvent",e,0),!o){if(y.crossDetected){if(!g.get("enhance.allowCrossOriginControl"))return!1;y.hotkeysRunner&&y.hotkeysRunner.run?y.hotkeysRunner.run({event:e,stopPropagation:!0,preventDefault:!0}):(y.mountRunner(),ye(e))}return!1}if(e.ctrlKey&&t===32&&y.toggleEnhance(),!y.enable)return console.log("[Input] 增强已禁用"),!1;if(e.ctrlKey&&t===220&&(y.globalMode=!y.globalMode,f.tips("全局模式："+(y.globalMode?" ON":" OFF"))),!(!y.globalMode&&!y._isFocus)&&y.siteShortcut(o,e)!==!0)if(y.hotkeysRunner&&y.hotkeysRunner.run){let n=y.hotkeysRunner.run({event:e,stopPropagation:!0,preventDefault:!0});if(n)return console.log("[Input] 按键命中",n),!0}else return y.playerTrigger(o,e)}}bindRelay(){if(y._relayed_)return;let e=function(t,o,n,r){let s=u.player();if(s&&!y.keysPaused){let a=n.data;a.stopPropagation=()=>{},a.preventDefault=()=>{},y.playerTrigger(s,a),console.log("[Input] 跨域按键响应",n)}};!M.pictureOpen()&&!y.crossDetected&&(e=c.throttle(e,80)),M.on("globalKeydownEvent",async(t,o,n,r)=>{r&&(c.crossSite()?document.visibilityState==="visible"&&n.originTab&&e(t,o,n,r):M.pictureOpen()&&!n.originTab&&(document.pictureInPictureElement||u.justExited())&&e(t,o,n,r))}),y._relayed_=!0}bindEvent(){if(y._bound_)return;let e=[document];c.inFrame()&&!c.crossSite()&&e.push(window.top.document),c.rebindKeydown(y.keydownEvent,e),y._bound_=!0}static register(){let e=g.get("mouse.longPressTime")||600,t=null,o=!1,n=!1,r=1;document.addEventListener("mousedown",function(s){let a=u.player();!a||!(a instanceof HTMLVideoElement)||(n=a.paused,c.onMedia(a,s.clientX,s.clientY,80)&&s.button===0&&(t=setTimeout(()=>{o=!0,r=d.getSpeed(),d.applyRate(3,!1,800),ye(s)},e)))},!0),document.addEventListener("mouseup",function(s){t&&clearTimeout(t),o&&(o=!1,ye(s),n?u.enhancer.lockPlay(600):u.enhancer.lockPause(600),d.applyRate(r,!1,800))},!0)}},y=null,Ve=()=>(y=new I,y),at=()=>{if(!window._debugMode_)return!1;let i=document.createElement("script");return i.innerText="debugger",document.body.appendChild(i),!0},W=Object.create(null),Ge=()=>(W.debuggerNow=at,[u,f,d,p,y].forEach(i=>{Object.getOwnPropertyNames(Object.getPrototypeOf(i)).forEach(e=>{e==="constructor"||e in W||typeof i[e]=="function"&&(W[e]=(...t)=>i[e](...t))})}),W),oe=(i,e)=>{let t=typeof i=="function"?i:W[i];if(!(t instanceof Function))return console.log("[Input] 命令派发失败",String(i)),!1;let o=Array.isArray(e)?e:typeof e>"u"?[]:[e];return t(...o),!0},it={ControlLeft:"ctrl",ControlRight:"ctrl",ShiftLeft:"shift",ShiftRight:"shift",AltLeft:"alt",AltRight:"alt",MetaLeft:"meta",MetaRight:"meta"},st=new k.WeakMap,Y=class i{window;windowList;MOD;prevPress;_prevTimer_;modState;hotkeys;constructor(e,t=window){this.window=t,this.windowList=[t],this.MOD=i.platformMod(),this.prevPress=null,this._prevTimer_=null,this.modState=new k.Map,this.hotkeys=e||[],Array.isArray(this.hotkeys)?this.hotkeys.forEach(o=>{!c.isObj(o)||!o.key||typeof o.key!="string"||(o.keyBindings=i.parseKeys(o.key,this.MOD))}):this.hotkeys=[],this.watchMods(t)}static platformMod(){return/Mac|iPod|iPhone|iPad/.test(typeof navigator=="object"&&navigator.platform?navigator.platform:"")?"meta":"ctrl"}static parsePress(e,t){let o=[],n="";return e.split(/\b\+/).forEach(r=>{r=r==="$mod"?t:r,c.isModifier(r)?o.push(r):n=r}),[o,n]}static parseKeys(e,t){return e.trim().toLowerCase().split(/\s+/).map(o=>i.parsePress(o,t))}addWindow(e){this.window=e,this.windowList.includes(e)||this.windowList.push(e),this.watchMods(e)}isMatch(e,t,o){if(!e||!Array.isArray(t))return!1;let n=e.modsMap||this.heldMods(),r=t[0],s=t[1];if(r.length!==n.size||s&&e.key.toLowerCase()!==s&&e.code.toLowerCase()!==s)return!1;let a=!0,l=o||this.modsOf(e);return r.forEach(m=>{l.has(m)||(a=!1)}),a}modsOf(e){let t=e.modsMap||this.heldMods(),o=new k.Map;return t.forEach((n,r)=>{o.set(r,n),o.set(r.toLowerCase(),n),it[r]&&o.set(it[r],n)}),o}run(e={}){if(!this.windowList.some(r=>r.KeyboardEvent===e.event.constructor))return!1;let t=e.event,o=this.modsOf(t),n=null;return this.hotkeys.forEach(r=>{if(r.disabled||!r.keyBindings)return!1;let s=r.keyBindings[0];if(this.prevPress){if(r.keyBindings.length<=1||!this.isMatch(this.prevPress,s))return!1;s=r.keyBindings[1]}if(!this.isMatch(t,s,o))return!1;n=r;let l=e.stopPropagation||r.stopPropagation,m=e.preventDefault||r.preventDefault;if(l&&t.stopPropagation(),m&&t.preventDefault(),s===r.keyBindings[0]&&r.keyBindings.length>1)return this.prevPress={modsMap:this.heldMods(),code:t.code,key:t.key,keyCode:t.keyCode,altKey:t.altKey,shiftKey:t.shiftKey,ctrlKey:t.ctrlKey,metaKey:t.metaKey},clearTimeout(this._prevTimer_),this._prevTimer_=setTimeout(()=>{this.prevPress=null},1e3),!0;r.keyBindings.length>1&&s!==r.keyBindings[0]&&setTimeout(()=>{this.prevPress=null},0),oe(r.command,r.args)}),n}watchMods(e=window){let o=this.modState;if(!e||e!==e.self||!e.addEventListener||st.get(e))return!1;let n={};function r(a){c.isModifier(a.code)&&o.set(a.code,!0)}function s(a){if(!(a instanceof KeyboardEvent))return o.forEach((l,m)=>{o.set(m,!1)}),!0;c.isModifier(a.code)&&(clearTimeout(n[a.code]),n[a.code]=setTimeout(()=>{o.set(a.code,!1)},50))}e.addEventListener("keydown",r,!0),e.addEventListener("keypress",r,!0),e.addEventListener("keyup",s,!0),e.addEventListener("blur",s,!0),st.set(e,!0)}heldMods(){let e=this.modState,t=new k.Map;return e.forEach((o,n)=>{o===!0&&t.set(n,o)}),t}};var ge={iPhone:{safari:"Mozilla/5.0 (iPhone; CPU iPhone OS 13_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/111.0.0.0 Mobile/15E148 Safari/604.1",chrome:"Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/74.0.3729.121 Mobile/15E148 Safari/605.1"}},lt={"open.163.com":ge.iPhone.chrome,"m.open.163.com":ge.iPhone.chrome,"pan.baidu.com":ge.iPhone.safari},$="globalPictureInPictureInfo",O=class i{_bound_;static openShadow(){if(!window._hasHackAttachShadow_)try{window._shadowDomList_=[],window.Element.prototype._attachShadow=window.Element.prototype.attachShadow,window.Element.prototype.attachShadow=function(){let e=arguments,t=e[0]&&e[0].mode==="closed";e[0]&&e[0].mode&&(e[0].mode="open");let o=this._attachShadow.apply(this,e);window._shadowDomList_.push(o),o._shadowHost=this;let n=new window.CustomEvent("addShadowRoot",{detail:{shadowRoot:o,message:"addShadowRoot",time:new Date},bubbles:!0,cancelable:!0});return document.dispatchEvent(n),t&&k.Object.defineProperty.call(Object,this,"shadowRoot",{get(){return null}}),o},window._hasHackAttachShadow_=!0}catch(e){console.log("[Bridge] shadowRoot劫持异常",e)}}static spoofAgent(e){if(e=e||lt[window.location.host],!e)return;let t=Object.getOwnPropertyDescriptor(Navigator.prototype,"userAgent");Object.defineProperty(Navigator.prototype,"userAgent",{...t,get:function(){return e}})}static unlockable(e,t,o){return!o||typeof o!="object"?[e,t,o]:(e instanceof Element&&typeof t=="string"&&t.indexOf("on")>=0&&(o.configurable=!0),e instanceof HTMLVideoElement&&typeof t=="string"&&["playbackRate","currentTime","volume","muted"].includes(t)&&(console.log("[Bridge] 媒体属性锁拦截",t),o.configurable=!0,t+="_hack"),[e,t,o])}static safeDefine(e,t,o){try{return e.apply(Object,t)}catch(n){return console.log("[Bridge] 属性定义异常",o,n),null}}static hackDefine(){let e=Object.defineProperty,t=Object.defineProperties;Object.defineProperty=function(o,n,r){return i.safeDefine(e,i.unlockable(o,n,r),"defineProperty")},Object.defineProperties=function(o,n){if(o instanceof Element&&n){let r={};Object.keys(n).forEach(s=>{let a=i.unlockable(o,s,n[s]);r[a[1]]=a[2]}),n=r}return i.safeDefine(t,[o,n],"defineProperties")}}static proxyEvents(){if(HTMLMediaElement.prototype._rawAddEventListener_)return!1;HTMLMediaElement.prototype._rawAddEventListener_=HTMLMediaElement.prototype.addEventListener,HTMLMediaElement.prototype._rawRemoveEventListener_=HTMLMediaElement.prototype.removeEventListener,HTMLMediaElement.prototype.addEventListener=new k.Proxy(HTMLMediaElement.prototype.addEventListener,{apply(e,t,o){let n=o[0],r=o[1];return r instanceof Function&&n==="ratechange"&&(o[1]=new k.Proxy(r,{apply(s,a,l){if(a&&a.playbackRate&&n==="ratechange"){if(a._hasBlockRatechangeEvent_)return!0;let m=a.playbackRate,x=Date.now(),b=s.apply(a,l),P=m!==a.playbackRate||Date.now()-x>1e3,v=a._setPlaybackRate_&&a._setPlaybackRate_.value!==a.playbackRate;return P||v?(console.log("[Bridge] 阻速行为拦截",n,r),a._hasBlockRatechangeEvent_=!0,!0):b}try{return s.apply(a,l)}catch(m){console.log("[Bridge] 事件代理异常",n,r,m)}}})),e.apply(t,o)}})}send(e,t,o=80){if(!window.GM_getValue||!window.GM_setValue)return!1;let n=window.GM_getValue(e);if(n&&n.updateTime&&Math.abs(Date.now()-n.updateTime)<o)return!1;let r={data:t,tabId:B.id||"undefined",title:document.title,referrer:c.extractData(window.location),updateTime:Date.now()};typeof t=="object"&&(r.data=c.extractData(t)),window.GM_setValue(e,r)}get(e){return window.GM_getValue&&window.GM_getValue(e)}on(e,t){return window.GM_addValueChangeListener&&window.GM_addValueChangeListener(e,function(o,n,r,s){r.originTab=r.tabId===B.id,t instanceof Function&&t.apply(null,arguments)})}pollPicture(){setInterval(()=>{document.pictureInPictureElement&&M.send($,{usePictureInPicture:!0})},1e3*1.5)}pictureOpen(){let e=M.get($);return!e||!e.data?!1:Math.abs(Date.now()-e.updateTime)<(e.data.usePictureInPicture?1e3*3:1e3*15)}yieldKeys(e){if(!c.editable(c.eventTarget(e))&&M.pictureOpen()){let t=M.get($),o=e&&typeof e.keyCode<"u"&&(e.ctrlKey||e.metaKey)&&["c","v","f","d"].includes(e.key.toLowerCase());if(t.tabId!==B.id&&I.isRegistered(e)&&!o)return e.stopPropagation(),e.preventDefault(),!0}}bindYield(){M._bound_||(c.rebindKeydown(M.yieldKeys,[document]),M._bound_=!0)}},M=new O;var ct=()=>{let i=window.unsafeWindow&&window.unsafeWindow.__r6PlayerCustomConfiguration__;i&&!g.hasExternal&&g.mergeExternal(i)},ut=()=>(ct(),S.doTask("disable")===!0?(console.log("[Boot] 任务中心禁用本站检测",location.host),!0):u.detectPlayer()),Ke=i=>J.forEach(e=>c.ready(e,()=>ut(),i)),j={runtimeReady:!1,initTryCount:0},dt=()=>(j.runtimeReady||(j.runtimeReady=!0,ct(),g.get("debug")===!0&&(window._debugMode_=!0),O.spoofAgent(),g.get("enableHotkeys")!==!1?(y.bindEvent(),y.bindRelay()):console.log("[Boot] 快捷键禁用"),M.on("videoDetected",(i,e,t,o)=>{t.originTab&&(y.crossDetected=!0),console.log("[Boot] 跨域视频检出",t,o)}),document.addEventListener("visibilitychange",function(){u.autoPlay()}),window.unsafeWindow&&g.getGlobal("enhance.allowExternalCustomConfiguration")&&(window.unsafeWindow.__setR6PlayerCustomConfiguration__=(i,e)=>g.mergeExternal(i,e)),Ke(),document.addEventListener("addShadowRoot",i=>Ke(i.detail.shadowRoot)),M.pollPicture(),M.bindYield(),c.inFrame()?console.log("[Boot] 启动完成, in iframe:"):console.log("[Boot] 启动完成"),c.crossSite()&&console.log("[Boot] 跨域iframe受限",window.location.href),g.get("mouse.enable")&&I.register()),!0),ft=()=>{try{if(c.isChallenge())return console.log("[Boot] 人机验证页暂停",location.href),!1}catch(n){console.log("[Boot] 页面判定异常",n)}let i=g.get("enable"),t=(g.get("blacklist.urls")||[]).includes(location.href)||te(),o=!!i&&!t;t&&console.log("[Boot] 黑名单禁用本站",location.href,"如需开启请在配置 blacklist 中移除该地址"),Ue(o);try{o&&(h.init(function(n){ut()}),g.get("enhance.allowExperimentFeatures")&&g.get("download.enable")&&(_.init(),console.log("[Boot] 实验功能开启警示"),console.log("[Boot] 媒体流捕获启用")),O.hackDefine(),O.openShadow(),O.proxyEvents())}catch(n){console.log("[Boot] 页面劫持异常",n)}if(H.init(),!o)return console.log("[Boot] 配置禁用本站",location.host),!1;try{dt()}catch(n){console.log("[Boot] 装配失败",n)}},ne=(i=0)=>{if(!window.document||!window.document.documentElement)return setTimeout(()=>{i<200?ne(i+1):console.log("[Boot] documentElement缺失",window)},10),!1;i>0&&console.log("[Boot] documentElement就绪",i,window),ft()};var ht=[We,He,Se,ze,ke,$e,Me,Ie,Ce,ve,je],Ye={},yt=()=>{let i=new Set;return ht.forEach(e=>{Object.keys(e).forEach(t=>{if(i.has(t))throw new Error("内部清单里名字重复："+t);i.add(t),Object.defineProperty(Ye,t,{enumerable:!0,get:()=>e[t]})})}),window.__playerInternals=Ye,Ye},gt=[De,Te,Le,Pe,Ve];yt();c.getTabId();_e();xe();gt.forEach(i=>i());Ge();try{ne(0)}catch(i){setTimeout(()=>{j.initTryCount<200&&(j.initTryCount++,ne(0),console.log("[Entry] 启动重试",j.initTryCount,i))},10)}})();
+      `);
+      }
+    },
+    "youku.com": { fullScreen: ".control-fullscreen-icon", next: ".control-next-video", init: watermarkTask(".youku-layer-logo") },
+    "ted.com": { fullScreen: "button.Fullscreen" },
+    "qq.com": {
+      pause: ".container_inner .txp-shadow-mod",
+      play: ".container_inner .txp-shadow-mod",
+      shortcuts: {
+        register: ["c", "x", "z", "1", "2", "3", "4"],
+        callback: function(taskConf2, data) {
+          const { event } = data;
+          const key = event.key.toLowerCase();
+          const keyName = "customShortcuts_" + key;
+          if (!taskScratch[keyName]) {
+            taskScratch[keyName] = { time: Date.now(), playbackRate: tuner.playbackRate };
+            return false;
+          } else {
+            if (Date.now() - taskScratch[keyName].time < 200) {
+              return false;
+            }
+            if (taskScratch[keyName] === tuner.playbackRate || taskScratch[keyName] === true) {
+              if (window.sessionStorage.playbackRate && /(c|x|z|1|2|3|4)/.test(key)) {
+                const curSpeed = Number(window.sessionStorage.playbackRate);
+                const perSpeed = curSpeed - 0.1 >= 0 ? curSpeed - 0.1 : 0.1;
+                const nextSpeed = curSpeed + 0.1 <= 4 ? curSpeed + 0.1 : 4;
+                let targetSpeed = curSpeed;
+                switch (key) {
+                  case "z":
+                    targetSpeed = 1;
+                    break;
+                  case "c":
+                    targetSpeed = nextSpeed;
+                    break;
+                  case "x":
+                    targetSpeed = perSpeed;
+                    break;
+                  default:
+                    targetSpeed = Number(key);
+                    break;
+                }
+                window.sessionStorage.playbackRate = targetSpeed;
+                tuner.seekForward(0.01, true);
+                tuner.setSpeed(targetSpeed, true);
+                return true;
+              }
+              taskScratch[keyName] = true;
+            } else {
+              taskScratch[keyName] = false;
+            }
+          }
+        }
+      },
+      fullScreen: 'txpdiv[data-report="window-fullscreen"]',
+      webFullScreen: 'txpdiv[data-report="browser-fullscreen"]',
+      next: 'txpdiv[data-report="play-next"]',
+      init: watermarkTask(".txp-watermark", ".txp-watermark-action"),
+      include: /(v.qq|sports.qq)/
+    },
+    "pan.baidu.com": { fullScreen: function(taskConf2) {
+      activePlayer.player().parentNode.querySelector(".vjs-fullscreen-control").click();
+    } },
+    "facebook.com": {
+      fullScreen: facebookTask,
+      webFullScreen: facebookTask,
+      // 在视频模式下按esc键，自动返回上一层界面
+      shortcuts: escapeTask(() => {
+        Utils.eachParent(activePlayer.player(), function(parentNode) {
+          if (parentNode.getAttribute("data-fullscreen-container") === "true") {
+            const goBackBtn = parentNode.parentNode.querySelector("div>a>i>u");
+            if (goBackBtn) {
+              goBackBtn.parentNode.parentNode.click();
+            }
+            return true;
+          }
+        });
+      })
+    },
+    "douyu.com": { fullScreen: douyuScreen("_isFullScreen_", "窗口全屏", "退出窗口全屏"), webFullScreen: douyuScreen("_isWebFullScreen_", "网页全屏", "退出网页全屏") },
+    "open.163.com": {
+      init: function(taskConf2) {
+        const player = activePlayer.player();
+        player.setAttribute("crossOrigin", "anonymous");
+      }
+    },
+    "agefans.tv": { init: allowCross },
+    "chaoxing.com": { fullScreen: ".vjs-fullscreen-control" },
+    "yixi.tv": { init: allowCross },
+    "douyin.com": { ...xgplayerTask, init: (taskConf2) => {
+      allowCross();
+      douyinTitle(taskConf2);
+    } },
+    "live.douyin.com": { ...xgplayerTask, init: allowCross },
+    "zhihu.com": {
+      fullScreen: ['button[aria-label="全屏"]', 'button[aria-label="退出全屏"]'],
+      play: function(taskConf2, data) {
+        const player = activePlayer.player();
+        if (player && player.parentNode && player.parentNode.parentNode) {
+          const maskWrap = player.parentNode.parentNode.querySelector("div~div:nth-child(3)");
+          if (maskWrap) {
+            const mask = maskWrap.querySelector("div");
+            if (mask && mask.innerText === "") {
+              mask.click();
+            }
+          }
+        }
+      },
+      init: allowCross
+    },
+    "weibo.com": { fullScreen: ["button.wbpv-fullscreen-control"], webFullScreen: ["div.wbpv-open-layer-button"] },
+    "twitter.com": {
+      init: hoverTitle('article[data-testid="tweet"]', 600, (player, wrapEl) => {
+        const titleEl = wrapEl.querySelector('div[data-testid="tweetText"]');
+        if (!titleEl) {
+          return false;
+        }
+        Utils.setTitle(player, wrapEl, titleEl.innerText.trim());
+        return true;
+      })
+    }
+  };
+  var TaskControl = class _TaskControl {
+    conf;
+    doTaskFunc;
+    constructor(taskConf2, doTaskFunc) {
+      this.conf = taskConf2 || {};
+      this.doTaskFunc = doTaskFunc instanceof Function ? doTaskFunc : function() {
+      };
+    }
+    // 取当前主域名：子域多于两段时去掉最左一段（www.a.com → a.com）
+    getDomain() {
+      const host = window.location.host;
+      let domain = host;
+      const tmpArr = host.split(".");
+      if (tmpArr.length > 2) {
+        tmpArr.shift();
+        domain = tmpArr.join(".");
+      }
+      return domain;
+    }
+    // 任务配置的 include / exclude 正则是否命中当前地址，exclude 命中即否决
+    isMatch(taskConf2) {
+      const url = window.location.href;
+      let isMatch = false;
+      if (!taskConf2.include && !taskConf2.exclude) {
+        isMatch = true;
+      } else {
+        if (taskConf2.include && taskConf2.include.test(url)) {
+          isMatch = true;
+        }
+        if (taskConf2.exclude && taskConf2.exclude.test(url)) {
+          isMatch = false;
+        }
+      }
+      return isMatch;
+    }
+    // 取本站任务表：host 优先、主域名兜底，再按 include / exclude 过滤
+    siteConf() {
+      const domain = this.getDomain();
+      const taskConf2 = this.conf[window.location.host] || this.conf[domain];
+      if (taskConf2 && this.isMatch(taskConf2)) {
+        return taskConf2;
+      }
+      return {};
+    }
+    // 按任务名派发：站点没配任务表、或表里没这个任务名，都返回 false
+    doTask(taskName, data) {
+      if (!taskName) return false;
+      const taskConf2 = this.siteConf();
+      if (!Utils.isObj(taskConf2) || !taskConf2[taskName]) return false;
+      return this.doTaskFunc(taskName, taskConf2, data);
+    }
+    // 造一个真 TaskControl：派发函数按任务值的形态分四路——shortcuts 回调、函数、布尔、选择器
+    static create() {
+      return new _TaskControl(taskConf, function(taskName, taskConf2, data) {
+        try {
+          const task = taskConf2[taskName];
+          if (taskName === "shortcuts") {
+            if (Utils.isObj(task) && task.callback instanceof Function) {
+              return task.callback(taskConf2, data);
+            }
+          } else if (task instanceof Function) {
+            try {
+              return task(taskConf2, data);
+            } catch (e) {
+              console.log("[Task] 自定义函数失败", taskName, taskConf2, data, e);
+              return false;
+            }
+          } else if (typeof task === "boolean") {
+            return task;
+          } else {
+            const roots = [activePlayer.getWrap(), document];
+            const selectorList = Array.isArray(task) ? task : [task];
+            for (const selector of selectorList) {
+              for (const root of roots) {
+                const target = root && root.querySelector(selector);
+                if (target) {
+                  target.click();
+                  return true;
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.log("[Task] 自定义任务失败", taskName, taskConf2, data, e);
+          return false;
+        }
+      });
+    }
+  };
+  var taskCenter = null;
+  var installTasks = (isEnhanceOn) => {
+    taskCenter = isEnhanceOn ? TaskControl.create() : new TaskControl({}, function() {
+    });
+  };
+
+  // Config.ts
+  var defaultConfiguration = {
+    prefix: "_r6player_",
+    config: {
+      enable: true,
+      media: { autoPlay: false, playbackRate: 1, volume: 1, lastPlaybackRate: 1.5, progress: {} },
+      enableHotkeys: true,
+      hotkeys: [
+        { desc: "网页全屏", key: "shift+enter", command: "webMaximize", disabled: false },
+        { desc: "全屏", key: "enter", command: "maximize" },
+        { desc: "切换画中画模式", key: "shift+p", command: "togglePicture" },
+        { desc: "视频截图", key: "shift+s", command: "capture" },
+        { desc: "启用或禁止自动恢复播放进度功能", key: "shift+r", command: "toggleRestore" },
+        { desc: "垂直镜像翻转", key: "shift+m", command: "setMirror", args: [true] },
+        { desc: "水平镜像翻转", key: "m", command: "setMirror" },
+        { desc: "下载音视频文件（实验性功能）", key: "shift+d", command: "mediaDownload" },
+        { desc: "缩小视频画面 -0.05", key: "shift+x", command: "zoomOut", args: -0.05 },
+        { desc: "放大视频画面 +0.05", key: "shift+c", command: "zoomIn", args: 0.05 },
+        { desc: "恢复视频画面", key: "shift+z", command: "resetTransform" },
+        { desc: "画面向右移动10px", key: "shift+arrowright", command: "moveRight", args: 10 },
+        { desc: "画面向左移动10px", key: "shift+arrowleft", command: "moveLeft", args: -10 },
+        { desc: "画面向上移动10px", key: "shift+arrowup", command: "moveUp", args: 10 },
+        { desc: "画面向下移动10px", key: "shift+arrowdown", command: "moveDown", args: -10 },
+        { desc: "前进5秒", key: "arrowright", command: "seekForward", args: 5 },
+        { desc: "后退5秒", key: "arrowleft", command: "seekBack", args: -5 },
+        { desc: "前进30秒", key: "ctrl+arrowright", command: "seekForward", args: [30] },
+        { desc: "后退30秒", key: "ctrl+arrowleft", command: "seekBack", args: [-30] },
+        { desc: "音量升高 5%", key: "arrowup", command: "volumeUp", args: [0.05] },
+        { desc: "音量降低 5%", key: "arrowdown", command: "volumeDown", args: [-0.05] },
+        { desc: "音量升高 20%", key: "ctrl+arrowup", command: "volumeUp", args: [0.2] },
+        { desc: "音量降低 20%", key: "ctrl+arrowdown", command: "volumeDown", args: [-0.2] },
+        { desc: "切换暂停/播放", key: "space", command: "switchPlay" },
+        { desc: "减速播放", key: "x", command: "slowDown", args: -0.1 },
+        { desc: "加速播放", key: "c", command: "speedUp", args: 0.1 },
+        { desc: "正常速度播放", key: "z", command: "resetSpeed" },
+        { desc: "设置1x的播放速度", key: "Digit1", command: "boost", args: 1 },
+        { desc: "设置1x的播放速度", key: "Numpad1", command: "boost", args: 1 },
+        { desc: "设置2x的播放速度", key: "Digit2", command: "boost", args: 2 },
+        { desc: "设置2x的播放速度", key: "Numpad2", command: "boost", args: 2 },
+        { desc: "设置3x的播放速度", key: "Digit3", command: "boost", args: 3 },
+        { desc: "设置3x的播放速度", key: "Numpad3", command: "boost", args: 3 },
+        { desc: "设置4x的播放速度", key: "Digit4", command: "boost", args: 4 },
+        { desc: "设置4x的播放速度", key: "Numpad4", command: "boost", args: 4 },
+        { desc: "下一帧", key: "F", command: "freezeFrame", args: 1 },
+        { desc: "上一帧", key: "D", command: "freezeFrame", args: -1 },
+        { desc: "增加亮度", key: "E", command: "brightnessUp" },
+        { desc: "减少亮度", key: "W", command: "brightnessDown" },
+        { desc: "增加对比度", key: "T", command: "contrastUp" },
+        { desc: "减少对比度", key: "R", command: "contrastDown" },
+        { desc: "增加饱和度", key: "U", command: "saturationUp" },
+        { desc: "减少饱和度", key: "Y", command: "saturationDown" },
+        { desc: "增加色相", key: "O", command: "hueUp" },
+        { desc: "减少色相", key: "I", command: "hueDown" },
+        { desc: "模糊增加 1 px", key: "K", command: "blurUp" },
+        { desc: "模糊减少 1 px", key: "J", command: "blurDown" },
+        { desc: "图像复位", key: "Q", command: "resetPicture" },
+        { desc: "画面旋转 90 度", key: "S", command: "setRotate" },
+        { desc: "播放下一集", key: "N", command: "nextVideo" },
+        { desc: "插入debugger断点", key: "ctrl+shift+alt+d", command: "debuggerNow" }
+      ],
+      mouse: { enable: false, longPressTime: 600 },
+      download: { enable: true },
+      enhance: {
+        // 不禁用默认调速逻辑的话，切换视频时倍速很容易被重置，所以默认开启
+        blockSetPlaybackRate: true,
+        blockSetCurrentTime: false,
+        blockSetVolume: false,
+        allowExperimentFeatures: false,
+        allowExternalCustomConfiguration: false,
+        allowAcousticGain: false,
+        allowCrossOriginControl: true
+      },
+      rightClickMenu: { enable: true },
+      debug: false,
+      blacklist: {
+        // url 黑名单：只挡单页（如 B 站首页），不整站禁用
+        urls: ["https://www.bilibili.com/"],
+        domains: ["challenges.cloudflare.com"]
+      }
+    }
+  };
+  var rawLocalStorage = (function getRawLocalStorage() {
+    const usable = Utils.storageUsable();
+    const raw = {};
+    ["getItem", "setItem", "removeItem"].forEach((apiKey) => {
+      const native = usable && localStorage[apiKey];
+      raw[apiKey] = native ? function() {
+        return native.apply(localStorage, arguments);
+      } : function() {
+        console.log("[Config] localStorage不可用");
+      };
+    });
+    return raw;
+  })();
+  var storageLayers = {
+    local: { label: "localStorage", usable: Utils.storageUsable, keys: () => Object.keys(localStorage), get: (key) => rawLocalStorage.getItem(key), set: (key, val) => rawLocalStorage.setItem(key, Utils.isObj(val) || Utils.isArr(val) ? JSON.stringify(val) : val), del: (key) => rawLocalStorage.removeItem(key), encoded: true, fallback: null },
+    global: { label: "globalStorage", usable: () => window.GM_setValue && window.GM_getValue && window.GM_deleteValue && window.GM_listValues instanceof Function, keys: () => window.GM_listValues(), get: (key) => window.GM_getValue(key), set: (key, val) => window.GM_setValue(key, val), del: (key) => window.GM_deleteValue(key), encoded: false, fallback: "local" }
+  };
+  var ConfigManager = class {
+    hasExternal;
+    opts;
+    _keyNames;
+    revision;
+    _confObjRevision_;
+    constructor(opts) {
+      this.hasExternal = false;
+      this.opts = opts;
+      this._keyNames = {};
+      this.revision = 0;
+      this._confObjRevision_ = -1;
+    }
+    // 吃宿主页面注入的配置并合并进默认表与任务配置：只有开了「允许外部自定义」才生效，推进配置版本号并打上标记
+    mergeExternal(config, tag = "Default") {
+      if (!config || !this.getGlobal("enhance.allowExternalCustomConfiguration")) return false;
+      const configuration = Utils.mergeObj(this.opts.config, config.customConfiguration);
+      this.revision++;
+      const mergedTaskConf = Utils.mergeObj(taskConf, config.customTaskControlCenter);
+      if (taskCenter) {
+        taskCenter.conf = mergedTaskConf;
+      }
+      console.log("[Config] 外部配置合并", configuration, mergedTaskConf);
+      this.hasExternal = true;
+      return true;
+    }
+    // 配置路径转存储键名：加前缀、点号换下划线，结果缓存进 _keyNames
+    confKey(confPath = "") {
+      return this._keyNames[confPath] || (this._keyNames[confPath] = this.opts.prefix + confPath.replace(/\./g, "_"));
+    }
+    // 存储键名还原成配置路径：去掉前缀、下划线换回点号
+    getConfPath(keyName = "") {
+      return (keyName.startsWith(this.opts.prefix) ? keyName.slice(this.opts.prefix.length) : keyName).replace(/_/g, ".");
+    }
+    // 读配置：本地层优先，其次全局层，最后落到内存默认表
+    get(confPath) {
+      if (typeof confPath !== "string") {
+        return null;
+      }
+      const localConf = this.getLocal(confPath);
+      if (localConf !== null) {
+        return localConf;
+      }
+      const globalConf = this.getGlobal(confPath);
+      if (globalConf !== null) {
+        return globalConf;
+      }
+      return this.getMemory(confPath);
+    }
+    // 写配置：先试本地层，写不进再升级到全局层
+    set(confPath, val) {
+      return this.setLocal(confPath, val) || this.setGlobal(confPath, val);
+    }
+    //   媒体数值的持久化位置：iframe 里的本地存储属于顶层页面，写不进本站，只能升级到全局层；站点自己接管该项时（forceGlobal）同理
+    persistMedia(confPath, val, forceGlobal) {
+      return forceGlobal || Utils.inFrame() ? this.setGlobal(confPath, val) : this.set(confPath, val);
+    }
+    // 列出两层已落盘的配置与内存默认表，供导出与诊断
+    list() {
+      const result = { localConf: this.listLocal(), globalConf: this.listGlobal(), defConfig: this.opts.config };
+      return result;
+    }
+    // 清掉两层已落盘的配置
+    clear() {
+      this.clearLocal();
+      this.clearGlobal();
+    }
+    // 从内存默认表里按路径取值，没有就返回 null
+    getMemory(confPath) {
+      const val = Utils.getPath(this.getConfObj(), confPath);
+      return typeof val === "undefined" || val === null ? null : val;
+    }
+    // 读一层：这一层不可用就退到它声明的兜底层，读不到键则退到内存里的默认值
+    readLayer(layerName, confPath) {
+      const layer = storageLayers[layerName];
+      if (!layer.usable()) {
+        return layer.fallback ? this.readLayer(layer.fallback, confPath) : null;
+      }
+      const key = this.confKey(confPath);
+      const stored = layer.get(key);
+      if (stored === null || typeof stored === "undefined") {
+        return this.getMemory(confPath);
+      }
+      if (!layer.encoded) {
+        return stored;
+      }
+      try {
+        return JSON.parse(stored);
+      } catch (e) {
+        console.log("[Config] 配置解析异常", key, stored);
+        return stored;
+      }
+    }
+    // 读本地层
+    getLocal(confPath) {
+      return this.readLayer("local", confPath);
+    }
+    // 读全局层
+    getGlobal(confPath) {
+      return this.readLayer("global", confPath);
+    }
+    // 写一层：先校验并更新内存快照，再落盘；这层不可用就退到它声明的兜底层
+    writeLayer(layerName, confPath, val) {
+      const layer = storageLayers[layerName];
+      if (typeof confPath !== "string" || typeof val === "undefined" || val === null) return false;
+      Utils.setPath(this.opts.config, confPath, val);
+      this.revision++;
+      const key = this.confKey(confPath);
+      if (!layer.usable()) {
+        return layer.fallback ? this.writeLayer(layer.fallback, confPath, val) : false;
+      }
+      try {
+        layer.set(key, val);
+        return true;
+      } catch (e) {
+        console.log("[Config] 配置写入异常", layer.label, key, val, e);
+        return false;
+      }
+    }
+    // 写本地层
+    setLocal(confPath, val) {
+      return this.writeLayer("local", confPath, val);
+    }
+    // 写全局层
+    setGlobal(confPath, val) {
+      return this.writeLayer("global", confPath, val);
+    }
+    // 列出某一层已经落盘的配置：按前缀筛键，值仍走该层自己的读法
+    listLayer(layerName) {
+      const layer = storageLayers[layerName];
+      const result = {};
+      if (!layer.usable()) {
+        return result;
+      }
+      layer.keys().forEach((key) => {
+        if (key.startsWith(this.opts.prefix)) {
+          const confPath = this.getConfPath(key);
+          result[confPath] = this.readLayer(layerName, confPath);
+        }
+      });
+      return result;
+    }
+    // 列出本地层已落盘的配置
+    listLocal() {
+      return this.listLayer("local");
+    }
+    // 列出全局层已落盘的配置
+    listGlobal() {
+      return this.listLayer("global");
+    }
+    // 把两层已落盘的值合进内存配置；枚举 + 逐键 JSON.parse 太贵，按 revision 一个版本只做一次，返回的仍是 opts.config 本体
+    getConfObj() {
+      if (this._confObjRevision_ === this.revision) {
+        return this.opts.config;
+      }
+      this._confObjRevision_ = this.revision;
+      const confList = this.list();
+      Object.keys(confList.globalConf).forEach((confPath) => {
+        Utils.setPath(this.opts.config, confPath, confList.globalConf[confPath]);
+      });
+      Object.keys(confList.localConf).forEach((confPath) => {
+        Utils.setPath(this.opts.config, confPath, confList.localConf[confPath]);
+      });
+      return this.opts.config;
+    }
+    // 清空一层里带前缀的键，并推进配置版本号
+    clearLayer(layerName) {
+      const layer = storageLayers[layerName];
+      if (!layer.usable()) return;
+      layer.keys().forEach((key) => {
+        if (key.startsWith(this.opts.prefix)) {
+          layer.del(key);
+        }
+      });
+      this.revision++;
+    }
+    // 清空本地层
+    clearLocal() {
+      this.clearLayer("local");
+    }
+    // 清空全局层
+    clearGlobal() {
+      this.clearLayer("global");
+    }
+  };
+  var configManager = new ConfigManager(defaultConfiguration);
+  var downloadState = /* @__PURE__ */ new Map();
+  var configScope = (layer) => layer === "site" ? "「仅用于此网站」" : "「全局设置」";
+  var configSave = (layer, key, val) => layer === "site" ? configManager.setLocal(key, val) : configManager.setGlobal(key, val);
+  var applyReload = (apply) => {
+    if (apply) apply();
+    window.location.reload();
+    return true;
+  };
+  var blacklistedDomains = () => configManager.get("blacklist.domains") || [];
+  var siteDisabled = () => blacklistedDomains().includes(location.host);
+  var menuOn = () => configManager.get("rightClickMenu.enable") !== false;
+  var blocksSet = (name) => configManager.get("enhance.blockSet" + name) === true;
+  var configSwitch = (key, layer, texts) => {
+    const scope = configScope(layer);
+    const isTurningOn = () => !configManager.get(key);
+    const label = () => texts[isTurningOn() ? 0 : 1];
+    return { title: () => `${label()} ${scope}`, fn: () => {
+      applyReload(() => configSave(layer, key, isTurningOn()));
+    } };
+  };
+  var globalFunctional = {
+    // 切换脚本的启用或禁用状态：黑名单是全局的一份列表，不是布尔开关
+    toggleEnable: {
+      title: () => `${siteDisabled() ? "启用脚本" : "禁用脚本"} ${configScope("site")}`,
+      fn: () => {
+        const turningOn = siteDisabled();
+        applyReload(() => {
+          const list = blacklistedDomains();
+          configSave("global", "blacklist.domains", turningOn ? list.filter((item) => item !== location.host) : list.concat(location.host));
+        });
+      }
+    },
+    // 切换默认播放进度的控制逻辑
+    toggleCurrentTime: configSwitch("enhance.blockSetCurrentTime", "site", ["允许默认播放进度控制逻辑", "禁用默认播放进度控制逻辑"]),
+    toggleVolume: configSwitch("enhance.blockSetVolume", "site", ["允许默认音量控制逻辑", "禁用默认音量控制逻辑"]),
+    // 倍速参数只能全局设置，本站覆盖会互相打架
+    togglePlaybackRate: configSwitch("enhance.blockSetPlaybackRate", "global", ["允许默认速度调节逻辑", "禁用默认速度调节逻辑"]),
+    toggleGain: configSwitch("enhance.allowAcousticGain", "global", ["开启音量增益能力", "禁用音量增益能力"]),
+    toggleCrossControl: configSwitch("enhance.allowCrossOriginControl", "global", ["开启跨域控制能力", "禁用跨域控制能力"]),
+    toggleExperiment: configSwitch("enhance.allowExperimentFeatures", "global", ["开启实验性功能", "禁用实验性功能"]),
+    toggleExternal: configSwitch("enhance.allowExternalCustomConfiguration", "global", ["开启外部自定义能力", "关闭外部自定义能力"]),
+    toggleDebug: configSwitch("debug", "global", ["开启调试模式", "关闭调试模式"]),
+    // 还原全局的默认配置
+    restoreDefault: {
+      title: "还原全局的默认配置",
+      fn: () => {
+        configManager.clear();
+        applyReload();
+      }
+    },
+    openFrame: { title: "单独打开跨域的页面", fn: () => {
+      Utils.openTab(location.href);
+    } },
+    // 切换视频右键菜单的启用或禁用状态（实时生效，无需刷新）
+    toggleMenu: {
+      title: () => `${menuOn() ? "禁用" : "启用"}视频右键菜单 ${configScope("global")}`,
+      fn: () => {
+        const isEnable = menuOn();
+        configSave("global", "rightClickMenu.enable", !isEnable);
+        menu.close();
+      }
+    },
+    toggleHotkeys: configSwitch("enableHotkeys", "global", ["启用快捷键", "禁用快捷键"]),
+    siteHotkeys: configSwitch("enableHotkeys", "site", ["启用快捷键", "禁用快捷键"]),
+    toggleMouse: configSwitch("mouse.enable", "global", ["启用鼠标控制", "禁用鼠标控制"]),
+    siteMouse: configSwitch("mouse.enable", "site", ["启用鼠标控制", "禁用鼠标控制"]),
+    setLongPress: {
+      title: () => `长按多久响应鼠标长按事件 ${configScope("global")}`,
+      fn: () => {
+        const typed = prompt(`长按多久响应鼠标长按事件 ${configScope("global")}`, configManager.get("mouse.longPressTime") || 600);
+        if (!typed) {
+          return;
+        }
+        configSave("global", "mouse.longPressTime", Number(typed));
+        window.location.reload();
+      }
+    },
+    toggleDownload: configSwitch("download.enable", "global", ["开启媒体下载", "关闭媒体下载"]),
+    siteDownload: configSwitch("download.enable", "site", ["开启媒体下载", "关闭媒体下载"])
+  };
+  var menuCmd = (title, command, ...args) => ({ title, command, args, fn: () => runCommand(command, args) });
+  var menuGroups = [
+    ["toggleMenu", "toggleEnable"],
+    ["togglePlaybackRate", "toggleCurrentTime", "toggleVolume", "toggleGain", "toggleCrossControl", "toggleExperiment", "toggleExternal"],
+    ["toggleHotkeys", "siteHotkeys", "toggleMouse", "siteMouse", "setLongPress", "toggleDownload", "siteDownload"],
+    ["toggleDebug", "restoreDefault", "openFrame"]
+  ];
+  var menuItems = () => menuGroups.map((group) => group.map((key) => globalFunctional[key])).reduce((all, items, i) => all.concat(i ? { divider: true } : [], items), []);
+
+  // Input.ts
+  var swallowEvent = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  var InputControl = class _InputControl {
+    enable;
+    globalMode;
+    crossDetected;
+    _isFocus;
+    hotkeysRunner;
+    keysPaused;
+    _bound_;
+    _relayed_;
+    _keyIndex_;
+    _indexRevision_;
+    constructor() {
+      this.enable = true;
+      this.globalMode = true;
+      this.crossDetected = false;
+      this._isFocus = false;
+      this.hotkeysRunner = null;
+      this.keysPaused = false;
+      this._bound_ = false;
+      this._relayed_ = false;
+      this._keyIndex_ = null;
+      this._indexRevision_ = -1;
+    }
+    // 签名：修饰键按字典序拼接再跟主键；建索引与查索引用的是同一拼法，否则永远撞不上
+    static signature(mods, key) {
+      if (!key) return "";
+      const sorted = mods.filter(Boolean).sort();
+      return sorted.length ? sorted.join("+") + "+" + key : key;
+    }
+    // 按键索引：从 hotkeys 配置推导出的「签名 -> 配置项」表，兜底派发与广播过滤共用它；按配置版本号缓存，配置一改（revision 推进）就重建
+    keyIndex() {
+      if (input._indexRevision_ !== configManager.revision) {
+        input._indexRevision_ = configManager.revision;
+        const index = /* @__PURE__ */ new Map();
+        (Array.isArray(configManager.get("hotkeys")) ? configManager.get("hotkeys") : []).forEach((conf) => {
+          if (!conf || conf.disabled || typeof conf.key !== "string") {
+            return;
+          }
+          const bindings = HotkeysRunner.parseKeys(conf.key, HotkeysRunner.platformMod());
+          if (bindings.length !== 1) {
+            return;
+          }
+          const sig = _InputControl.signature(bindings[0][0], bindings[0][1]);
+          if (sig && !index.has(sig)) {
+            index.set(sig, conf);
+          }
+        });
+        input._keyIndex_ = index;
+      }
+      return input._keyIndex_;
+    }
+    // 按事件可能拼出的几种签名逐个查索引，取第一条命中的配置；key 与 code 两种写法都认
+    findBinding(event) {
+      if (!event) return null;
+      const index = input.keyIndex();
+      const mods = [];
+      if (event.ctrlKey) {
+        mods.push("ctrl");
+      }
+      if (event.altKey) {
+        mods.push("alt");
+      }
+      if (event.metaKey) {
+        mods.push("meta");
+      }
+      if (event.shiftKey) {
+        mods.push("shift");
+      }
+      const signatures = [event.key, event.code].filter((name) => typeof name === "string").map((name) => _InputControl.signature(mods, name.toLowerCase())).filter(Boolean);
+      for (let i = 0; i < signatures.length; i++) {
+        if (index.has(signatures[i])) {
+          return index.get(signatures[i]);
+        }
+      }
+      return null;
+    }
+    // 这个按键是否归脚本处理（跨Tab广播按它过滤）
+    static isRegistered(event) {
+      return !!input.findBinding(event);
+    }
+    // 临时禁用 / 启用快捷键：直接翻转状态位并给出提示，不弹确认
+    toggleHotkeys() {
+      input.keysPaused = !input.keysPaused;
+      menu.tips(input.keysPaused ? "快捷键已临时禁用" : "快捷键已临时启用");
+    }
+    // 整套增强的总开关：Ctrl+空格与右键菜单里的同名项共用一处
+    toggleEnhance() {
+      input.enable = !input.enable;
+      menu.tips(input.enable ? "启用r6Player插件" : "禁用r6Player插件");
+      return input.enable;
+    }
+    // 按需建按键引擎；在非同源 iframe 里把组合键监视挂到 window.top 上
+    mountRunner() {
+      if (!input.hotkeysRunner) {
+        input.hotkeysRunner = new HotkeysRunner(configManager.get("hotkeys"));
+        if (Utils.inFrame() && !Utils.crossSite()) {
+          input.hotkeysRunner.addWindow(window.top);
+        }
+      }
+    }
+    // 播放器的聚焦事件
+    isFocus() {
+      const player = activePlayer.player();
+      if (!player) return;
+      player.onmouseenter = function(e) {
+        input._isFocus = true;
+      };
+      player.onmouseleave = function(e) {
+        input._isFocus = false;
+      };
+    }
+    //   兜底派发：runner 只认本窗口的 KeyboardEvent，跨Tab/跨域来的模拟事件进不去，这里按同一份 hotkeys 配置查动作，保证两条路径的执行结果一致
+    playerTrigger(player, event) {
+      if (!player || !event) return false;
+      const conf = input.findBinding(event);
+      if (!conf) {
+        return false;
+      }
+      if (!runCommand(conf.command, conf.args)) {
+        return false;
+      }
+      event.stopPropagation && event.stopPropagation();
+      event.preventDefault && event.preventDefault();
+      return true;
+    }
+    // 运行站点自定义的快捷键任务：修饰键+主键拼好与注册项同序比对，命中即派发
+    siteShortcut(player, event) {
+      if (!player || !event) return;
+      const key = event.key.toLowerCase();
+      const taskConf2 = taskCenter.siteConf();
+      const confIsCorrect = Utils.isObj(taskConf2.shortcuts) && Array.isArray(taskConf2.shortcuts.register) && taskConf2.shortcuts.callback instanceof Function;
+      const combineKey = [];
+      if (event.ctrlKey) {
+        combineKey.push("ctrl");
+      }
+      if (event.shiftKey) {
+        combineKey.push("shift");
+      }
+      if (event.altKey) {
+        combineKey.push("alt");
+      }
+      if (event.metaKey) {
+        combineKey.push("command");
+      }
+      combineKey.push(key);
+      const hit = confIsCorrect && taskConf2.shortcuts.register.some((shortcut) => {
+        const regKey = shortcut.split("+");
+        return regKey.length === combineKey.length && regKey.every((name) => combineKey.includes(name));
+      });
+      if (!hit) {
+        return false;
+      }
+      const isDo = taskCenter.doTask("shortcuts", { event, player });
+      if (isDo) {
+        swallowEvent(event);
+      }
+      return isDo;
+    }
+    // 按键响应方法
+    keydownEvent(event) {
+      const keyCode = event.keyCode;
+      const player = activePlayer.player();
+      if (input.keysPaused || Utils.editable(Utils.eventTarget(event))) return;
+      pageBridge.send("globalKeydownEvent", event, 0);
+      if (!player) {
+        if (input.crossDetected) {
+          if (!configManager.get("enhance.allowCrossOriginControl")) {
+            return false;
+          }
+          if (input.hotkeysRunner && input.hotkeysRunner.run) {
+            input.hotkeysRunner.run({ event, stopPropagation: true, preventDefault: true });
+          } else {
+            input.mountRunner();
+            swallowEvent(event);
+          }
+        }
+        return false;
+      }
+      if (event.ctrlKey && keyCode === 32) {
+        input.toggleEnhance();
+      }
+      if (!input.enable) {
+        console.log("[Input] 增强已禁用");
+        return false;
+      }
+      if (event.ctrlKey && keyCode === 220) {
+        input.globalMode = !input.globalMode;
+        menu.tips("全局模式：" + (input.globalMode ? " ON" : " OFF"));
+      }
+      if (!input.globalMode && !input._isFocus) return;
+      if (input.siteShortcut(player, event) === true) return;
+      if (input.hotkeysRunner && input.hotkeysRunner.run) {
+        const matchResult = input.hotkeysRunner.run({ event, stopPropagation: true, preventDefault: true });
+        if (matchResult) {
+          console.log("[Input] 按键命中", matchResult);
+          return true;
+        }
+      } else {
+        return input.playerTrigger(player, event);
+      }
+    }
+    // 响应来自按键消息的广播
+    bindRelay() {
+      if (input._relayed_) return;
+      let triggerFakeEvent = function(name, oldVal, newVal, remote) {
+        const player = activePlayer.player();
+        if (player && !input.keysPaused) {
+          const fakeEvent = newVal.data;
+          fakeEvent.stopPropagation = () => {
+          };
+          fakeEvent.preventDefault = () => {
+          };
+          input.playerTrigger(player, fakeEvent);
+          console.log("[Input] 跨域按键响应", newVal);
+        }
+      };
+      if (!pageBridge.pictureOpen() && !input.crossDetected) {
+        triggerFakeEvent = Utils.throttle(triggerFakeEvent, 80);
+      }
+      pageBridge.on("globalKeydownEvent", async (name, oldVal, newVal, remote) => {
+        if (remote) {
+          if (Utils.crossSite()) {
+            if (document.visibilityState === "visible" && newVal.originTab) {
+              triggerFakeEvent(name, oldVal, newVal, remote);
+            }
+          } else if (pageBridge.pictureOpen()) {
+            if (!newVal.originTab && (document.pictureInPictureElement || activePlayer.justExited())) {
+              triggerFakeEvent(name, oldVal, newVal, remote);
+            }
+          }
+        }
+      });
+      input._relayed_ = true;
+    }
+    // 绑定相关事件
+    bindEvent() {
+      if (input._bound_) return;
+      const docs = [document];
+      if (Utils.inFrame() && !Utils.crossSite()) {
+        docs.push(window.top.document);
+      }
+      Utils.rebindKeydown(input.keydownEvent, docs);
+      input._bound_ = true;
+    }
+    // 长按视频画面进行3倍速快进的鼠标控制
+    static register() {
+      const longPressTime = configManager.get("mouse.longPressTime") || 600;
+      let mouseEventTimer = null;
+      let hasHandleEvent = false;
+      let isPaused = false;
+      let oldPlaybackRate = 1;
+      document.addEventListener("mousedown", function(event) {
+        const player = activePlayer.player();
+        if (!player || !(player instanceof HTMLVideoElement)) {
+          return;
+        }
+        isPaused = player.paused;
+        if (!Utils.onMedia(player, event.clientX, event.clientY, 80)) {
+          return;
+        }
+        if (event.button === 0) {
+          mouseEventTimer = setTimeout(() => {
+            hasHandleEvent = true;
+            oldPlaybackRate = tuner.getSpeed();
+            tuner.applyRate(3, false, 800);
+            swallowEvent(event);
+          }, longPressTime);
+        }
+      }, true);
+      document.addEventListener("mouseup", function(event) {
+        mouseEventTimer && clearTimeout(mouseEventTimer);
+        if (hasHandleEvent) {
+          hasHandleEvent = false;
+          swallowEvent(event);
+          if (isPaused) {
+            activePlayer.enhancer.lockPlay(600);
+          } else {
+            activePlayer.enhancer.lockPause(600);
+          }
+          tuner.applyRate(oldPlaybackRate, false, 800);
+        }
+      }, true);
+    }
+  };
+  var input = null;
+  var createInput = () => {
+    input = new InputControl();
+    return input;
+  };
+  var debuggerNow = () => {
+    if (!window._debugMode_) return false;
+    const script = document.createElement("script");
+    script.innerText = "debugger";
+    document.body.appendChild(script);
+    return true;
+  };
+  var hotkeyCommands = /* @__PURE__ */ Object.create(null);
+  var buildCommands = () => {
+    hotkeyCommands.debuggerNow = debuggerNow;
+    [activePlayer, menu, tuner, picture, input].forEach((ctl) => {
+      Object.getOwnPropertyNames(Object.getPrototypeOf(ctl)).forEach((name) => {
+        if (name === "constructor" || name in hotkeyCommands) return;
+        if (typeof ctl[name] !== "function") return;
+        hotkeyCommands[name] = (...args) => ctl[name](...args);
+      });
+    });
+    return hotkeyCommands;
+  };
+  var runCommand = (command, args) => {
+    const fn = typeof command === "function" ? command : hotkeyCommands[command];
+    if (!(fn instanceof Function)) {
+      console.log("[Input] 命令派发失败", String(command));
+      return false;
+    }
+    const argv = Array.isArray(args) ? args : typeof args === "undefined" ? [] : [args];
+    fn(...argv);
+    return true;
+  };
+  var keyAlias = { ControlLeft: "ctrl", ControlRight: "ctrl", ShiftLeft: "shift", ShiftRight: "shift", AltLeft: "alt", AltRight: "alt", MetaLeft: "meta", MetaRight: "meta" };
+  var modGuard = new original.WeakMap();
+  var HotkeysRunner = class _HotkeysRunner {
+    window;
+    windowList;
+    MOD;
+    prevPress;
+    _prevTimer_;
+    modState;
+    hotkeys;
+    constructor(hotkeys, win = window) {
+      this.window = win;
+      this.windowList = [win];
+      this.MOD = _HotkeysRunner.platformMod();
+      this.prevPress = null;
+      this._prevTimer_ = null;
+      this.modState = new original.Map();
+      this.hotkeys = hotkeys || [];
+      if (Array.isArray(this.hotkeys)) {
+        this.hotkeys.forEach((config) => {
+          if (!Utils.isObj(config) || !config.key || typeof config.key !== "string") {
+            return;
+          }
+          config.keyBindings = _HotkeysRunner.parseKeys(config.key, this.MOD);
+        });
+      } else {
+        this.hotkeys = [];
+      }
+      this.watchMods(win);
+    }
+    //   — 按键配置解析：引擎的逐段匹配与兜底派发的签名查表共用这一份，不再各解析一遍$mod 在 Mac 上是 meta、其它平台是 ctrl；拿不到 navigator 时按非 Mac 处理
+    static platformMod() {
+      return /Mac|iPod|iPhone|iPad/.test(typeof navigator === "object" && navigator.platform ? navigator.platform : "") ? "meta" : "ctrl";
+    }
+    // 一段按键串 -> [修饰键（按书写顺序）, 主键]；纯修饰键组合的主键为空串
+    static parsePress(press, mod) {
+      const mods = [];
+      let key = "";
+      press.split(/\b\+/).forEach((k) => {
+        k = k === "$mod" ? mod : k;
+        if (Utils.isModifier(k)) {
+          mods.push(k);
+        } else {
+          key = k;
+        }
+      });
+      return [mods, key];
+    }
+    // 整条配置 -> 逐段解析结果；空格分段即多段序列（如 space c），只有引擎能走完
+    static parseKeys(key, mod) {
+      return key.trim().toLowerCase().split(/\s+/).map((press) => _HotkeysRunner.parsePress(press, mod));
+    }
+    // 设置其它window对象的组合键监控逻辑
+    addWindow(win) {
+      this.window = win;
+      if (!this.windowList.includes(win)) {
+        this.windowList.push(win);
+      }
+      this.watchMods(win);
+    }
+    // 当前键盘事件与某一段预期按键配置是否匹配
+    isMatch(event, press, heldKeys) {
+      if (!event || !Array.isArray(press)) {
+        return false;
+      }
+      const held = event.modsMap || this.heldMods();
+      const mods = press[0];
+      const key = press[1];
+      if (mods.length !== held.size) {
+        return false;
+      }
+      if (key && event.key.toLowerCase() !== key && event.code.toLowerCase() !== key) {
+        return false;
+      }
+      let result = true;
+      const modsKey = heldKeys || this.modsOf(event);
+      mods.forEach((key2) => {
+        if (!modsKey.has(key2)) {
+          result = false;
+        }
+      });
+      return result;
+    }
+    // 把当前按住的修饰键展开成便于查表的形态（同时兼容大小写与别名）
+    modsOf(event) {
+      const held = event.modsMap || this.heldMods();
+      const modsKey = new original.Map();
+      held.forEach((val, key) => {
+        modsKey.set(key, val);
+        modsKey.set(key.toLowerCase(), val);
+        keyAlias[key] && modsKey.set(keyAlias[key], val);
+      });
+      return modsKey;
+    }
+    //   上一段按键是否与给定段匹配，多段序列靠它衔接引擎主循环：逐条配置按段匹配，命中就吞事件并按需派发命令，返回命中的配置
+    run(opts = {}) {
+      if (!this.windowList.some((win) => win.KeyboardEvent === opts.event.constructor)) {
+        return false;
+      }
+      const event = opts.event;
+      const heldKeys = this.modsOf(event);
+      let matchResult = null;
+      this.hotkeys.forEach((hotkeyConf) => {
+        if (hotkeyConf.disabled || !hotkeyConf.keyBindings) {
+          return false;
+        }
+        let press = hotkeyConf.keyBindings[0];
+        if (this.prevPress) {
+          if (hotkeyConf.keyBindings.length <= 1 || !this.isMatch(this.prevPress, press)) {
+            return false;
+          }
+          press = hotkeyConf.keyBindings[1];
+        }
+        const isMatch = this.isMatch(event, press, heldKeys);
+        if (!isMatch) {
+          return false;
+        }
+        matchResult = hotkeyConf;
+        const stopPropagation = opts.stopPropagation || hotkeyConf.stopPropagation;
+        const preventDefault = opts.preventDefault || hotkeyConf.preventDefault;
+        stopPropagation && event.stopPropagation();
+        preventDefault && event.preventDefault();
+        if (press === hotkeyConf.keyBindings[0] && hotkeyConf.keyBindings.length > 1) {
+          this.prevPress = {
+            modsMap: this.heldMods(),
+            code: event.code,
+            key: event.key,
+            keyCode: event.keyCode,
+            altKey: event.altKey,
+            shiftKey: event.shiftKey,
+            ctrlKey: event.ctrlKey,
+            metaKey: event.metaKey
+          };
+          clearTimeout(this._prevTimer_);
+          this._prevTimer_ = setTimeout(() => {
+            this.prevPress = null;
+          }, 1e3);
+          return true;
+        }
+        if (hotkeyConf.keyBindings.length > 1 && press !== hotkeyConf.keyBindings[0]) {
+          setTimeout(() => {
+            this.prevPress = null;
+          }, 0);
+        }
+        runCommand(hotkeyConf.command, hotkeyConf.args);
+      });
+      return matchResult;
+    }
+    // 给一个 window 挂组合键状态监听（按下置位、松开延迟复位、失焦全清），每个 window 只挂一次
+    watchMods(win = window) {
+      const self = this;
+      const modState = self.modState;
+      if (!win || win !== win.self || !win.addEventListener || modGuard.get(win)) {
+        return false;
+      }
+      const timers = {};
+      function pressMod(event) {
+        Utils.isModifier(event.code) && modState.set(event.code, true);
+      }
+      function releaseMod(event) {
+        if (!(event instanceof KeyboardEvent)) {
+          modState.forEach((val, key) => {
+            modState.set(key, false);
+          });
+          return true;
+        }
+        if (Utils.isModifier(event.code)) {
+          clearTimeout(timers[event.code]);
+          timers[event.code] = setTimeout(() => {
+            modState.set(event.code, false);
+          }, 50);
+        }
+      }
+      win.addEventListener("keydown", pressMod, true);
+      win.addEventListener("keypress", pressMod, true);
+      win.addEventListener("keyup", releaseMod, true);
+      win.addEventListener("blur", releaseMod, true);
+      modGuard.set(win, true);
+    }
+    // 取当前所有按下的修饰键，跨 Tab 转发按键时要把这份状态一起带上
+    heldMods() {
+      const modState = this.modState;
+      const result = new original.Map();
+      modState.forEach((val, key) => {
+        if (val === true) {
+          result.set(key, val);
+        }
+      });
+      return result;
+    }
+  };
+
+  // Bridge.ts
+  var userAgentMap = {
+    iPhone: {
+      safari: "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/111.0.0.0 Mobile/15E148 Safari/604.1",
+      chrome: "Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/74.0.3729.121 Mobile/15E148 Safari/605.1"
+    }
+  };
+  var fakeConfig = { "open.163.com": userAgentMap.iPhone.chrome, "m.open.163.com": userAgentMap.iPhone.chrome, "pan.baidu.com": userAgentMap.iPhone.safari };
+  var pictureKey = "globalPictureInPictureInfo";
+  var PageBridge = class _PageBridge {
+    // 跨Tab按键让位只绑一次：标记留在实例上，重试路径不会再挂第二份
+    _bound_;
+    // 某些网页用 attachShadow closed mode，改成 open 才拿得到 video（如百度云盘）
+    static openShadow() {
+      if (window._hasHackAttachShadow_) return;
+      try {
+        window._shadowDomList_ = [];
+        window.Element.prototype._attachShadow = window.Element.prototype.attachShadow;
+        window.Element.prototype.attachShadow = function() {
+          const arg = arguments;
+          const isClosed = arg[0] && arg[0].mode === "closed";
+          if (arg[0] && arg[0].mode) {
+            arg[0].mode = "open";
+          }
+          const shadowRoot = this._attachShadow.apply(this, arg);
+          window._shadowDomList_.push(shadowRoot);
+          shadowRoot._shadowHost = this;
+          const shadowEvent = new window.CustomEvent("addShadowRoot", { detail: { shadowRoot, message: "addShadowRoot", time: /* @__PURE__ */ new Date() }, bubbles: true, cancelable: true });
+          document.dispatchEvent(shadowEvent);
+          if (isClosed) {
+            original.Object.defineProperty.call(Object, this, "shadowRoot", {
+              // 站点用的是 closed 模式，就把 shadowRoot 对外装回 null
+              get() {
+                return null;
+              }
+            });
+          }
+          return shadowRoot;
+        };
+        window._hasHackAttachShadow_ = true;
+      } catch (e) {
+        console.log("[Bridge] shadowRoot劫持异常", e);
+      }
+    }
+    // 按站点伪装 Navigator 的 userAgent
+    static spoofAgent(ua) {
+      ua = ua || fakeConfig[window.location.host];
+      if (!ua) return;
+      const desc = Object.getOwnPropertyDescriptor(Navigator.prototype, "userAgent");
+      Object.defineProperty(Navigator.prototype, "userAgent", { ...desc, get: function() {
+        return ua;
+      } });
+    }
+    // 反制站点对媒体属性的锁定：定义发生的那一刻把属性改成可配置，并把真正落地的键名挪开
+    static unlockable(target, key, option) {
+      if (!option || typeof option !== "object") {
+        return [target, key, option];
+      }
+      if (target instanceof Element && typeof key === "string" && key.indexOf("on") >= 0) {
+        option.configurable = true;
+      }
+      if (target instanceof HTMLVideoElement && typeof key === "string" && ["playbackRate", "currentTime", "volume", "muted"].includes(key)) {
+        console.log("[Bridge] 媒体属性锁拦截", key);
+        option.configurable = true;
+        key += "_hack";
+      }
+      return [target, key, option];
+    }
+    // 统一包一层 try/catch：失败只记日志并返回 null，不把异常抛给站点
+    static safeDefine(rawFn, args, methodName) {
+      try {
+        return rawFn.apply(Object, args);
+      } catch (e) {
+        console.log("[Bridge] 属性定义异常", methodName, e);
+        return null;
+      }
+    }
+    // 把 Object.defineProperty 与 defineProperties 换成会先解锁的版本
+    static hackDefine() {
+      const rawDefineProperty = Object.defineProperty;
+      const rawDefineProperties = Object.defineProperties;
+      Object.defineProperty = function(target, key, option) {
+        return _PageBridge.safeDefine(rawDefineProperty, _PageBridge.unlockable(target, key, option), "defineProperty");
+      };
+      Object.defineProperties = function(target, properties) {
+        if (target instanceof Element && properties) {
+          const unlocked = {};
+          Object.keys(properties).forEach((key) => {
+            const afterArgs = _PageBridge.unlockable(target, key, properties[key]);
+            unlocked[afterArgs[1]] = afterArgs[2];
+          });
+          properties = unlocked;
+        }
+        return _PageBridge.safeDefine(rawDefineProperties, [target, properties], "defineProperties");
+      };
+    }
+    // 代理媒体元素的事件注册，以便调试或阻断 ratechange
+    static proxyEvents() {
+      if (HTMLMediaElement.prototype._rawAddEventListener_) {
+        return false;
+      }
+      HTMLMediaElement.prototype._rawAddEventListener_ = HTMLMediaElement.prototype.addEventListener;
+      HTMLMediaElement.prototype._rawRemoveEventListener_ = HTMLMediaElement.prototype.removeEventListener;
+      HTMLMediaElement.prototype.addEventListener = new original.Proxy(HTMLMediaElement.prototype.addEventListener, {
+        // 只给 ratechange 的监听器再包一层，其余事件原样放行
+        apply(target, ctx, args) {
+          const eventName = args[0];
+          const listener = args[1];
+          if (listener instanceof Function && eventName === "ratechange") {
+            args[1] = new original.Proxy(listener, {
+              // 识别站点阻速：速率被改过、或与脚本设的值对不上，就吞掉这次事件
+              apply(target2, ctx2, args2) {
+                if (ctx2) {
+                  if (ctx2.playbackRate && eventName === "ratechange") {
+                    if (ctx2._hasBlockRatechangeEvent_) {
+                      return true;
+                    }
+                    const oldRate = ctx2.playbackRate;
+                    const startTime = Date.now();
+                    const result = target2.apply(ctx2, args2);
+                    const blockRatechangeBehave1 = oldRate !== ctx2.playbackRate || Date.now() - startTime > 1e3;
+                    const blockRatechangeBehave2 = ctx2._setPlaybackRate_ && ctx2._setPlaybackRate_.value !== ctx2.playbackRate;
+                    if (blockRatechangeBehave1 || blockRatechangeBehave2) {
+                      console.log("[Bridge] 阻速行为拦截", eventName, listener);
+                      ctx2._hasBlockRatechangeEvent_ = true;
+                      return true;
+                    } else {
+                      return result;
+                    }
+                  }
+                }
+                try {
+                  return target2.apply(ctx2, args2);
+                } catch (e) {
+                  console.log("[Bridge] 事件代理异常", eventName, listener, e);
+                }
+              }
+            });
+          }
+          return target.apply(ctx, args);
+        }
+      });
+    }
+    // 发消息：带上 tabId、标题、referrer 等必要信息，并按间隔节流
+    send(name, data, throttleInterval = 80) {
+      if (!window.GM_getValue || !window.GM_setValue) {
+        return false;
+      }
+      const oldMsg = window.GM_getValue(name);
+      if (oldMsg && oldMsg.updateTime) {
+        const interval = Math.abs(Date.now() - oldMsg.updateTime);
+        if (interval < throttleInterval) {
+          return false;
+        }
+      }
+      const msg = { data, tabId: tabIdentity.id || "undefined", title: document.title, referrer: Utils.extractData(window.location), updateTime: Date.now() };
+      if (typeof data === "object") {
+        msg.data = Utils.extractData(data);
+      }
+      window.GM_setValue(name, msg);
+    }
+    // 读跨 Tab 消息，底层就是 GM_getValue
+    get(name) {
+      return window.GM_getValue && window.GM_getValue(name);
+    }
+    // 订阅跨 Tab 消息：先标记来源是不是本 Tab，再回调
+    on(name, fn) {
+      return window.GM_addValueChangeListener && window.GM_addValueChangeListener(name, function(name2, oldVal, newVal, remote) {
+        newVal.originTab = newVal.tabId === tabIdentity.id;
+        fn instanceof Function && fn.apply(null, arguments);
+      });
+    }
+    // 意外退出的时候leavepictureinpicture事件并不会被调用，所以只能通过轮询来更新画中画信息
+    pollPicture() {
+      setInterval(() => {
+        if (document.pictureInPictureElement) {
+          pageBridge.send(pictureKey, { usePictureInPicture: true });
+        }
+      }, 1e3 * 1.5);
+    }
+    // 判断当前是否开启了画中画功能
+    pictureOpen() {
+      const data = pageBridge.get(pictureKey);
+      if (!data || !data.data) {
+        return false;
+      }
+      return Math.abs(Date.now() - data.updateTime) < (data.data.usePictureInPicture ? 1e3 * 3 : 1e3 * 15);
+    }
+    //   别的 Tab 开着画中画时，本页按下已注册的快捷键就吞掉，让给那个 Tab；ctrl/meta + c/v/f/d 这类系统级快捷键排除在外，减少对复制粘贴查找下载的干扰
+    yieldKeys(event) {
+      if (Utils.editable(Utils.eventTarget(event))) return;
+      if (pageBridge.pictureOpen()) {
+        const pipInfo = pageBridge.get(pictureKey);
+        const exclude = event && typeof event.keyCode !== "undefined" && (event.ctrlKey || event.metaKey) && ["c", "v", "f", "d"].includes(event.key.toLowerCase());
+        if (pipInfo.tabId !== tabIdentity.id && InputControl.isRegistered(event) && !exclude) {
+          event.stopPropagation();
+          event.preventDefault();
+          return true;
+        }
+      }
+    }
+    // 绑定跨 Tab 按键让位，只绑一次
+    bindYield() {
+      if (pageBridge._bound_) return;
+      Utils.rebindKeydown(pageBridge.yieldKeys, [document]);
+      pageBridge._bound_ = true;
+    }
+  };
+  var pageBridge = new PageBridge();
+
+  // Boot.ts
+  var applyExternal = () => {
+    const conf = window.unsafeWindow && window.unsafeWindow.__r6PlayerCustomConfiguration__;
+    if (conf && !configManager.hasExternal) {
+      configManager.mergeExternal(conf);
+    }
+  };
+  var playerDetected = () => {
+    applyExternal();
+    if (taskCenter.doTask("disable") === true) {
+      console.log("[Boot] 任务中心禁用本站检测", location.host);
+      return true;
+    }
+    return activePlayer.detectPlayer();
+  };
+  var watchTags = (root) => supportMediaTags.forEach((tagName) => Utils.ready(tagName, () => playerDetected(), root));
+  var bootState = { runtimeReady: false, initTryCount: 0 };
+  var setupRuntime = () => {
+    if (bootState.runtimeReady) return true;
+    bootState.runtimeReady = true;
+    applyExternal();
+    if (configManager.get("debug") === true) {
+      window._debugMode_ = true;
+    }
+    PageBridge.spoofAgent();
+    if (configManager.get("enableHotkeys") !== false) {
+      input.bindEvent();
+      input.bindRelay();
+    } else {
+      console.log("[Boot] 快捷键禁用");
+    }
+    pageBridge.on("videoDetected", (name, oldVal, newVal, remote) => {
+      if (newVal.originTab) {
+        input.crossDetected = true;
+      }
+      console.log("[Boot] 跨域视频检出", newVal, remote);
+    });
+    document.addEventListener("visibilitychange", function() {
+      activePlayer.autoPlay();
+    });
+    if (window.unsafeWindow && configManager.getGlobal("enhance.allowExternalCustomConfiguration")) {
+      window.unsafeWindow.__setR6PlayerCustomConfiguration__ = (config, tag) => configManager.mergeExternal(config, tag);
+    }
+    watchTags();
+    document.addEventListener("addShadowRoot", (e) => watchTags(e.detail.shadowRoot));
+    pageBridge.pollPicture();
+    pageBridge.bindYield();
+    if (Utils.inFrame()) {
+      console.log("[Boot] 启动完成, in iframe:");
+    } else {
+      console.log("[Boot] 启动完成");
+    }
+    if (Utils.crossSite()) {
+      console.log("[Boot] 跨域iframe受限", window.location.href);
+    }
+    if (configManager.get("mouse.enable")) {
+      InputControl.register();
+    }
+    return true;
+  };
+  var initEnhance = () => {
+    try {
+      if (Utils.isChallenge()) {
+        console.log("[Boot] 人机验证页暂停", location.href);
+        return false;
+      }
+    } catch (e) {
+      console.log("[Boot] 页面判定异常", e);
+    }
+    const isEnabled = configManager.get("enable");
+    const blackUrlList = configManager.get("blacklist.urls") || [];
+    const isInBlackList = blackUrlList.includes(location.href) || siteDisabled();
+    const isEnhanceOn = !!isEnabled && !isInBlackList;
+    if (isInBlackList) {
+      console.log("[Boot] 黑名单禁用本站", location.href, "如需开启请在配置 blacklist 中移除该地址");
+    }
+    installTasks(isEnhanceOn);
+    try {
+      if (isEnhanceOn) {
+        mediaCore.init(function(mediaElement) {
+          playerDetected();
+        });
+        if (configManager.get("enhance.allowExperimentFeatures") && configManager.get("download.enable")) {
+          mediaSource.init();
+          console.log("[Boot] 实验功能开启警示");
+          console.log("[Boot] 媒体流捕获启用");
+        }
+        PageBridge.hackDefine();
+        PageBridge.openShadow();
+        PageBridge.proxyEvents();
+      }
+    } catch (e) {
+      console.log("[Boot] 页面劫持异常", e);
+    }
+    MenuControl.init();
+    if (!isEnhanceOn) {
+      console.log("[Boot] 配置禁用本站", location.host);
+      return false;
+    }
+    try {
+      setupRuntime();
+    } catch (e) {
+      console.log("[Boot] 装配失败", e);
+    }
+  };
+  var startUp = (retryCount = 0) => {
+    if (!window.document || !window.document.documentElement) {
+      setTimeout(() => {
+        if (retryCount < 200) {
+          startUp(retryCount + 1);
+        } else {
+          console.log("[Boot] documentElement缺失", window);
+        }
+      }, 10);
+      return false;
+    } else if (retryCount > 0) {
+      console.log("[Boot] documentElement就绪", retryCount, window);
+    }
+    initEnhance();
+  };
+
+  // Entry.ts
+  var MODULES = [
+    Boot_exports,
+    Config_exports,
+    Media_exports,
+    Bridge_exports,
+    Utils_exports,
+    Input_exports,
+    Picture_exports,
+    Player_exports,
+    Tuner_exports,
+    Menu_exports,
+    Task_exports
+  ];
+  var internals = {};
+  var exposeInternals = () => {
+    const seen = /* @__PURE__ */ new Set();
+    MODULES.forEach((ns) => {
+      Object.keys(ns).forEach((name) => {
+        if (seen.has(name)) {
+          throw new Error("内部清单里名字重复：" + name);
+        }
+        seen.add(name);
+        Object.defineProperty(internals, name, { enumerable: true, get: () => ns[name] });
+      });
+    });
+    window.__playerInternals = internals;
+    return internals;
+  };
+  var CAPABILITY_CONTROLLERS = [createPlayer, createMenu, createTuner, createPicture, createInput];
+  exposeInternals();
+  Utils.getTabId();
+  createMedia();
+  createSource();
+  CAPABILITY_CONTROLLERS.forEach((create) => create());
+  buildCommands();
+  try {
+    startUp(0);
+  } catch (e) {
+    setTimeout(() => {
+      if (bootState.initTryCount < 200) {
+        bootState.initTryCount++;
+        startUp(0);
+        console.log("[Entry] 启动重试", bootState.initTryCount, e);
+      }
+    }, 10);
+  }
+})();
 // @license Copyright 2017 - Chris West - MIT Licensed · https://cwestblog.com/2017/08/22/web-audio-api-controlling-audio-video-loudness/

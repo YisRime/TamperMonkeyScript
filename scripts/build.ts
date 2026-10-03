@@ -67,7 +67,7 @@ export class Project {
         ? { stdin: { contents: opts.entrySource, resolveDir: this.SRC, sourcefile: this.ENTRY, loader: 'ts' as const } }
         : { entryPoints: [path.join(this.SRC, this.ENTRY)] }),
       bundle: true, format: 'iife' as const, target: 'es2022', platform: 'browser' as const,
-      charset: 'utf8' as const, logLevel: 'warning' as const, minify: true,
+      charset: 'utf8' as const, logLevel: 'warning' as const, minify: false,
       absWorkingDir: this.SRC, banner: { js: banner }, metafile: true, write: false,
       plugins: Object.keys(overrides).length ? [{
         name: 'in-memory-sources',

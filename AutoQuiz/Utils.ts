@@ -1,5 +1,5 @@
 // Utils：全脚本共用的常量、通用工具、日志、HTTP 出口与题型词表
-export const VERSION = '0.5.0';
+export const VERSION = '1.0.0';
 
 export const NAMESPACE = 'autoquiz';
 
